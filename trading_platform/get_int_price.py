@@ -20,4 +20,4 @@ def __main__():
 	print int_price
 
 if __name__ == "__main__":
-    __main__()
+	__main__()

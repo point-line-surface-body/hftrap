@@ -52,6 +52,8 @@ class SecurityMarketView:
     #     
     #===========================================================================
         
+    #def __eq__(self):
+        
         
     def subscribe_price_type (self, t_new_listener_, t_price_type_ ) :
         res = True

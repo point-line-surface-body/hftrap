@@ -1,18 +1,12 @@
-import os
 import sys
+from Indicators.simple_trend import SimpleTrend
 
-import data_file_constants
+from trading_platform.data_file_constants import *
 from get_data_file_name import get_data_file_name
 #from get_time_from_timestamp import get_time_from_timestamp
 
 usage = 'USAGE: EXEC SHORTCODE TRADING_DATE START_TIME END_TIME INDICATOR_LIST OUTPUT_FILE'
 
-TIMESTAMP_SIZE = 4
-TYPE_SIZE = 1
-PRICE_SIZE = 2
-SIZE_SIZE = 2
-ORDERS_SIZE = 2
-1=1
 if (len(sys.argv) < 7):
 	print usage
 	exit(0)
@@ -36,7 +30,7 @@ of = open(output_file, 'w')
 indicators = []
 
 for i in range(0, len(indicators_strings)):
-	if (i < 3 || i == len(indicators_strings)-1):
+	if (i < 3 or i == len(indicators_strings)-1):
 		continue
 	tokens = indicators_strings[i].split()
 	if (tokens[2] == 'SimpleTrend'):
