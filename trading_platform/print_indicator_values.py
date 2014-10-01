@@ -12,7 +12,7 @@ TYPE_SIZE = 1
 PRICE_SIZE = 2
 SIZE_SIZE = 2
 ORDERS_SIZE = 2
-
+1=1
 if (len(sys.argv) < 7):
 	print usage
 	exit(0)
