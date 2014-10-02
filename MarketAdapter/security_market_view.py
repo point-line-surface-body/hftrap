@@ -1,3 +1,5 @@
+from CDef.defines import *
+
 
 #Keeping only 1 Level in the book
 class OrderBook():
