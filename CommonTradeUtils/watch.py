@@ -10,4 +10,5 @@ class Watch(ExternalTimeListener):
     def OnTimeReceived(self, new_tv):
         return
         
-    
+    def YYMMDD(self):
+        return

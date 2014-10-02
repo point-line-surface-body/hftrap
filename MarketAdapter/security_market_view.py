@@ -1,9 +1,12 @@
 from CDef.defines import *
+from basic_market_view import *
+from normal_spread_manager import NormalSpreadManager
+from CDef.security_definitions import SecurityDefinitions
+from MarketAdapter.basic_market_view import BestBidAskInfo
 
 
 #Keeping only 1 Level in the book
-class OrderBook():
-    
+class OrderBook():  
     def __init__(self, bid_px, bid_sz, ask_px, ask_sz):
         self._bid_price_ = bid_px
         self._bid_size_ = bid_sz
@@ -23,40 +26,109 @@ class PriceLevelInfo():
 
 
 class SecurityMarketView:
-    #variables
-    market_update_info
-    trade_print_info
-    l1_price_listeners = []
-    l1_size_listeners = []
-    onready_listeners_ = []
-    price_type_subscribed = dict()
-    min_price_increment_
-    min_order_size_
-    normal_spread_increments_
-    normal_spread_
-    is_ready_
-    
-    
+ 
     def __init_(self, watch, shortcode, exchange_symbol, security_id):
-        return
+        self.watch_ = watch
+        self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.YYMMDD())
+        self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.YYMMDD())
+        self.normal_spread_increments_ = NormalSpreadManager.GetNormalSpreadIncrements(watch.YYMMDD(), shortcode)
+        self.normal_spread_ = 1
+        self.is_ready_ = False
+        self.computing_price_levels_ = False
+        self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(shortcode,watch.YYMMDD())
+        self.market_update_info_ = MarketUpdateInfo(shortcode, exchange_symbol,security_id, SecurityDefinitions.GetContractExchSource(shortcode, watch.YYMMDD()))
+        self.trade_print_info_ = TradePrintInfo()
+        self.l1_price_listeners = []
+        self.l1_size_listeners = []
+        self.onready_listeners_ = []
+        self.price_type_subscribed = dict()
+        self.use_order_level_book_ = False
+        #following variables may not be needed
+        self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(shortcode, watch.YYMMDD())
+        self.self_best_bid_ask_ = BestBidAskInfo()
+        self.last_best_level_ = BestBidAskInfo()
+        self.current_best_level_ = BestBidAskInfo()
+        self.top_bid_level_to_mask_trades_on_ = 0
+        self.top_ask_level_to_mask_trades_on_ = 0
+        self.prev_bid_was_quote_ = True
+        self.prev_ask_was_quote_ = True
+        self.running_hit_size_vec_ = []
+        self.running_lift_size_vec_ = []
+        self.l1_changed_since_last_ = False
+        self.last_message_was_trade_ = False
+        self.min_priority_size_ = 10
+        self.max_priority_size_ = 500
+        self.suspect_book_correct_ = False
+        self.using_order_level_data_ = False
+        self.skip_listener_notification_end_time_ = 0.0
+        self.process_market_data_ = True
+        self.initial_book_constructed_ = False
+        self.int_price_bid_book_ = []
+        self.int_price_ask_book_ = []
+        self.int_price_bid_skip_delete_ = []
+        self.int_price_ask_skip_delete_ = []
+        self.indexed_bid_book_ = []
+        self.indexed_ask_book_ = []
+        self.base_bid_index_ = 0
+        self.base_ask_index_ = 0
+        self.last_base_bid_index_ = 0
+        self.last_base_ask_index_ = 0
+        self.this_int_price_ = 0
+        self.last_msg_was_quote_ = False
+        self.running_lift_size_ = 0
+        self.running_hit_size_ = 0
+        self.lift_base_index_ = 0
+        self.hit_base_index_ = 0
+        self.last_raw_message_sequnece_applied_ = 0
+        self.price_type_subscribed_["MktSizeWPrice"] = False
+        self.normal_spread_ = self.normal_spread_increments_ * self.min_price_increment_
+        self.running_hit_size_vec_ = []
+        self.running_lift_size_vec_ = []
+        i=0
+        while i < DEF_MARKET_DEPTH :
+            self.running_hit_size_vec_.append(0)
+            self.running_lift_size_vec_.append(0)
+            i = i+1
+      
+    def __eq__(self, obj):
+        return self.shortcode() == obj.shortcode()
     
-    #===========================================================================
-    # 
-    # def __init__(self, bid_price, bid_size, ask_price, ask_size, min_price_increment):
-    #     #initialisation
-    #     self._bid_price_ = bid_price
-    #     self._bid_size_ = bid_size
-    #     self._ask_price_ = ask_price
-    #     self._ask_size_ = ask_size
-    #     self._min_price_increment = min_price_increment
-    #     self._mkt_price = (bid_price * ask_size + ask_price * bid_size )/ (bid_size + ask_size )
-    #     
-    #     
-    #===========================================================================
+    def shortcode(self):
+        return self.market_update_info_.shortcode_
+    
+    def secname(self):
+        return self.market_update_info_.secname_
+    
+    def security_id(self):
+        return self.market_update_info_.security_id_
+
+    def min_price_increment(self):
+        return self.min_price_increment_
+    
+    def  min_order_size(self):
+        return self.min_order_size_
+    
+    def normal_spread_increments(self):
+        return self.normal_spread_increments_
+    
+    def normal_spread(self):
+        return self.normal_spread_
+    
+    def spread_increments(self):
+        return self.market_update_info_.spread_increments_
+    
+    def SpreadWiderThanNormal(self):
+        return self.market_update_info_.spread_increments_ > self.normal_spread_increments_
+    
+    def UseOrderLevelBook(self):
+        return self.use_order_level_book_
+    
+    def SetUseOrderLevelBook(self):
+        self.use_order_level_book_ = True
         
-    #def __eq__(self):
-        
-        
+    def UnsetUseOrderLevelBook(self):
+        self.use_order_level_book_ = False
+            
     def subscribe_price_type (self, t_new_listener_, t_price_type_ ) :
         res = True
         if t_price_type_ == "MktSizeWPrice":
@@ -112,56 +184,6 @@ class SecurityMarketView:
     def isL1Valid(self):
         return
     
-    
-    
-    
-        
-    #===========================================================================
-    # def GetPriceFromType(self, price_type, market_update_info):
-    #     return 
-    #     
-    # def get_min_price_increment(self):
-    #     return self._min_price_increment
-    # 
-    # def get_bid_price(self):
-    #     return self._bid_price_
-    # 
-    # def get_bid_size(self):
-    #     return self._bid_size_
-    # 
-    # def get_ask_price(self):
-    #     return self._ask_price_
-    # 
-    # def get_ask_size(self):
-    #     return self._ask_size_
-    # 
-    # def compute_mkt_price(self):
-    #     self._mkt_price = (self._bid_price_ * self._ask_size_ + self._ask_price_ * self._bid_size_ ) / (self._ask_size_ + self._bid_size_)
-    #     
-    # def get_mkt_price(self):
-    #     self.compute_mkt_price()
-    #     return self._mkt_price
-    # 
-    # def update_l1_bid(self):
-    #     #compute mkt px
-    #     #update
-    #     return
-    #     
-    # def update(self):
-    #     #compute mkt px
-    #     return
-    #     
-    # def onMarketUpdate(self):
-    #     ##
-    #     return
-    #     
-    # def OnTradeUpdate(self):
-    #     ##
-    #     return
-    #     
-    # def subscribe_l1_update(self, smv_listener):
-    #     return
-    #===========================================================================
     
     
 

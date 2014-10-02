@@ -3,7 +3,7 @@ from CDef.defines import *
 class TradePrintInfo():
     
     def __init__(self):
-        self.buysell_ = "NOTRADETYPE"
+        self.buysell_ = "NOTRADETYPE" # BUY SELL
         self.trade_price_ =0.0
         self.size_traded_ = 0
         self.int_trade_price_ = 0.0
