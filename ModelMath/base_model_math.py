@@ -34,3 +34,7 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 	def PropagateNewTargetPrice(self, _new_target_, _new_sum_vars_):
 		for i in range(0, len(self.model_math_listener_vec)):
 			self.model_math_listener_vec[i].UpdateTarget(_new_target_, _new_sum_vars_)
+			
+	def PropagateNotReady(self):
+		for i in range(0, len(self.model_math_listener_vec)):
+			self.model_math_listener_vec[i].TargetNotReady()
