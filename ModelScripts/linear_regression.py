@@ -1,0 +1,25 @@
+import sys
+import numpy
+from sklearn.linear_model import LinearRegression 
+
+usage = 'USAGE: EXEC REG_DATA_FILE REG_OUT_FILE'
+
+if (len(sys.argv) < 3):
+    print usage
+    exit(0)
+    
+model = LinearRegression(fit_intercept=False, normalize=False)
+
+reg_data_numpy = numpy.loadTxt(sys.argv[1])
+X = 
+y =  
+model.fit(X, y)
+coefficients = model.coeff_
+
+reg_out = open(sys.argv[2], 'w')
+
+for i in range(0, len(coefficients)):
+    if (coefficients[i] != 0):
+        reg_out.write(str(i+1)+' '+str(coefficients[i])
+
+reg_out.close()
