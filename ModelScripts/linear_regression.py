@@ -12,7 +12,7 @@ model = LinearRegression(fit_intercept=False, normalize=False)
 
 reg_data_numpy = numpy.loadtxt(sys.argv[1])
 X = reg_data_numpy[:, 1:]  # select columns 1 through end
-y =  reg_data_numpy[:, 0]
+y =  reg_data_numpy[:, 0]   # select column 0
 model.fit(X, y)
 coefficients = model.coeff_
 
