@@ -52,13 +52,12 @@ class LinearModelAggregator(BaseModelMath):
         
     def ShowIndicatorValues(self):
         for i in range(0, len(self.indicator_vec)):
-            print ' value: '+self.prev_value_vec[i]/self.dep_market_view.min_price_increment()
-                + ' of '+self.indicator_vec[i].ConciseIndicatorDescription()
+            print ' value: '+self.prev_value_vec[i]/self.dep_market_view.min_price_increment() + ' of '+self.indicator_vec[i].ConciseIndicatorDescription()
         
     def CalcAndPropagate(self):
         if (self.is_ready):
             t_new_target_bias = self.sum_vars
-            t_new_target_price = something
+            t_new_target_price = 0.0 #something
             
             kMinTicksMoved = 0.015
             if ((t_new_target_price - self.last_propagated_target_price) > kMinTicksMoved*self.dep_market_view.min_price_increment()):

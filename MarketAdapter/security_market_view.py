@@ -179,7 +179,19 @@ class SecurityMarketView:
             return
         for i in range(len(self.onready_listeners_)) :
             self.onready_listeners_[i].SMVOnReady()
-    
+            
+    def GetPriceFromType(self, price_type, market_update_info):
+        if price_type == "MktSizeWPrice":
+            return self.market_update_info_.mkt_size_weighted_price_
+        elif price_type == "AskPrice":
+            return self.market_update_info_.bestask_price_
+        elif price_type == "BidPrice":
+            return self.market_update_info_.bestbid_price_
+        else :
+            return self.market_update_info_.mkt_size_weighted_price_
+        
+        
+        
     def OnL1Trade (self, trade_price, trade_size, trade_type):
         return
     
