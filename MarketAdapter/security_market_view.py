@@ -2,7 +2,7 @@ from CDef.defines import *
 from basic_market_view import *
 from normal_spread_manager import NormalSpreadManager
 from CDef.security_definitions import SecurityDefinitions
-from MarketAdapter.basic_market_view import BestBidAskInfo
+from MarketAdapter.basic_market_view import *
 
 
 #Keeping only 1 Level in the book
@@ -164,10 +164,21 @@ class SecurityMarketView:
         return
 
     def NotifyL1PriceListeners(self):
-        return
+        if not self.is_ready_ :
+            return
+        if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_ :
+            return
+        for i in range(len(self.l1_price_listeners_)) :
+            self.l1_price_listeners[i].OnMarketUpdate(self.market_update_info_.security_id_, self.market_update_info_)
+        self.market_update_info_.l1events_ += 1
     
     def NotifyOnReadyListeners(self):
-        return
+        if not self.is_ready_ : 
+            return 
+        if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_ :
+            return
+        for i in range(len(self.onready_listeners_)) :
+            self.onready_listeners_[i].SMVOnReady()
     
     def OnL1Trade (self, trade_price, trade_size, trade_type):
         return

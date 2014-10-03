@@ -12,3 +12,6 @@ class Watch(ExternalTimeListener):
         
     def YYMMDD(self):
         return
+    
+    def tv(self):
+        return
