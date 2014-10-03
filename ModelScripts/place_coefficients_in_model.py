@@ -8,9 +8,9 @@ def place_coefficients_in_model(ilist_file, reg_out_file, model_file):
     reg_out_lines = reg_out.readlines()
     ilist.close()
     reg_out.close()
-    model.write(ilist_lines[0])
-    model.write(ilist_lines[1])
-    model.write('INDICATORSTART')
+    model.write(ilist_lines[0]+'\n')
+    model.write(ilist_lines[1]+'\n')
+    model.write('INDICATORSTART\n')
     indicators = {}
     indicator_idx = 1
     for i in range(3, len(ilist_lines)-1):
@@ -20,11 +20,11 @@ def place_coefficients_in_model(ilist_file, reg_out_file, model_file):
     
     for i in range(0, len(reg_out_lines)):
         tokens1 = reg_out_lines[i].split()
-        indicator_idx = int(tokens[0])
+        indicator_idx = int(tokens1[0])
         tokens2 = indicators[indicator_idx].split()
         model.write(tokens2[0]+' ')
         model.write(float(tokens1[1]))
-        for j in range(2, len(token2)):
+        for j in range(2, len(tokens2)):
             model.write(' '+str(tokens2[j]))
         model.write('\n')
     model.write('INDICATOREND\n')
