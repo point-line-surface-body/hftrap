@@ -12,3 +12,4 @@ kInvalidPrice = -1000.00
 kInvalidIntPrice = -1000
 NOT_USING_ZERO_LOGGIN_ORS = 0
 MAX_LEVELS = 10
+BASESYSINFODIR = "infracore_install/SysInfo/"

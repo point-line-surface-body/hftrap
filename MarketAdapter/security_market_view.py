@@ -1,8 +1,7 @@
-from CDef.defines import *
-from basic_market_view import *
+from CDef.defines import DEF_MARKET_DEPTH
 from normal_spread_manager import NormalSpreadManager
 from CDef.security_definitions import SecurityDefinitions
-from MarketAdapter.basic_market_view import *
+from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo, BestBidAskInfo
 
 
 #Keeping only 1 Level in the book

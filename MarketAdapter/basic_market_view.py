@@ -1,4 +1,4 @@
-from CDef.defines import *
+from CDef.defines import MAX_LEVELS, kInvalidIntPrice, kInvalidPrice
 
 class TradePrintInfo():
     
