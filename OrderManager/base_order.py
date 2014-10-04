@@ -46,7 +46,7 @@ class BaseOrder:
     def order_status(self):
         return self.order_status
     
-    # Might be useless
+    # Might be useless, check
     def cancelled(self):
         return self.cancelled
     
