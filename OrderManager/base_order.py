@@ -52,3 +52,9 @@ class BaseOrder:
     
     def replayed(self):
         return self.replayed
+    
+    def execute_remaining(self):
+        size_remaining = self.size_remaining
+        self.size_remaining = 0
+        self.size_executed += size_remaining
+        return size_remaining
