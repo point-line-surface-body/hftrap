@@ -4,10 +4,11 @@ import commands
 
 class Watch(ExternalTimeListener):
     
-    def __init__(self):
+    def __init__(self, trading_date):
         self.tv = 0.0
         self.msecs_from_midnight = 0.0
         self.last_midnight_sec_ = 0.0
+        self.trading_date = trading_date
         
     def OnTimeReceived(self, new_tv):
         self.tv = new_tv
@@ -20,7 +21,7 @@ class Watch(ExternalTimeListener):
         
         
     def YYMMDD(self):
-        return
+        return self.trading_date
     
     def tv(self):
         return self.tv
