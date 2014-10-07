@@ -1,10 +1,18 @@
 class ShortcodeSecurityMarketViewMap():
     shortcode_smv_map_ = dict()
-   
-    #make this function
+    unique_instance = dict()
+    
+    
+    def __init__(self):
+        return
+    
     @staticmethod
     def GetUniqueInstance():
-        return 
+        if ShortcodeSecurityMarketViewMap.unique_instance.has_key("instance"):
+            return ShortcodeSecurityMarketViewMap.unique_instance["instance"]
+        else :
+            ShortcodeSecurityMarketViewMap.unique_instance["instance"] = ShortcodeSecurityMarketViewMap()
+            return ShortcodeSecurityMarketViewMap.unique_instance["instance"]
    
     def GetSecurityMarketView ( self,  _shortcode_ ):
         if _shortcode_ in ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys() :
