@@ -24,26 +24,26 @@ class DirectionalAggressiveTrading(BaseTrading):
         # Maximum number of orders we can place at one go
         num_max_orders_ = 1
         # Current number of unconfirmed orders
-        our_bid_orders_ = self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_)+self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_)
-        our_ask_orders_ = self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_)+self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_)
-
+        our_bid_orders_ = self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) + 
+                          self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_)
+        our_ask_orders_ = self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) + 
+                          self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_)
         effective_bid_position_ = self.my_position_
         effective_ask_position_ = self.my_position_
         effective_bid_position_to_keep_ = self.my_position_
         effective_ask_position_to_keep_ = self.my_position_
-
         # setting top level directives
         top_bid_place_ = False
         top_bid_keep_ = False
         top_bid_improve_ = False
         top_ask_lift_ = False
         bid_improve_keep_ = False
-          
         # if based on current risk level or if trading is stopped ... check if we have any allowance to place orders at top level
         if (self.current_tradevarset_.l1bid_trade_size_ == 0):
-            return
+            return #not return correct this
         # first check for cooloff_interval (why the second condition?)
-        if ((self.last_buy_msecs_ > 0) and (self.watch_.msecs_from_midnight()-self.last_buy_msecs_ < self.param_set_.cooloff_interval_) and (best_nonself_bid_int_price_ >= last_buy_int_price_)):
+        if ((self.last_buy_msecs_ > 0) and (self.watch_.msecs_from_midnight()-self.last_buy_msecs_ < self.param_set_.cooloff_interval_) and 
+            (best_nonself_bid_int_price_ >= last_buy_int_price_)):
             # no bids at this or higher prices now
             pass
         else:
