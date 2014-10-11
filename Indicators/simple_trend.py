@@ -1,7 +1,7 @@
 
-from common_indicator import CommonIndicator
 import math
 from CDef import MathUtils
+from common_indicator import CommonIndicator
 from MarketAdapter.security_market_view import SecurityMarketView
 from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
@@ -24,7 +24,7 @@ class SimpleTrend(CommonIndicator):
         self.SetTimeDecayWeights()
 
 
-    def  CollectShortCodes(self, _shortcodes_affecting_this_indicator_,_ors_source_needed_vec_ , r_tokens_):
+    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_,_ors_source_needed_vec_ , r_tokens_):
         if r_tokens_[3] not in _shortcodes_affecting_this_indicator_:
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
     
