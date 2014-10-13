@@ -1,9 +1,14 @@
+class ExternalDataListener():
 
-
-class ExternalDataListener() :
-    next_event_timestamp_ = 0
     def __init__(self):
+        self.next_event_timestamp = 0
         return
+    
+    def __del__(self):
+        return
+    
+    def __lt__(self, other):
+        return self.NextEventTimestamp() < other.NextEventTimestamp()
     
     def socket_file_descriptor(self):
         return
@@ -17,8 +22,8 @@ class ExternalDataListener() :
     def ProcessAllEvents(self):
         return
     
-    def ProcessEventsTill(self, end_time):
+    def ProcessEventsTill(self, _end_time_):
         return
         
-    def next_event_timestamp(self):
-        return
+    def NextEventTimestamp(self):
+        return self.next_event_timestamp

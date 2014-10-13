@@ -57,7 +57,8 @@ def __main__():
 
     market_update_manager_.start();
 
+    '''Run Historical Dispatcher'''
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
-    historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time)
-    hist_disp_end_time = strategy_desc_.GetMaxEndTime() # add 1 hour
-    historical_dispatcher_.RunHist(hist_disp_end_time)
+    historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
+    historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() # add 1 hour
+    historical_dispatcher_.RunHist(historical_dispatcher_end_time_)

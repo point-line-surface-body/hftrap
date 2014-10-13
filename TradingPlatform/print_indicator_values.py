@@ -1,7 +1,7 @@
 import sys
 from Indicators.simple_trend import SimpleTrend
 
-from trading_platform.data_file_constants import *
+from TradingPlatform.data_file_constants import *
 from get_data_file_name import get_data_file_name
 #from get_time_from_timestamp import get_time_from_timestamp
 
