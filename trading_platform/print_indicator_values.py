@@ -60,7 +60,7 @@ while (1):
 			output_string = output_string+' '+str(indicator_value)
 		output_string = output_string+'\n'
 
-	if (get_time_from_timestamp(timestamp) >= start_time):
+	if (get_time_from_timestamp(timestamp) >= start_time): #@ashwin use the function from MathUtil , timestamp size is 4 only, so might not need any function here
 		of.write(output_string)
 
 	if (get_time_from_timestamp(timestamp) > end_time):
