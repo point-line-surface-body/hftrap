@@ -1,12 +1,12 @@
 import sys
-from get_min_price_increment import get_min_price_increment
+from get_min_price_increment import GetMinPriceIncrement
 
-def get_int_price(shortcode, price):
-	tick_size = get_min_price_increment(shortcode)
+def GetIntPrice(_shortcode_, _price_):
+	tick_size = GetMinPriceIncrement(_shortcode_)
 	if tick_size != 0:
-		int_price = round((price/tick_size), 0)
+		int_price = round((_price_/tick_size), 0)
 	else:
-		int_price = int(price)
+		int_price = int(_price_)
 	return int_price
 
 def __main__():
@@ -16,7 +16,7 @@ def __main__():
 		exit()
 	shortcode = sys.argv[1]
 	price = float(sys.argv[2])
-	int_price = get_int_price(shortcode, price)
+	int_price = GetIntPrice(shortcode, price)
 	print int_price
 
 if __name__ == "__main__":
