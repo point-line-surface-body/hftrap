@@ -3,8 +3,10 @@ import heapq
 class HistoricalDispatcher() :
 
 	first_event_enqueued = False
+	'''List of external data listeners (filesources)'''
 	external_data_listener_vec = []
-	prev_external_data_listerner_vec = []    
+	'''TODO: I don't think this is needed, remove it @Ashwin'''
+	prev_external_data_listener_vec = []    
 	
 	def __init__(self):
 		return
@@ -12,58 +14,58 @@ class HistoricalDispatcher() :
 	def __del__(self):
 		self.DeleteSource()
 		
-	def AddExternalDataListener(self, new_listener):
-		self.external_data_listener_vec.append(new_listener)
+	def AddExternalDataListener(self, _new_listener_):
+		self.external_data_listener_vec.append(_new_listener_)
 
-	def RunHist(self, endtime): # endtime = something by default
-		if ( not self.first_event_enqueued):
-			for it in range(0, len(self.external_data_listener_vec)):
-				hasevents = self.external_data_listener_vec[it].ComputeEarliestDataTimestamp()
-				if ( not hasevents):
-					self.prev_external_data_listerner_vec.append(self.external_data_listener_vec[it])
-					self.external_data_listener_vec.remove(it) # correct this
+	def RunHist(self, _endtime_):
+		'''This condition is required: Some sources may have gotten empty due to 
+		Seek and RunHist may be called multiple times. @Ashwin'''
+		if (not self.first_event_enqueued):
+			for edl in self.external_data_listener_vec[:]:
+				hasevents = edl.ComputeEarliestDataTimestamp()
+				if (not hasevents):
+					self.prev_external_data_listener_vec.append(edl)
+					self.external_data_listener_vec.remove(edl)
 			self.first_event_enqueued = True
-
+			
 		if (len(self.external_data_listener_vec) == 1):
-			# No need to make heap
-			self.external_data_listener_vec[0].ProcessEventsTill(endtime)
-			self.prev_external_data_listerner_vec.append(self.external_data_listener_vec[0])
+			self.external_data_listener_vec[0].ProcessEventsTill(_endtime_)
+			self.prev_external_data_listener_vec.append(self.external_data_listener_vec[0])
 			self.external_data_listener_vec.pop()
 
 		if (len(self.external_data_listener_vec) == 0):
-			# Nothing to process
 			return
 
-		# Make heap
-		heapq.heapify(self.external_data_listener_vec) # Incorporate comparator
+		'''Add comparator'''
+		heapq.heapify(self.external_data_listener_vec)
+
 		while (1):
 			top_edl = self.external_data_listener_vec[0]
 			heapq.heappop(self.external_data_listener_vec)
 			top_edl.ProcessEventsTill(self.external_data_listener_vec[0].NextEventTimestamp())
 			next_event_timestamp_from_edl = top_edl.NextEventTimestamp()
-			hasevents = (next_event_timestamp_from_edl != 0) and (next_event_timestamp_from_edl <= endtime)
+			hasevents = (next_event_timestamp_from_edl != 0) and (next_event_timestamp_from_edl <= _endtime_)
+
 			if (hasevents):
 				heapq.heappush(self.external_data_listener_vec, top_edl)
 			else:
-				self.prev_external_data_listerner_vec.append(top_edl)
-	
+				self.prev_external_data_listener_vec.append(top_edl)
+
 			if (len(self.external_data_listener_vec) == 1):
-				self.external_data_listener_vec[0].ProcessEventsTill(endtime)
-				self.prev_external_data_listerner_vec.append(self.external_data_listener_vec[0])
+				self.external_data_listener_vec[0].ProcessEventsTill(_endtime_)
+				self.prev_external_data_listener_vec.append(self.external_data_listener_vec[0])
 				self.external_data_listener_vec.pop()
 
 			if (len(self.external_data_listener_vec) == 0):
 				return
 
 	def DeleteSources(self):
-		# Check whether cleaning is required in python
 		return
 
-	def SeekHistFileSourcesTo(self, endtime):
-		if (not self.first_event_enqueued):
-			for it in range(0, len(self.external_data_listener_vec)):
-				hasevents = self.external_data_listener_vec[it].SeekToFirstEventAfter(endtime)
-				if (not hasevents):
-					self.prev_external_data_listerner_vec.append(self.external_data_listener_vec[it])
-					self.external_data_listener_vec.remove(it) # correct this
-			self.first_event_enqueued = True
+	def SeekHistFileSourcesTo(self, _endtime_):
+		'''I have removed the condition here, will it affect? @Ashwin'''
+		for edl in self.external_data_listener_vec[:]:
+			hasevents = edl.SeekToFirstEventAfter(_endtime_)
+			if (not hasevents):
+				self.prev_external_data_listener_vec.append(edl)
+				self.external_data_listener_vec.remove(edl)
