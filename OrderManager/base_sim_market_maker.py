@@ -33,7 +33,7 @@ class BaseSimMarketMaker:
             self.pending_requests.append(_request_)
         else:
             self.all_requests.append(_request_)
-            stable_sort(self.all_requests) # Correct this ## may use self.all_requests.sort()
+            self.all_requests.sort() #stable_sort(self.all_requests) # Corrected this)
     
     def ProcessRequestQueue(self): # Later find out whether that boolean variable is needed
         if (self.all_requests_lock):
