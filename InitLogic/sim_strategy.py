@@ -43,12 +43,12 @@ def __main__():
         historical_dispatcher_.AddExternalDataListener(t_file_source)
 
     sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
+    base_trader = SimTrader(sim_market_maker)
     strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
     strategy_desc_.strategy_vec_[0].base_trader_ = sim_market_maker
 
     order_manager_ = OrderManager(watch_, sid_to_shortcode_ptr_map_[0], base_trader)
     base_pnl = BasePnl(watch_, order_manager_, sid_to_shortcode_ptr_map_[0])
-
 
     base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_)
 
