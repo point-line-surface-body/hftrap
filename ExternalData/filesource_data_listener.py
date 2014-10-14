@@ -11,9 +11,24 @@ class FileSource(ExternalDataListener):
     def __del__(self):
         return
 
-    def SeekToFirstEventAfter(self, time, has_events):
-        
+    def SeekToFirstEventAfter(self, _start_time_):
+        while (1):
+            available_len = self.file.read(self.next_event, )
+            if (available_len < ):
+                return False
+            self.next_event_timestamp = self.next_event.time
+            if (self.next_event_timestamp > _start_time_):
+                return True
         return
+    
+    def ComputeEarliestDataTimestamp(self):
+        available_len = self.file.read(self.next_event, )
+        if (available_len < ):
+            self.next_event_timestamp = 0
+            return False
+        else:
+            self.next_event_timestamp = self.next_event.time
+            return True
     
     def ProcessThisEvent(self):
         return

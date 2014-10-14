@@ -159,8 +159,8 @@ class SecurityMarketView:
     def UpdateL1Prices(self):
         self.market_update_info_.mkt_size_weighted_price_ = ( self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_ ) / ( self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_ ) ;
 
-    def OnL1SizeUpdate(self):
-        return
+#     def OnL1SizeUpdate(self):
+#         return
 
     def NotifyL1PriceListeners(self):
         if not self.is_ready_ :
@@ -336,19 +336,19 @@ class SecurityMarketView:
                 self.market_update_info_.bestbid_int_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_
                 self.market_update_info_.bestbid_ordercount_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_ordercount_
                          
-    def OnL1Trade (self, trade_price, trade_size, trade_type):
-        if self.trade_print_info_.computing_last_book_tdiff_ and self.prev_bid_was_quote_ and self.prev_ask_was_quote_ :
-            self.market_update_info_.last_book_mkt_size_weighted_price_ = self.market_update_info_.mkt_size_weighted_price_
-        if not self.market_update_info_.trade_update_implied_quote_ :
-            self.market_update_info_.trade_update_implied_quote_ = True
-        self.StorePreTrade()
-        self.trade_print_info_.buysell_ = trade_type
-        self.trade_print_info_.trade_price_ = trade_price
-        self.trade_print_info_.size_traded_ = trade_size
-        self.trade_print_info_.int_trade_price_ = (int)(round(trade_price/self.min_price_increment(),0))
-        if self.trade_print_info_.computing_last_book_tdiff_ :
-            if self.market_update_info_.last_book_mkt_size_weighted_price_ > -500 :
-                self.trade_print_info_.last_book_tdiff_ = self.trade_print_info_.trade_price_ - self.market_update_info_.last_book_mkt_size_weighted_price_
-            else :
-                self.trade_print_info_.last_book_tdiff_ = 0
+#     def OnL1Trade (self, trade_price, trade_size, trade_type):
+#         if self.trade_print_info_.computing_last_book_tdiff_ and self.prev_bid_was_quote_ and self.prev_ask_was_quote_ :
+#             self.market_update_info_.last_book_mkt_size_weighted_price_ = self.market_update_info_.mkt_size_weighted_price_
+#         if not self.market_update_info_.trade_update_implied_quote_ :
+#             self.market_update_info_.trade_update_implied_quote_ = True
+#         self.StorePreTrade()
+#         self.trade_print_info_.buysell_ = trade_type
+#         self.trade_print_info_.trade_price_ = trade_price
+#         self.trade_print_info_.size_traded_ = trade_size
+#         self.trade_print_info_.int_trade_price_ = (int)(round(trade_price/self.min_price_increment(),0))
+#         if self.trade_print_info_.computing_last_book_tdiff_ :
+#             if self.market_update_info_.last_book_mkt_size_weighted_price_ > -500 :
+#                 self.trade_print_info_.last_book_tdiff_ = self.trade_print_info_.trade_price_ - self.market_update_info_.last_book_mkt_size_weighted_price_
+#             else :
+#                 self.trade_print_info_.last_book_tdiff_ = 0
 
