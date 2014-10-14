@@ -1,6 +1,6 @@
 import sys
 
-def get_data_file_name(shortcode, trading_date):
+def GetFileSourceName(shortcode, trading_date):
 	return shortcode+'.'+trading_date
 
 def __main__():
@@ -10,7 +10,7 @@ def __main__():
 		exit(0)
 	shortcode = sys.argv[1]
 	trading_date = sys.argv[2]	
-	data_file_name = get_data_file_name(shortcode, trading_date)
+	data_file_name = GetFileSourceName(shortcode, trading_date)
 	print data_file_name
 	
 if __name__ == '__main__':
