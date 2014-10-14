@@ -5,7 +5,8 @@ from TradingPlatform.get_data_file_name import GetFileSourceName
 
 class FileSource(ExternalDataListener):
     
-    def __init__(self, _shortcode_, _smv_):
+    def __init__(self, _watch_, _shortcode_, _smv_):
+        self.watch = _watch_
         self.shortcode = _shortcode_
         self.smv = _smv_
         self.file_name = GetFileSourceName(_shortcode_)
@@ -15,6 +16,7 @@ class FileSource(ExternalDataListener):
         return
         
     def ProcessThisEvent(self):
+        self.watch.OnTimeReceived(self.next_event.timestamp)
         '''OnTradePrint'''
         if (self.next_event.type == 'T'):
             '''TODO: Fill this'''

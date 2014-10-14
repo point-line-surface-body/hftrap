@@ -3,6 +3,7 @@ from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
 #from ExecLogic.base_trading import BaseTrading
 from InitCommon.strategy_desc import StrategyDesc
+from ExternalData.filesource import FileSource
 from ExternalData.historical_dispatcher import HistoricalDispatcher
 from MarketAdapter.security_market_view import SecurityMarketView
 import OrderManager
@@ -15,8 +16,13 @@ MIN_YYYYMMDD = 20090920
 MAX_YYYYMMDD = 20141225
 
 def __main__():
-    tradingdate_ = 0
-    strategy_desc_filename_ = sys.argv[2] # decide the no. of arguments and order of arguments
+     
+    if (len(sys.argv) < 3):
+        print 'USAGE: EXEC STRATEGY_FILE_NAME TRADING_DATE'
+        exit(0)
+
+    strategy_desc_filename_ = sys.argv[1] # decide the no. of arguments and order of arguments
+    tradingdate_ = sys.argv[2]
 
     source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
@@ -42,18 +48,18 @@ def __main__():
         t_file_source = FileSource(source_shortcode_vec_[i], tradingdate_, i)
         historical_dispatcher_.AddExternalDataListener(t_file_source)
 
-    sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
-    base_trader = SimTrader(sim_market_maker)
-    strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
-    strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
-
-    order_manager_ = OrderManager(watch_, sid_to_shortcode_ptr_map_[0], strategy_desc_.strategy_vec_[0].p_base_trader_)
-    base_pnl = BasePnl(watch_, order_manager_, sid_to_shortcode_ptr_map_[0])
-
-    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_)
-
-    base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
-    strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
+#     sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
+#     base_trader = SimTrader(sim_market_maker)
+#     strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
+#     strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
+# 
+#     order_manager_ = OrderManager(watch_, sid_to_shortcode_ptr_map_[0], strategy_desc_.strategy_vec_[0].p_base_trader_)
+#     base_pnl = BasePnl(watch_, order_manager_, sid_to_shortcode_ptr_map_[0])
+# 
+#     base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_)
+# 
+#     base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
+#     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
     
     
     market_update_manager_ = MarketUpdateManager() # initialise with proper arguments
