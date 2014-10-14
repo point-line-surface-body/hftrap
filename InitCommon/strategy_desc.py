@@ -73,7 +73,3 @@ class StrategyDesc():
                 i += 1
         return True
     
-    #Dont need this function ??
-    #@staticmethod
-    #def GetRollParam(_paramfile_,_tradingdate_ ):
-    #    return _paramfile_
