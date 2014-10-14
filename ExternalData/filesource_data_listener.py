@@ -9,44 +9,58 @@ class FileSource(ExternalDataListener):
         self.file = open(self.file_name)
         
     def __del__(self):
-        return
-    
-    def SeekToFirstEventAfter(self, time, has_events):
-        return ExternalDataListener.SeekToFirstEventAfter(self, time, has_events)
-    
     def ProcessThisEvent(self):
         return
     
-    def SetNextTimeStamp(self):
-        if (self.events_left <= 0):
-            events_left = 0
-        found_non_intermediate_event = False
-        while (not found_non_intermediate_event):
-            if (self.file.read(&next_event, )):
-                next_event_timestamp_ = 0
+    def SeekToFirstEventAfter(self, _start_time_):
+        while (1):
+            available_len = self.file.read(self.next_event, )
+            if (available_len < ):
                 return False
-            if (next_event_.time != 0):
-                next_non_intermediate_time = next_event.time
-                found_non_intermediate_event = True
-            self.event_queue.push_back(next_event)
-            events_left += 1
-
-          if (self.events_left > 0):
-              next_event = event_queue_[0]
-              next_event_timestamp = next_non_intermediate_time
-              events_left -= 1;
-              event_queue.erase(event_queue.begin())
-              return True
-          
-        return True
+            self.next_event_timestamp = self.next_event.time
+            if (self.next_event_timestamp > _start_time_):
+                return True
+        return
     
+    def ComputeEarliestDataTimestamp(self):
+        available_len = self.file.read(self.next_event, )
+        if (available_len < ):
+            self.next_event_timestamp = 0
+            return False
+        else:
+            self.next_event_timestamp = self.next_event.time
+            return True
+    
+    def SetNextTimeStamp(self):
+        '''@Ashwin Can it be less than zero?'''
+        if (self.events_left <= 0):
+            self.events_left = 0
+            '''Why Non Intermediate?'''
+            found_non_intermediate_event = False
+            while (not found_non_intermediate_event):
+                if (self.file.read(self.next_event, )):
+                    self.next_event_timestamp = 0
+                    return False
+                if (self.next_event.time != 0):
+                    next_non_intermediate_time = self.next_event.time
+                    found_non_intermediate_event = True
+            self.event_queue.append(self.next_event)
+            self.events_left += 1
+        if (self.events_left > 0):
+            self.next_event = self.event_queue_[0]
+            self.next_event_timestamp = next_non_intermediate_time
+            self.events_left -= 1;
+            self.event_queue.pop()
+            return True
+        return True
+        
     def ProcessAllEvents(self):
         while (1):
             self.ProcessThisEvent()
             if (not self.SetNextTimeStamp()):
                 return
     
-    def ProcessEventsTill(self, _end_time_):
+	def ProcessEventsTill(self, _end_time_):
         while (self.next_event_timestamp <= _end_time_):
             self.ProcessThisEvent()
             if (not self.SetNextTimeStamp()):

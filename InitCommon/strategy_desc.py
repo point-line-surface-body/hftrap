@@ -5,8 +5,8 @@ class StrategyLine():
         self.trading_end_ttime_t_ = 0
         self.trading_start_utc_mfm_ = 8*60*60*1000
         self.trading_end_utc_mfm_ = 8*60*60*1000
-        #self.p_dep_market_view_ = None
-        #self.p_base_trader_ = None
+        self.p_dep_market_view_ = None
+        self.p_base_trader_ = None
         #self.exec_ = None
         self.strategy_full_line_ = ""
         self.dep_shortcode_ = "invalid"
@@ -73,7 +73,3 @@ class StrategyDesc():
                 i += 1
         return True
     
-    #Dont need this function ??
-    #@staticmethod
-    #def GetRollParam(_paramfile_,_tradingdate_ ):
-    #    return _paramfile_

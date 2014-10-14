@@ -1,13 +1,14 @@
 from OrderManager.base_order import BaseOrder
 class BaseSimMarketMaker:
     
+    '''constructor'''
     def __init__(self):
         self.all_requests = []
         self.pending_requests = []
         self.all_requests_lock = False
         return
     
-    # If an order exists in order_book, returns it otherwise returns None
+    '''If an order exists in order_book, returns it otherwise returns None '''
     def FetchOrder(self, _buysell_, _int_price_, _server_assigned_order_sequence_):
         if (_buysell_ == 1):
             if (_int_price_ in self.int_price_to_bid_order_vec.keys()):
@@ -33,7 +34,7 @@ class BaseSimMarketMaker:
             self.pending_requests.append(_request_)
         else:
             self.all_requests.append(_request_)
-            stable_sort(self.all_requests) # Correct this ## may use self.all_requests.sort()
+            self.all_requests.sort() #stable_sort(self.all_requests) # Corrected this)
     
     def ProcessRequestQueue(self): # Later find out whether that boolean variable is needed
         if (self.all_requests_lock):
