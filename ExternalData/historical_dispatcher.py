@@ -5,7 +5,7 @@ class HistoricalDispatcher() :
 	first_event_enqueued = False
 	'''List of external data listeners (filesources)'''
 	external_data_listener_vec = []
-	'''TODO: I don't think this is needed, remove it @Ashwin'''
+	'''TODO: I don't think this is needed, remove it'''
 	prev_external_data_listener_vec = []    
 	
 	def __init__(self):
@@ -19,7 +19,7 @@ class HistoricalDispatcher() :
 
 	def RunHist(self, _endtime_):
 		'''This condition is required: Some sources may have gotten empty due to 
-		Seek and RunHist may be called multiple times. @Ashwin'''
+		Seek and RunHist may be called multiple times.'''
 		if (not self.first_event_enqueued):
 			for edl in self.external_data_listener_vec[:]:
 				hasevents = edl.ComputeEarliestDataTimestamp()
@@ -63,7 +63,7 @@ class HistoricalDispatcher() :
 		return
 
 	def SeekHistFileSourcesTo(self, _endtime_):
-		'''I have removed the condition here, will it affect? @Ashwin'''
+		'''I have removed the condition here, will it affect?'''
 		for edl in self.external_data_listener_vec[:]:
 			hasevents = edl.SeekToFirstEventAfter(_endtime_)
 			if (not hasevents):
