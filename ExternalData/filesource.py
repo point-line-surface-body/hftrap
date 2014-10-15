@@ -5,11 +5,11 @@ from TradingPlatform.get_data_file_name import GetFileSourceName
 
 class FileSource(ExternalDataListener):
     
-    def __init__(self, _watch_, _shortcode_, _smv_):
+    def __init__(self, _watch_, _shortcode_, _smv_, _trading_date_):
         self.watch = _watch_
         self.shortcode = _shortcode_
         self.smv = _smv_
-        self.file_name = GetFileSourceName(_shortcode_)
+        self.file_name = GetFileSourceName(_shortcode_, _trading_date_)
         self.file = open(self.file_name, 'rb')
         
     def __del__(self):

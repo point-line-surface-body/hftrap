@@ -24,29 +24,29 @@ def __main__():
     strategy_desc_filename_ = sys.argv[1] # decide the no. of arguments and order of arguments
     tradingdate_ = sys.argv[2]
 
-    source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
     watch_ = Watch(tradingdate_)
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
+
+    source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
     shortcode_to_sid_map_ = {}
-    sid_to_shortcode_ptr_map_ = []
+    smv_vec_ = []
+
     source_shortcode_vec_.append(dependant_shortcode_)
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
+
     ModelCreator.CollectShortCodes(model_filename_, source_shortcode_vec_)
-    for i in range(0, len(source_shortcode_vec_)):
-        shortcode_to_sid_map_[source_shortcode_vec_[i]] = i
-        sid_to_shortcode_ptr_map_[i] = source_shortcode_vec_[i]
-    sid_to_smv_ptr_map_ = []
     
-    for i in range(0, len(source_shortcode_vec_)):
-        t_smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i], i)
-        sid_to_smv_ptr_map_.append(t_smv_)
+    for i_ in range(0, len(source_shortcode_vec_)):
+        shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
+        smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
+        smv_vec_.append(smv_)
 
     historical_dispatcher_ = HistoricalDispatcher()
 
-    for i in range(0, len(source_shortcode_vec_)):
-        t_file_source = FileSource(source_shortcode_vec_[i], tradingdate_, i)
-        historical_dispatcher_.AddExternalDataListener(t_file_source)
+    for shortcode_ in source_shortcode_vec_:
+        file_source_ = FileSource(watch_, shortcode_, smv_vec_[shortcode_to_sid_map_[shortcode_]], tradingdate_)
+        historical_dispatcher_.AddExternalDataListener(file_source_)
 
 #     sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
 #     base_trader = SimTrader(sim_market_maker)
@@ -60,7 +60,6 @@ def __main__():
 # 
 #     base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
 #     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
-    
     
     market_update_manager_ = MarketUpdateManager() # initialise with proper arguments
     market_update_manager_.start();
