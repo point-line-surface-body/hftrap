@@ -8,6 +8,7 @@ from MarketAdapter.security_market_view import SecurityMarketView
 import OrderManager
 from CommonTradeUtils.market_update_manager import MarketUpdateManager
 from SimMarketMaker.price_level_sim_market_maker import PriceLevelSimMarketMaker
+from ExternalData.filesource_data_listener import FileSource
 
 
 SECONDS_TO_PREP = 1800
