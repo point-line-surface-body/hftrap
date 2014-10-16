@@ -10,7 +10,7 @@ from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMa
 
 class SimpleTrend(CommonIndicator):
     
-    def __init(self, watch,concise_indicator_description_,  _indep_market_view_, _fractional_seconds_, _price_type_):
+    def __init__(self, watch,concise_indicator_description_,  _indep_market_view_, _fractional_seconds_, _price_type_):
         super(self, watch,concise_indicator_description_)
         self.trend_histroy_msecs = _fractional_seconds_ * 1000.0
         self.price_type = _price_type_

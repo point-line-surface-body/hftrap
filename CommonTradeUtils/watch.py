@@ -9,6 +9,7 @@ class Watch(ExternalTimeListener):
         self.tv_usec_ = 0
         self.msecs_from_midnight_ = 0
         self.prev_midnight_sec_ = 0
+        self.big_time_period_listener_vec_ = [] # TimePeriodListener
         
     def OnTimeReceived(self, _tv_sec_, _tv_usec_):
         if (self.tv_sec_ == 0):
@@ -28,3 +29,8 @@ class Watch(ExternalTimeListener):
         
     def GetMsecsFromMidnight(self):
         return self.msecs_from_midnight_
+    
+    def subscribe_BigTimePeriod(self, _this_listener_):
+        if _this_listener_ is not None :
+            if not self.big_time_period_listener_vec_.__contains__(_this_listener_) :
+                self.big_time_period_listener_vec_.append(_this_listener_)
