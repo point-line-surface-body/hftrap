@@ -2,7 +2,7 @@
 import math
 from CDef import MathUtils
 from common_indicator import CommonIndicator
-from MarketAdapter.security_market_view import SecurityMarketView
+from MarketAdapter.security_market_view_old import SecurityMarketView
 from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
 class SimpleTrend(CommonIndicator):
@@ -23,21 +23,29 @@ class SimpleTrend(CommonIndicator):
         self.current_indep_price_ = 0.0
         self.SetTimeDecayWeights()
 
-
     def CollectShortCodes(self, _shortcodes_affecting_this_indicator_,_ors_source_needed_vec_ , r_tokens_):
         if r_tokens_[3] not in _shortcodes_affecting_this_indicator_:
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
     
-    def GetUniqueInstance(self, r_watch_, r_tokens_, _basepx_pxtype_):
-        #INDICATOR _this_weight_ _indicator_string_ _indep_market_view_ _fractional_seconds_ _price_type_
-        return self.GetUniqueInstance2(self, r_watch_, ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView ( r_tokens_[3] ), (float)(r_tokens_[4]) ,r_tokens_[5] )
-    
-    def GetUniqueInstance2(self, r_watch_, _indep_market_view_,_fractional_seconds_, _price_type_ ):
-        t_temp_oss_ = self.VarName() + " " + self._indep_market_view_.secname ( ) +  " " + _fractional_seconds_ + " " + _price_type_
-        concise_indicator_description_ = t_temp_oss_
-        if concise_indicator_description_ not in self.concise_indicator_description_map_.keys() : 
-            self.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
-        return self.concise_indicator_description_map_ [ concise_indicator_description_ ] ;
+    @staticmethod
+    def GetUniqueInstance(*argv):
+        '''INDICATOR _this_weight_ _indicator_string_ _indep_market_view_ _fractional_seconds_ _price_type_'''
+        if len(argv) <= 3 :
+            r_watch_ = argv[0]
+            r_tokens_ = argv[1]
+            #_basepx_pxtype_ = argv[2]
+            _indep_market_view_ = ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView ( r_tokens_[3] )
+            _fractional_seconds_ = (float)(r_tokens_[4])
+            _price_type_ = r_tokens_[5]            
+        else :
+            r_watch_ = argv[0]
+            _indep_market_view_ = argv[1]
+            _fractional_seconds_ = argv[2]
+            _price_type_ = argv[3]            
+        concise_indicator_description_= SimpleTrend.VarName() + " " + _indep_market_view_.secname ( ) +  " " + _fractional_seconds_ + " " + _price_type_
+        if concise_indicator_description_ not in CommonIndicator.concise_indicator_description_map_.keys() : 
+            CommonIndicator.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
+        return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] ;
 
     def OnMarketUpdate(self,_security_id_, _market_update_info_ ):   
         self.current_indep_price_ = SecurityMarketView.GetPriceFromType ( self.price_type_, _market_update_info_ );
@@ -77,15 +85,13 @@ class SimpleTrend(CommonIndicator):
         self.decay_vector_sums_.append(0)
         for i in range(2*(int)(number_fadeoffs_) - 1):
             self.decay_vector_sums_.append(self.decay_vector_sums_ [ i ] + self.decay_vector_ [ i + 1 ])
-        self.inv_decay_sum_ = ( 1 - self.decay_page_factor_ )
-     
+        self.inv_decay_sum_ = ( 1 - self.decay_page_factor_ )   
     
     def InitializeValues(self):
         self.moving_avg_price_ = self.current_indep_price_ ;
         self.last_price_recorded_ = self.current_indep_price_ ;
         self.last_new_page_msecs_ = self.watch_.msecs_from_midnight - (self.watch_.msecs_from_midnight % self.page_width_msecs_)
         self.indicator_value_ = 0;
-
     
     def VarName(self):
         return "SimpleTrend"

@@ -16,19 +16,13 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         self.data_interupted = False
         self.base_price_type = "MidPrice"
         if len(args) == 3:
-            self.__init2__(self, args[0], args[1], args[2])
+            self.watch = args[0]
+            self.concise_indicator_description_ = args[1]
+            self.price_type = args[2]
         if len(args) == 2:
-            self.__init2__(self, args[0], args[1])
-           
-    def __init2__(self, watch,concise_indicator_description_, base_price_type ):
-        self.watch = watch
-        self.concise_indicator_description_ = concise_indicator_description_
-        self.price_type = base_price_type
-        
-    def __init3__(self, watch,concise_indicator_description_):
-        self.watch = watch
-        self.concise_indicator_description_ = concise_indicator_description_
-        
+            self.watch = args[0]
+            self.concise_indicator_description_ = args[1]
+             
     def SetBasepxPxtype (self, smv, base_px_type):
         self.base_price_type = base_px_type
  

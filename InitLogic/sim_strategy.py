@@ -5,7 +5,7 @@ from ModelMath.model_creator import ModelCreator
 from InitCommon.strategy_desc import StrategyDesc
 from ExternalData.filesource import FileSource
 from ExternalData.historical_dispatcher import HistoricalDispatcher
-from MarketAdapter.security_market_view import SecurityMarketView
+from MarketAdapter.security_market_view_old import SecurityMarketView
 import OrderManager
 from CommonTradeUtils.market_update_manager import MarketUpdateManager
 from SimMarketMaker.price_level_sim_market_maker import PriceLevelSimMarketMaker
