@@ -232,5 +232,12 @@ class BaseSimMarketMaker:
         new_request = Request()
         AddRequest(new_request)
     
-    def CancelOrderExch(self):
+    def CancelOrderExch(self, client_id_, server_assigned_order_sequence, buysell, int_price):
+        return
+    
+    def CancelReplaceOrderExch(self, client_id_,server_assigned_order_sequence,buysell, int_price, _new_size_requested_ ):
+        return
+    
+    def ReplayOrderExch(self, client_id_,client_assigned_order_sequence,buysell,int_price, server_assigned_order_sequence):
+        return
         

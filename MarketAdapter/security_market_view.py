@@ -1,5 +1,4 @@
 from CDef.defines import DEF_MARKET_DEPTH
-from normal_spread_manager import NormalSpreadManager
 from CDef.security_definitions import SecurityDefinitions
 from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo, BestBidAskInfo
 
@@ -30,8 +29,7 @@ class SecurityMarketView:
         self.watch_ = watch
         self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.YYMMDD())
         self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.YYMMDD())
-        self.normal_spread_increments_ = NormalSpreadManager.GetNormalSpreadIncrements(watch.YYMMDD(), shortcode)
-        self.normal_spread_ = 1
+        self.normal_spread_ = 1 * self.min_price_increment_
         self.is_ready_ = False
         self.computing_price_levels_ = False
         self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(shortcode,watch.YYMMDD())
@@ -80,7 +78,6 @@ class SecurityMarketView:
         self.hit_base_index_ = 0
         self.last_raw_message_sequnece_applied_ = 0
         self.price_type_subscribed_["MktSizeWPrice"] = False
-        self.normal_spread_ = self.normal_spread_increments_ * self.min_price_increment_
         self.running_hit_size_vec_ = []
         self.running_lift_size_vec_ = []
         i=0
@@ -106,18 +103,6 @@ class SecurityMarketView:
     
     def  min_order_size(self):
         return self.min_order_size_
-    
-    def normal_spread_increments(self):
-        return self.normal_spread_increments_
-    
-    def normal_spread(self):
-        return self.normal_spread_
-    
-    def spread_increments(self):
-        return self.market_update_info_.spread_increments_
-    
-    def SpreadWiderThanNormal(self):
-        return self.market_update_info_.spread_increments_ > self.normal_spread_increments_
     
     def UseOrderLevelBook(self):
         return self.use_order_level_book_
@@ -203,7 +188,6 @@ class SecurityMarketView:
         self.trade_print_info_.trade_price_ = trade_price
         self.trade_print_info_.size_traded_ = trade_size
         self.trade_print_info_.int_trade_price_ = (int)(round(trade_price/self.min_price_increment() , 0))
-        self.SetTradeVarsForIndicatorsIfRequired()
         if self.trade_before_quote_ :
             if self.trade_print_info_.buysell_ == "BUY" :
                 self.SetBestLevelAskVariablesOnLift()
