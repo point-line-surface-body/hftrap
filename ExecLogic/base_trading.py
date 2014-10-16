@@ -1,8 +1,9 @@
 from InitCommon.paramset import ParamSet
 from ExecLogic.trade_vars import TradeVars
 from __builtin__ import None
+from ModelMath.model_math_listener import ModelMathListener
 
-class BaseTrading(): #extends many classes.. add here
+class BaseTrading(ModelMathListener): #extends many classes.. add here
 
 	def __init__(self, _watch_, _dep_market_view_, _order_manager_, _paramfilename_, _trading_start_time_, 
                  _trading_end_time_, _runtime_id_, _model_source_shortcode_vec_):
@@ -14,7 +15,7 @@ class BaseTrading(): #extends many classes.. add here
 		self.trading_start_time_ = _trading_start_time_
 		self.trading_end_time_ = _trading_end_time_
 		self.runtime_id_ = _runtime_id_
-		self.myposition_ = 0
+		self.my_position_ = 0
 		self.should_be_getting_flat_ = False
 		self.get_flat_due_to_close_ = False
 		self.get_flat_due_to_max_position_ = False
@@ -46,12 +47,12 @@ class BaseTrading(): #extends many classes.. add here
 		self.bid_improve_keep_ = False
 		self.ask_improve_keep_ = False
 		
-		self.last_buy_msecs_
-		self.last_buy_int_price_;
-		self.last_sell_msecs_;
-		self.last_sell_int_price_;
-		self.last_agg_buy_msecs_ ;
-		self.last_agg_sell_msecs_ ;
+		self.last_buy_msecs_ = 0
+		self.last_buy_int_price_ = 0
+		self.last_sell_msecs_ = 0
+		self.last_sell_int_price_ = 0
+		self.last_agg_buy_msecs_ = 0
+		self.last_agg_sell_msecs_ = 0
 		return
 	
 	def TradingLogic(self):
@@ -61,13 +62,47 @@ class BaseTrading(): #extends many classes.. add here
 		return
 	
 	def OnTradePrint(self):
-		return		
+		return
 	
 	def SetModelMathComponent(self, _base_model_math_):
 		self.base_model_math_ = _base_model_math_
 	
 	def ReportResults(self):
 		return
+	
+	def GetPosition(self):
+		return self.my_position_
+	
+	def UpdateTarget(self, _new_target_, _new_sum_vars_):
+		if (not self.is_ready):
+			if ((self.watch_.msecs_from_midnight() > self.trading_start_time_) and
+				(self.dep_market_view_.is_ready()) and
+				(_new_target_ >= self.dep_market_view_.bestbid_price()) and
+				(_new_target_ <= self.dep_market_view_.bestask_price())):
+				self.is_ready = True
+		else:
+			self.target_price_ = _new_target_
+			self.target_bias_numbers_ = _new_sum_vars_
+			self.ShouldBeGettingFlat()
+			if (not self.should_be_getting_flat_):
+				self.TradingLogic()
+				'''Why?'''
+				#self.CallPlaceCancelNonBestLevels()
+			else:
+				self.GetFlatTradingLogic()
+		return
+	
+	def ShouldBeGettingFlat(self):
+		return self.get_flat_due_to_close_ or self.get_flat_due_to_max_loss_ or self.get_flat_due_to_max_opentrade_loss_ or self.get_flat_due_to_max_pnl_ or self.get_flat_due_to_max_position_
+	
+	def GetFlatTradingLogic(self):
+		t_position = self.my_position_
+		if (t_position == 0):
+			self.order_manager_.CancelAllOrders()
+		elif (t_position > 0):
+			
+		else:
+			
 	
 	def InitializeTradeVarSet(self):
 		self.current_tradevarset_.l1bid_aggressive = self.param_set_.bid_aggress_threshold_

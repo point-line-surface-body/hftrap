@@ -15,11 +15,11 @@ class DirectionalAggressiveTrading(BaseTrading):
     
     def TradingLogic(self):
 
-        top_bid_place_ = False
-        top_bid_keep_ = False
-        top_bid_improve_ = False
-        top_ask_lift_ = False
-        bid_improve_keep_ = False
+        self.top_bid_place_ = False
+        self.top_bid_keep_ = False
+        self.top_bid_improve_ = False
+        self.top_ask_lift_ = False
+        self.bid_improve_keep_ = False
 
         if (self.current_tradevarset_.l1bid_trade_size_ == 0):
             return #not return correct this
@@ -29,8 +29,8 @@ class DirectionalAggressiveTrading(BaseTrading):
         else:
             if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance) or 
                 (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
-                top_bid_place_ = True
-                top_bid_keep_ = True
+                self.top_bid_place_ = True
+                self.top_bid_keep_ = True
                 
                 if (self.watch_.msecs_from_midnight() - self.last_agg_buy_msecs_ > self.param_set_.agg_cooloff_interval_):
                     
@@ -38,38 +38,38 @@ class DirectionalAggressiveTrading(BaseTrading):
                         (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_aggressive_) and 
                         (self.my_position_ <= self.param_set_.max_position_to_lift_ ) and
                         (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_cross_)):
-                        top_ask_lift_ = True
+                        self.top_ask_lift_ = True
 
                         if (self.my_position_ >= self.param_set_.max_position_to_cancel_on_lift_):
-                            top_bid_place_ = False
-                            top_bid_keep_ = False
+                            self.top_bid_place_ = False
+                            self.top_bid_keep_ = False
                     else:
-                        top_ask_lift_ = False
+                        self.top_ask_lift_ = False
                         
                         if ((self.param_set_.allowed_to_improve_) and 
                             (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_) and 
                             (self.my_position_ <= self.param_set_.max_position_to_bidimprove_) and 
                             (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_)):
-                            top_bid_improve_ = True
+                            self.top_bid_improve_ = True
                         else:
-                            top_bid_improve_ = False
+                            self.top_bid_improve_ = False
             else:
                 if (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_keep_):
-                    top_bid_keep_ = True
+                    self.top_bid_keep_ = True
                 else:
-                    top_bid_keep_ = False
+                    self.top_bid_keep_ = False
 
                 if ((self.dep_market_view_.spread_increments() > 1 ) and
                     (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_keep_)):
-                    bid_improve_keep_ = True
+                    self.bid_improve_keep_ = True
                 else:
-                    bid_improve_keep_ = False
+                    self.bid_improve_keep_ = False
 
-        top_ask_place_ = False
-        top_ask_keep_ = False
-        top_ask_improve_ = False
-        top_bid_hit_ = False
-        ask_improve_keep_ = False
+        self.top_ask_place_ = False
+        self.top_ask_keep_ = False
+        self.top_ask_improve_ = False
+        self.top_bid_hit_ = False
+        self.ask_improve_keep_ = False
 
         if (self.current_tradevarset_.l1ask_trade_size_ == 0):
             return #not return correct this
@@ -79,8 +79,8 @@ class DirectionalAggressiveTrading(BaseTrading):
         else:
             if ((self.best_nonself_ask_size_ > self.param_set_.safe_distance_) or 
                 (-self.targetbias_numbers_ >= self.current_ask_tradevarset_.l1ask_place_)):
-                top_ask_place_ = True
-                top_ask_keep_ = True
+                self.top_ask_place_ = True
+                self.top_ask_keep_ = True
                 
                 if (self.watch_.msecs_from_midnight() - self.last_agg_sell_msecs_ > self.param_set_.agg_cooloff_interval_):
                     
@@ -88,41 +88,41 @@ class DirectionalAggressiveTrading(BaseTrading):
                         (self.my_position_ >= self.param_set_.min_position_to_hit_) and 
                         (self.best_nonself_ask_int_price_ - self.best_nonself_bid_int_price_ <= self.param_set_.max_int_spread_to_cross_) and 
                         (-self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_aggressive_)):
-                        top_bid_hit_ = True
+                        self.top_bid_hit_ = True
 
                         if (self.my_position_ <= self.param_set_.min_position_to_cancel_on_hit_):
-                            top_ask_place_ = False
-                            top_ask_keep_ = False
+                            self.top_ask_place_ = False
+                            self.top_ask_keep_ = False
                     else:
-                        top_bid_hit_ = False
+                        self.top_bid_hit_ = False
                         
                         if ((self.param_set_.allowed_to_improve_) and 
                             (self.my_position_ <= self.param_set_.min_position_to_askimprove_) and 
                             (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_) and 
                             (self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_)):
-                            top_ask_improve_ = True
+                            self.top_ask_improve_ = True
                         else:
-                            top_ask_improve_ = False
+                            self.top_ask_improve_ = False
             else:
                 if (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_keep_):
-                    top_ask_keep_ = True
+                    self.top_ask_keep_ = True
                 else:
-                    top_ask_keep_ = False
+                    self.top_ask_keep_ = False
                 
                 if ((self.dep_market_view_.spread_increments() > 1) and 
                     (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_keep_)):
-                    ask_improve_keep_ = True
+                    self.ask_improve_keep_ = True
                 else:
-                    ask_improve_keep_ = False
+                    self.ask_improve_keep_ = False
 
         placed_bids_this_round_ = False
         canceled_bids_this_round_ = False
         canceled_size_ = 0
         
-        if (top_ask_lift_):
+        if (self.top_ask_lift_):
             if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_+1) == 0) and 
                 (self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
-                if (not top_bid_keep_):
+                if (not self.top_bid_keep_):
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
                 
                 allowance_for_aggressive_buy_ = self.my_position_ + self.order_manager_.SumBidSizes() + self.current_tradevarset_.l1bid_trade_size_ - self.param_set_.worst_case_position_
@@ -138,7 +138,7 @@ class DirectionalAggressiveTrading(BaseTrading):
             else:
                 canceled_size_ += self.order_manager_.CancelBidsAboveIntPrice(self.best_nonself_bid_int_price_)
     
-        if ((not placed_bids_this_round_) and (top_bid_improve_)):
+        if ((not placed_bids_this_round_) and (self.top_bid_improve_)):
             if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_ + 1) == 0) and 
                 (self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
 
@@ -150,11 +150,11 @@ class DirectionalAggressiveTrading(BaseTrading):
                     self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
         else:
-            if ((self.dep_market_view_.spread_increments() > 1) and (not bid_improve_keep_)):
+            if ((self.dep_market_view_.spread_increments() > 1) and (not self.bid_improve_keep_)):
                 canceled_size_ += self.order_manager_.CancelBidsAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if (not placed_bids_this_round_):
-            if (top_bid_place_):
+            if (self.top_bid_place_):
                 if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
                     (self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
@@ -162,7 +162,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                     placed_bids_this_round_ = True
                     self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
             else:
-                if (not top_bid_keep_):
+                if (not self.top_bid_keep_):
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if (canceled_size_ > 0):
@@ -172,11 +172,11 @@ class DirectionalAggressiveTrading(BaseTrading):
         canceled_asks_this_round_ = False
         canceled_size_ = 0
 
-        if (top_bid_hit_):
+        if (self.top_bid_hit_):
 
             if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
                 (self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
-                if (not top_ask_keep_):
+                if (not self.top_ask_keep_):
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
                 allowance_for_aggressive_sell_ = - self.my_position_ + self.order_manager_.SumAskSizes() + self.current_tradevarset_.l1ask_trade_size_ - self.param_set_.worst_case_position_
                 if (allowance_for_aggressive_sell_ >= 0):
@@ -190,7 +190,7 @@ class DirectionalAggressiveTrading(BaseTrading):
             else:
                 canceled_size_ += self.order_manager_.CancelAsksAboveIntPrice(self.best_nonself_ask_int_price_)
     
-        if ((not placed_asks_this_round_) and (top_ask_improve_)):
+        if ((not placed_asks_this_round_) and (self.top_ask_improve_)):
 
             if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
                 (self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
@@ -202,11 +202,11 @@ class DirectionalAggressiveTrading(BaseTrading):
                     self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
         else:
-            if ((self.dep_market_view_.spread_increments() > 1) and (not ask_improve_keep_)): 
+            if ((self.dep_market_view_.spread_increments() > 1) and (not self.ask_improve_keep_)): 
                 canceled_size_ += self.order_manager_.CancelAsksAboveIntPrice(self.best_nonself_ask_int_price_)
     
         if (not placed_asks_this_round_):
-            if (top_ask_place_):
+            if (self.top_ask_place_):
                 if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
@@ -214,7 +214,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                     placed_asks_this_round_ = True
                     self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
             else:
-                if (not top_ask_keep_ ):
+                if (not self.top_ask_keep_ ):
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
         
         if (canceled_size_ > 0):
