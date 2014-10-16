@@ -17,6 +17,9 @@ class BaseTrading(): #extends many classes.. add here
 	def SetModelMathComponent(self, _base_model_math_):
 		self.base_model_math_ = _base_model_math_
 	
+	def ReportResults(self):
+		return
+	
 	@staticmethod
 	def CollectORSShortCodes(*args): # how many arguments to keep
 		return

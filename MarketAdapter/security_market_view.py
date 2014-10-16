@@ -253,6 +253,4 @@ class SecurityMarketView:
         res += " " + str(self.market_update_info_.bidlevels_[0].limit_ordercount_) + " " + str(self.market_update_info_.bidlevels_[0].limit_price_) +  " " + str(self.market_update_info_.bidlevels_[0].limit_int_price_)
         res += " X " + str(self.market_update_info_.asklevels_[0].limit_int_price_)+ " " + str(self.market_update_info_.asklevels_[0].limit_price_) + " " + str(self.market_update_info_.asklevels_[0].limit_ordercount_)
         res += " " +  str(self.market_update_info_.asklevels_[0].limit_size_)  + " " + self.market_update_info_.asklevels_[0].limit_int_price_level_
-        return res 
-    
- 
+        return res

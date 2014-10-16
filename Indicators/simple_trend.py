@@ -103,7 +103,7 @@ class SimpleTrend(CommonIndicator):
         return "SimpleTrend"
     
     def OnMarketDataInterrupted(self,_security_id_, msecs_since_last_receive_ ):
-        if self.indep_market_view_.security_id()==_security_id_ : 
+        if self.indep_market_view_.security_id()==_security_id_:
             self.data_interrupted_ = True
             self.indicator_value_ = 0.0
             self.NotifyIndicatorListeners(self.indicator_value_)

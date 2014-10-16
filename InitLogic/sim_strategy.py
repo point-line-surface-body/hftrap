@@ -11,6 +11,7 @@ from CommonTradeUtils.market_update_manager import MarketUpdateManager
 from SimMarketMaker.price_level_sim_market_maker import PriceLevelSimMarketMaker
 from ExternalData.filesource_data_listener import FileSource
 from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
+from OrderManager import base_trader
 
 
 SECONDS_TO_PREP = 1800
@@ -43,6 +44,13 @@ def __main__():
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
         smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(smv_)
+
+    sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
+    base_trader = SimTrader(sim_market_maker)
+    strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
+    strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
+    
+    order_manager_ = OrderManager(watch_, base_trader_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
         
     if (strategy_desc_.strategy_vec_[0].strategy_name_ == 'DirectionalAggressiveTrading'):
         strategy_desc_.strategy_vec_[0].exec_ = DirectionalAggressiveTrading(watch_, smv_vec_[0], order_manager_, 
@@ -58,12 +66,7 @@ def __main__():
         file_source_ = FileSource(watch_, shortcode_, smv_vec_[shortcode_to_sid_map_[shortcode_]], tradingdate_)
         historical_dispatcher_.AddExternalDataListener(file_source_)
 
-#     sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
-#     base_trader = SimTrader(sim_market_maker)
-#     strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
-#     strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
 # 
-#     order_manager_ = OrderManager(watch_, sid_to_shortcode_ptr_map_[0], strategy_desc_.strategy_vec_[0].p_base_trader_)
 #     base_pnl = BasePnl(watch_, order_manager_, sid_to_shortcode_ptr_map_[0])
 # 
 #     
@@ -81,3 +84,6 @@ def __main__():
     historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
     historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() # add 1 hour
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
+
+    '''Print Results'''
+    strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)
