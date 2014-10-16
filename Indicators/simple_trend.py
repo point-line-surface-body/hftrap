@@ -24,14 +24,16 @@ class SimpleTrend(CommonIndicator):
         self.SetTimeDecayWeights()
 
 
-    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_,_ors_source_needed_vec_ , r_tokens_):
+    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_, r_tokens_):
         if r_tokens_[3] not in _shortcodes_affecting_this_indicator_:
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
     
+    @staticmethod
     def GetUniqueInstance(self, r_watch_, r_tokens_, _basepx_pxtype_):
         #INDICATOR _this_weight_ _indicator_string_ _indep_market_view_ _fractional_seconds_ _price_type_
         return self.GetUniqueInstance2(self, r_watch_, ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView ( r_tokens_[3] ), (float)(r_tokens_[4]) ,r_tokens_[5] )
     
+    @staticmethod
     def GetUniqueInstance2(self, r_watch_, _indep_market_view_,_fractional_seconds_, _price_type_ ):
         t_temp_oss_ = self.VarName() + " " + self._indep_market_view_.secname ( ) +  " " + _fractional_seconds_ + " " + _price_type_
         concise_indicator_description_ = t_temp_oss_
