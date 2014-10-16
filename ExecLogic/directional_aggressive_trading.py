@@ -28,7 +28,7 @@ class DirectionalAggressiveTrading(BaseTrading):
             pass
         else:
             if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance) or 
-                (self.targetbias_numbers_ >= self.current_bid_tradevarset_.l1bid_place_)):
+                (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
                 top_bid_place_ = True
                 top_bid_keep_ = True
                 
@@ -207,9 +207,8 @@ class DirectionalAggressiveTrading(BaseTrading):
     
         if (not placed_asks_this_round_):
             if (top_ask_place_):
-                
                 if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
-                    (self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0)) and 
+                    (self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, self.current_tradevarset_.l1ask_trade_size_, 1, 'B')
                     placed_asks_this_round_ = True
