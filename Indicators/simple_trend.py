@@ -1,3 +1,6 @@
+'''
+This is an example of an Indicator.
+'''
 
 import math
 from CDef import MathUtils
@@ -46,7 +49,10 @@ class SimpleTrend(CommonIndicator):
         if concise_indicator_description_ not in CommonIndicator.concise_indicator_description_map_.keys() : 
             CommonIndicator.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
         return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] 
-
+    
+    '''
+    Main logic is written here. This is the function which calculates the indicator value.
+    '''
     def OnMarketUpdate(self,_security_id_, _market_update_info_ ):   
         self.current_indep_price_ = SecurityMarketView.GetPriceFromType ( self.price_type_, _market_update_info_ );
         if not self.is_ready and self.indep_market_view_.is_ready_complex(2):

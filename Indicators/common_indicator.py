@@ -1,3 +1,9 @@
+''' 
+This is the base class for all indicators. 
+To make a new Indicator, you need to make a class that inherit this class.
+Example is given in simple_trend.py which makes a SimpleTrend class.
+'''
+
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 from CommonTradeUtils.watch import Watch
 import core_shortcodes
