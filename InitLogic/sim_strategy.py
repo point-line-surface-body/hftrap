@@ -45,9 +45,9 @@ def __main__():
         smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(smv_)
 
-    sim_market_maker_ = PriceLevelSimMarketMaker(watch_, sid_to_smv_ptr_map_[0])
-    base_trader = SimTrader(sim_market_maker)
-    strategy_desc_.strategy_vec_[0].dep_market_view_ = sid_to_smv_ptr_map_[0]
+    sim_market_maker_ = PriceLevelSimMarketMaker(watch_, smv_vec_[0])
+    base_trader_ = SimTrader(sim_market_maker_)
+    strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
     strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
     
     order_manager_ = OrderManager(watch_, base_trader_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
@@ -76,8 +76,8 @@ def __main__():
     for smv_ in smv_vec_:
         smv_.SubscribeOnReady(base_model_math_)
     
-    market_update_manager_ = MarketUpdateManager() # initialise with proper arguments
-    market_update_manager_.start();
+    market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_,tradingdate_ )
+    market_update_manager_.start()
 
     '''Run Historical Dispatcher'''
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time

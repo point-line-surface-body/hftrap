@@ -1,20 +1,19 @@
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 from ExternalData.external_time_listener import TimePeriodListener
 
-MIN_MSEC_DURATION = 5000
+MIN_MSEC_DURATION = 60000
 
 class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
     unique_instance = None
     
     def __init__(self,_watch_,_sid_to_smv_ptr_map_,_trading_date_):
         self.watch_ = _watch_
-        self.security_id_to_smv_ = _sid_to_smv_ptr_map_ # its an array
+        self.security_id_to_smv_ = _sid_to_smv_ptr_map_ 
         self.trading_date_ = _trading_date_
         self.check_updates_ = False
-        self.security_id_to_smv_ = []
         self.last_check_msecs_from_midnight_ = 0
-        min_msec_market_update_ = 60000 # we can change this, or we can put different for different security
         '''might not need following variables'''
+        min_msec_market_update_ = 60000 # we can change this, or we can put different for different security
         security_id_to_last_msec_market_update_ = [0 for i in range(len(_sid_to_smv_ptr_map_))]
     
     @staticmethod
