@@ -47,11 +47,11 @@ class CommonIndicator(SecurityMarketViewChangeListener):
     def WhyNotReady(self):
         return
     
-    def GetReadinessRequired(self,r_dep_shortcode_, tokens_ ):
-        core_shortcode_vec_=[]
+    def GetReadinessRequired(self, r_dep_shortcode_, tokens_):
+        core_shortcode_vec_= []
         core_shortcodes.GetCoreShortcodes(r_dep_shortcode_, core_shortcode_vec_)
-        if tokens_[3] in core_shortcode_vec_ : 
-            return True;
+        if tokens_[3] in core_shortcode_vec_:
+            return True
         else:
             return False
     
@@ -104,5 +104,3 @@ class CommonIndicator(SecurityMarketViewChangeListener):
             self.indicator_listener_pairs_[x].OnIndicatorUpdate ( _indicator_value_ ) 
         for x in range(len(self.unweighted_indicator_listener_pairs_)):
             self.unweighted_indicator_listener_pairs_[x].OnIndicatorUpdate ( _indicator_value_ )
-    
-    

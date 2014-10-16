@@ -23,7 +23,7 @@ class SimpleTrend(CommonIndicator):
         self.current_indep_price_ = 0.0
         self.SetTimeDecayWeights()
 
-    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_,_ors_source_needed_vec_ , r_tokens_):
+    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_, r_tokens_):
         if r_tokens_[3] not in _shortcodes_affecting_this_indicator_:
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
     
@@ -45,7 +45,7 @@ class SimpleTrend(CommonIndicator):
         concise_indicator_description_= SimpleTrend.VarName() + " " + _indep_market_view_.secname ( ) +  " " + _fractional_seconds_ + " " + _price_type_
         if concise_indicator_description_ not in CommonIndicator.concise_indicator_description_map_.keys() : 
             CommonIndicator.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
-        return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] ;
+        return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] 
 
     def OnMarketUpdate(self,_security_id_, _market_update_info_ ):   
         self.current_indep_price_ = SecurityMarketView.GetPriceFromType ( self.price_type_, _market_update_info_ );
