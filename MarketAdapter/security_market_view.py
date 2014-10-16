@@ -147,7 +147,7 @@ class SecurityMarketView:
         if not self.l1_size_listeners.__contains__(t_new_listener_) :
             self.l1_size_listeners.append(t_new_listener_)
         
-    def subscribe_OnReady(self, t_new_listener_):
+    def SubscribeOnReady(self, t_new_listener_):
         if not self.onready_listeners_.__contains__(t_new_listener_) :
             self.onready_listeners_.append(t_new_listener_)
         

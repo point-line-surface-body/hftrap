@@ -10,6 +10,7 @@ import OrderManager
 from CommonTradeUtils.market_update_manager import MarketUpdateManager
 from SimMarketMaker.price_level_sim_market_maker import PriceLevelSimMarketMaker
 from ExternalData.filesource_data_listener import FileSource
+from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
 
 
 SECONDS_TO_PREP = 1800
@@ -36,12 +37,20 @@ def __main__():
     source_shortcode_vec_.append(dependant_shortcode_)
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
 
-    ModelCreator.CollectShortCodes(model_filename_, source_shortcode_vec_)
-    
+    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_, source_shortcode_vec_)
+
     for i_ in range(0, len(source_shortcode_vec_)):
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
         smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(smv_)
+        
+    if (strategy_desc_.strategy_vec_[0].strategy_name_ == 'DirectionalAggressiveTrading'):
+        strategy_desc_.strategy_vec_[0].exec_ = DirectionalAggressiveTrading(watch_, smv_vec_[0], order_manager_, 
+                                                                             strategy_desc_.strategy_vec_[0].param_filename_, 
+                                                                             strategy_desc_.strategy_vec_[0].trading_start_mfm_, 
+                                                                             strategy_desc_.strategy_vec_[0].trading_end_mfm_,
+                                                                             strategy_desc_.strategy_vec_[0].runtime_id_, 
+                                                                             source_shortcode_vec_) 
 
     historical_dispatcher_ = HistoricalDispatcher()
 
@@ -57,10 +66,12 @@ def __main__():
 #     order_manager_ = OrderManager(watch_, sid_to_shortcode_ptr_map_[0], strategy_desc_.strategy_vec_[0].p_base_trader_)
 #     base_pnl = BasePnl(watch_, order_manager_, sid_to_shortcode_ptr_map_[0])
 # 
-#     base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_)
+#     
 # 
-#     base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
-#     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
+    base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
+    strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
+    for smv_ in smv_vec_:
+        smv_.SubscribeOnReady(base_model_math_)
     
     market_update_manager_ = MarketUpdateManager() # initialise with proper arguments
     market_update_manager_.start();

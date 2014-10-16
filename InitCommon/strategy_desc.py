@@ -9,6 +9,7 @@ class StrategyLine():
         self.trading_start_mfm_ = 8*60*60*1000
         self.trading_end_time_ = 0
         self.trading_end_mfm_ = 8*60*60*1000
+        self.exec_ = None
         self.runtime_id_ = 0
         self.dep_market_view_ = None
         self.base_trader_ = None
