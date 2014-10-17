@@ -1,8 +1,18 @@
 from OrderManager.base_order import BaseOrder
-class BaseSimMarketMaker:
-    
-    '''constructor'''
+class Request:
     def __init__(self):
+        self.wakeup_time = 0
+        self.request_type = None #"CANCEL", "SEND" , "REPLACE"
+        self.order = BaseOrder()
+        self.server_assigned_client_id_ = 0
+        self.server_assigned_order_sequence_ = 0
+        self.postpone_once = False # do we need this ?
+        
+
+class BaseSimMarketMaker:
+    '''constructor'''
+    def __init__(self, watch):
+        self.watch_ = watch
         self.all_requests = []
         self.pending_requests = []
         self.all_requests_lock = False
@@ -41,9 +51,10 @@ class BaseSimMarketMaker:
             return
         self.all_requests_lock = True
         for request in self.all_requests:
+            server_assigned_client_id = request.server_assigned_client_id_
             if (request.wakeup_time > self.watch.tv()):
                 continue
-            if (request.request_type == ORQ_SEND):
+            if (request.request_type == "SEND"):
                 order = request.order
                 # This order will always get confirmed
                 order.Confirm()
@@ -133,7 +144,7 @@ class BaseSimMarketMaker:
                         if (order.int_price > self.dep_market_view.bestask_int_price()):
                             order.alone_above_best_market = True
                             
-            elif (request.request_type == ORQ_CANCEL):
+            elif (request.request_type == "CANCEL"):
                 if (self.process_only_sendtrades):
                     return
                 to_postpone = 0
@@ -192,6 +203,7 @@ class BaseSimMarketMaker:
                             # Prematurely executed , just waiting on the OnTradePrint call.
                             to_postpone = 4
                         if (to_postpone == 0):
+                            '''Need to mae __eq__ () function for order'''
                             UniqueVectorRemove (int_price_to_ask_order_vec[order.int_price], order)
                             BroadcastCancelNotification(r_server_assigned_client_id_, order)
         
@@ -230,14 +242,33 @@ class BaseSimMarketMaker:
         # Wrap new_order in a request object
         
         new_request = Request()
-        AddRequest(new_request)
+        self.AddRequest(new_request)
     
     def CancelOrderExch(self, client_id_, server_assigned_order_sequence, buysell, int_price):
-        return
+        '''Cancellation logic here'''
+        new_request = Request()
+        new_request.wakeup_time = self.watch_.tv()
+        new_request.request_type = "CANCEL"
+        new_request.order.buy_sell = buysell
+        new_request.order.int_price = int_price
+        new_request.server_assigned_client_id_ = client_id_
+        new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
+        self.AddRequest(new_request)
     
     def CancelReplaceOrderExch(self, client_id_,server_assigned_order_sequence,buysell, int_price, _new_size_requested_ ):
-        return
+        '''Replace logic here'''
+        new_request = Request()
+        new_request.wakeup_time = self.watch_.tv()
+        new_request.request_type = "REPLACE"
+        new_request.order.buy_sell = buysell
+        new_request.order.int_price = int_price
+        new_request.server_assigned_client_id_ = client_id_
+        new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
+        new_request.order.size_remaining = _new_size_requested_
+        self.AddRequest(new_request)
+        
     
     def ReplayOrderExch(self, client_id_,client_assigned_order_sequence,buysell,int_price, server_assigned_order_sequence):
+        #not adding relpay now.. 
         return
         
