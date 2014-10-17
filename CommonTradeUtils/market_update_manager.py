@@ -14,7 +14,7 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
         self.last_check_msecs_from_midnight_ = 0
         '''might not need following variables'''
         self.min_msec_market_update_ = 60000 # we can change this, or we can put different for different security
-        self.security_id_to_last_msec_market_update_ = [0 for i in range(len(_sid_to_smv_ptr_map_))]
+        self.security_id_to_last_msec_market_update_ = [0] * len(_sid_to_smv_ptr_map_)
     
     @staticmethod
     def GetUniqueInstance(_watch_,_sid_to_smv_ptr_map_,_trading_date_):

@@ -176,7 +176,6 @@ class MarketOrder():
     
 class MarketUpdateInfo():
     def __init__(self, *argv):
-        self.secname = ""
         self.shortcode_ = ""
         self.security_id_ = 0
         self.exch_source_ = ""
@@ -197,11 +196,10 @@ class MarketUpdateInfo():
         self.bid_level_order_depth_book_ = []
         self.ask_level_order_depth_book_ = []
         
-        if len(argv) ==4 :
-            self.secname_ = argv[1]
+        if len(argv) ==3 :
             self.shortcode_ = argv[0]
-            self.security_id_ = (int)(argv[2])
-            self._exch_source_ = argv[3]
+            self.security_id_ = (int)(argv[1])
+            self._exch_source_ = argv[2]
         self.bestbid_price_ = kInvalidPrice
         self.bestbid_size_ = 0
         self.bestbid_int_price_ = kInvalidIntPrice

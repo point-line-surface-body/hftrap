@@ -25,7 +25,7 @@ class PriceLevelInfo():
 
 class SecurityMarketView:
  
-    def __init_(self, watch, shortcode, exchange_symbol, security_id):
+    def __init_(self, watch, shortcode, security_id):
         self.watch_ = watch
         self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.YYMMDD())
         self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.YYMMDD())
@@ -33,7 +33,7 @@ class SecurityMarketView:
         self.is_ready_ = False
         self.computing_price_levels_ = False
         self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(shortcode,watch.YYMMDD())
-        self.market_update_info_ = MarketUpdateInfo(shortcode, exchange_symbol,security_id, SecurityDefinitions.GetContractExchSource(shortcode, watch.YYMMDD()))
+        self.market_update_info_ = MarketUpdateInfo(shortcode,security_id, SecurityDefinitions.GetContractExchSource(shortcode, watch.YYMMDD()))
         self.trade_print_info_ = TradePrintInfo()
         self.l1_price_listeners = []
         self.l1_size_listeners = []

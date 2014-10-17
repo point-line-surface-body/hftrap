@@ -38,7 +38,7 @@ def __main__():
     source_shortcode_vec_.append(dependant_shortcode_)
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
 
-    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_, source_shortcode_vec_)
+    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_, source_shortcode_vec_) # need to update smv_vec in this function itself
 
     for i_ in range(0, len(source_shortcode_vec_)):
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_

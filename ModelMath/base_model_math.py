@@ -1,8 +1,11 @@
 from Indicators.indicator_listener import IndicatorListener
 from MarketAdapter.security_market_view_on_ready_listener import SecurityMarketViewOnReadyListener
+from abc import ABCMeta
+from abc import abstractmethod
 
 class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
-
+	__metaclass__ = ABCMeta
+	
 	def __init__(self, _watch_, _model_filename_):
 		self.watch = _watch_
 		self.model_filename = _model_filename_
@@ -38,3 +41,7 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 	def PropagateNotReady(self):
 		for i in range(0, len(self.model_math_listener_vec)):
 			self.model_math_listener_vec[i].TargetNotReady()
+			
+	@abstractmethod
+	def SMVOnReady(self):
+		return
