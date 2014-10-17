@@ -104,6 +104,87 @@ class BaseOrderManager:
         # Do some adjustment
         return t_ask_index_
     
+    def CancelAllOrders(self):
+        self.CancelAllBidOrders()
+        self.CancelAllAskOrders()
+        
+    def CancelAllBidOrders(self):
+        if (self.order_vec_top_bid_index_ == -1):
+            return
+        t_index_ = self.order_vec_top_bid_index_
+        while (t_index_ >= self.order_vec_bottom_bid_index_):
+            for t_order_ in self.bid_order_vec_[t_index_]:
+                self.Cancel(t_order_)
+            t_index_ -= 1
+    
+    def CancelAllAskOrders(self):
+        if (self.order_vec_top_ask_index_ == -1):
+            return
+        t_index_ = self.order_vec_top_ask_index_
+        while (t_index_ >= self.order_vec_bottom_ask_index_):
+            for t_order_ in self.ask_order_vec_[t_index_]:
+                self.Cancel(t_order_)
+            t_index_ -= 1
+            
+    def CancelBidsEqAboveIntPrice(self, _intpx_):
+        t_retval_ = 0
+        t_retval_ += self.CancelBidsAtIntPrice(self, _intpx_)
+        t_retval_ += self.CancelBidsAboveIntPrice(self, _intpx_)
+        return t_retval_
+    
+    def CancelBidsEqBelowIntPrice(self, _intpx_):
+        t_retval_ = 0
+        t_retval_ += self.CancelBidsAtIntPrice(self, _intpx_)
+        t_retval_ += self.CancelBidsBelowIntPrice(self, _intpx_)
+        return t_retval_
+        
+    def CancelBidsAtIntPrice(self, _intpx_):
+        if (self.order_vec_top_bid_index_ == -1):
+            return
+        t_bid_index_ = self.GetBidIndex(_intpx_)
+        return self.CancelOrdersInVec(self.bid_order_vec_[t_bid_index_])
+    
+    def CancelBidsAboveIntPrice(self, _intpx_):
+        if (self.order_vec_top_bid_index_ == -1)
+            return 0
+        t_retval_ = 0
+        t_index_ = self.order_vec_top_bid_index_
+        while (t_index_ > max(t_index_, self.order_vec_bottom_bid_index_ - 1)):
+            t_retval_ += self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
+            t_index_ -= 1
+        return t_retval_
+        
+    def CancelBidsBelowIntPrice(self, _intpx_):
+        if (self.order_vec_top_bid_index_ == -1):
+            return 0
+        t_retval_ = 0
+        t_index_ = self.order_vec_bottom_bid_index_
+        while (t_index_ < min(t_index_, self.order_vec_bottom_bid_index_ + 1):
+            t_retval_ += self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
+            t_index_ += 1
+        return t_retval_
+    
+    def CancelBidsFromFar(self, _requested_size_):
+        if (self.order_vec_top_bid_index_ == -1):
+            return 0
+        t_retval_ = 0
+        t_index_ = self.order_vec_bottom_bid_index_
+        while (t_index_ <= self.order_vec_top_bid_index_):
+            t_retval_ += self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
+            if (t_retval_ >= _required_size_):
+                break
+            t_index_ += 1
+        return t_retval_
+        
+    def CancelOrdersInVec(self, _order_vec_):
+        t_retval_ = 0
+        for t_order_ in _order_vec_:
+            if (self.Cancel(t_order_))
+                t_retval_ += t_order_.SizeRemaining()
+        return t_retval_
+    
+    def CancelAsksBelowIntPrice(self):
+                
     def SendTrade(self, _price_, _int_price_, _size_requested_, _buysell_):
         if (_size_requested_ <= 0):
             print 'SendTrade: _size_requested_ <= 0'
