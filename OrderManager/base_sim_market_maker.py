@@ -46,6 +46,7 @@ class BaseSimMarketMaker:
             self.all_requests.append(_request_)
             self.all_requests.sort() #stable_sort(self.all_requests) # Corrected this)
     
+    #We might need bool variable so that we can keep the cancel request on next time update.. 
     def ProcessRequestQueue(self): # Later find out whether that boolean variable is needed
         if (self.all_requests_lock):
             return
@@ -253,6 +254,7 @@ class BaseSimMarketMaker:
         new_request.order.int_price = int_price
         new_request.server_assigned_client_id_ = client_id_
         new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
+        new_request.postpone_once = False
         self.AddRequest(new_request)
     
     def CancelReplaceOrderExch(self, client_id_,server_assigned_order_sequence,buysell, int_price, _new_size_requested_ ):
@@ -265,6 +267,7 @@ class BaseSimMarketMaker:
         new_request.server_assigned_client_id_ = client_id_
         new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
         new_request.order.size_remaining = _new_size_requested_
+        new_request.postpone_once = False
         self.AddRequest(new_request)
         
     
