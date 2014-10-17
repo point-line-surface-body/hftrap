@@ -280,4 +280,73 @@ class BaseSimMarketMaker:
     def ReplayOrderExch(self, _server_assigned_client_id_, _client_assigned_order_sequence_, _buysell_, _int_price_, _server_assigned_order_sequence_):
         #not adding relpay now...
         return
+    
+    '''Broadcast Messages'''
+    def BroadcastRejection(self, _server_assigned_client_id_, _order_, _order_rejection_reason_):
+        for t_item_ in self.order_rejection_listener_vec_:
+            t_item_.OrderRejected(_server_assigned_client_id_, _order_.client_assigned_order_sequence(), 
+                                  self.dep_shortcode_, _order_.price(), _order_.buysell()
+                                  _order_.size_remaining(), _order_rejection_reason_, _order_.int_price())
+            
+    # Add Client position
+    def BroadcastSequenced(self, _server_assigned_client_id_, _order_):
+        for t_item_ in self.order_sequenced_listener_vec_:
+            t_item_.OrderRejected(_server_assigned_client_id_, _order_.client_assigned_order_sequence(), 
+                                  _order_.server_assigned_order_sequence_, self.dep_shortcode_, _order_.price(), 
+                                  _order_.buysell(), _order_.size_remaining(), _order_.size_executed(), 
+                                  _order_.int_price())
+            
+    def BroadcastConfirm(self):
+        
+    def BroadcastCancelNotification(self):
+        
+    def BroadcastExecNotification(self):
+        
+    def BroadcastOrderNone(self):
+        
+        
+    def CxlOrdersAboveBestLevel(self):
+        
+    def UpdateQueueSizes(self):
+        
+    def UpdateQueueSizesTradeBased(self):
+        
+    def UpdateQueueSizesTargetPrice(self):
+        
+    def UpdateQueueSizesBasePriceBasedTargetPrice(self):
+        
+    def MatchTradeAndQuote(self):
+        
+        
+    def SubscribeL2Events(self):
+        
+    def OnTimePeriodUpdade(self):
+        
+    def OnMarketUpdate(self):
+        
+    def OnTradePrint(self):
+        
+    def OrderNotFound(self):
+        
+    def OrderSequenced(self):
+        
+    def OrderSequencedAtTime(self):
+        
+    def OrderConfirmed(self):
+        
+    def OrderConfirmedAtTime(self):
+        
+    def OrderORSConfirmed(self):
+        
+    def OrderConfCxlReplaced(self):
+
+    def OrderCanceled(self):
+
+    def OrderCanceledAtTime(self):
+
+    def OrderCxlSequencedAtTime(self):
+        
+    def OrderCancelRejected(self):
+        
+    def OrderExecuted(self):
         
