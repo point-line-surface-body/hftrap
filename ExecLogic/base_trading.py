@@ -16,6 +16,7 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 		self.trading_end_time_ = _trading_end_time_
 		self.runtime_id_ = _runtime_id_
 		self.my_position_ = 0
+		self.is_ready_ = False
 		self.should_be_getting_flat_ = False
 		self.get_flat_due_to_close_ = False
 		self.get_flat_due_to_max_position_ = False
@@ -23,12 +24,12 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 		self.get_flat_due_to_max_opentrade_loss_ = False
 		self.get_flat_due_to_max_pnl_ = False
 		
-		self.best_non_self_bid_price_ = None
-		self.best_non_self_bid_int_price_ = None
-		self.best_non_self_bid_size_ = None
-		self.best_non_self_ask_price_ = None
-		self.best_non_self_ask_int_price_ = None
-		self.best_non_self_ask_size_ = None
+		self.best_nonself_bid_price_ = None
+		self.best_nonself_bid_int_price_ = None
+		self.best_nonself_bid_size_ = None
+		self.best_nonself_ask_price_ = None
+		self.best_nonself_ask_int_price_ = None
+		self.best_nonself_ask_size_ = None
 		
 		self.target_price_ = None
 		self.target_bias_numbers_ = None
@@ -100,8 +101,15 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 		if (t_position == 0):
 			self.order_manager_.CancelAllOrders()
 		elif (t_position > 0):
+			self.order_manager_.CancelAllBidOrders()
+			self.order_manager_.CancelAsksBelowIntPrice(self.best_nonself_ask_int_price_)
 			
 		else:
+			self.order_manager_.CancelAllAskOrders()
+			self.order_manager_.CancelBidsBelowIntPrice(self.best_nonself_bid_int_price_)
+			
+	def UpdatePosition(self):
+		self.my_position_ += self.position_offset_
 			
 	
 	def InitializeTradeVarSet(self):
