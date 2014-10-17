@@ -1,12 +1,12 @@
 from OrderManager.base_order import BaseOrder
 class Request:
     def __init__(self):
-        self.wakeup_time = 0
-        self.request_type = None #"CANCEL", "SEND" , "REPLACE"
-        self.order = BaseOrder()
+        self.wakeup_time_ = 0
+        self.request_type_ = None #"CANCEL", "SEND" , "REPLACE"
+        self.order_ = BaseOrder()
         self.server_assigned_client_id_ = 0
         self.server_assigned_order_sequence_ = 0
-        self.postpone_once = False # do we need this ?
+        self.postpone_once_ = False # do we need this ?
         
 
 class BaseSimMarketMaker:
@@ -214,64 +214,70 @@ class BaseSimMarketMaker:
             self.pending_request = []
         self.all_requests_lock = False    
     
-    def SendOrderExch(self, _client_id_, _security_name_, _buy_sell_, _price_, _size_requested_, _int_price_, _order_sequence_):
-        new_order = BaseOrder()
-        new_order.security_name = _security_name_
-        new_order.buy_sell = _buy_sell_
-        new_order.price = _price_
-        new_order.size_remaining = _size_requested_
-        new_order.int_price = _int_price_
-        new_order.order_status = 0 # Not Needed
+    def SendOrderExch(self, _server_assigned_client_id_, _security_name_, _buysell_, _price_, _size_requested_, _int_price_, _client_assigned_order_sequence_):
+        order_ = BaseOrder()
+        order_.security_name_ = _security_name_
+        order_.buysell_ = _buysell_
+        order_.price_ = _price_
+        order_.size_remaining_ = _size_requested_
+        order_.int_price_ = _int_price_
+        order_.order_status_ = 0 # Not Needed
         
-        new_order.queue_size_ahead = 0
-        new_order.queue_size_behind = 0
+        order_.queue_size_ahead_ = 0
+        order_.queue_size_behind_ = 0
         
-        # new_order.num_events_seen = 0
-        new_order.client_assigned_order_sequence = _order_sequence_
-        new_order.server_assigned_order_sequence = 
+        order_.num_events_seen_ = 0
+        order_.client_assigned_order_sequence_ = _client_assigned_order_sequence_
+        order_.server_assigned_order_sequence_ = self.server_assigned_order_sequence_
+        self.server_assigned_order_sequence_ += 1
         
-        new_order.seqd_msec = self.watch.tv()
+        order_.server_assigned_client_id_ = self.servr
+        
+        order_.order_sequenced_time_ = self.watch.tv()
         
         # Size requested must be a multiple of MinOrderSize
-        if (_size_requested_ mod self.dep_market_view.min_order_size() != 0):
+        if (not _size_requested_ mod self.dep_market_view.min_order_size() != 0):
             # Broadcast rejection
+            self.BroadcastRejection(_server_assigned_client_id_, order_, 'kSendOrderRejectNotMinOrderMultiple')
             
+        self.saos_to_seqd_time_[order_.server_assigned_order_sequence_] = self.watch_.tv()
         # Broadcast sequenced
+        self.BroadcastSequenced(_server_assigned_client_id_, order_)
         
         # Create a request class
-        
-        # Wrap new_order in a request object
-        
-        new_request = Request()
-        self.AddRequest(new_request)
+        new_request_ = Request()
+        new_request_.wakeup_time_ = self.watch_.tv()
+        new_request_.request_type_ = 'SEND'
+        new_request_.order_ = order_
+        new_request_.server_assigned_client_id_ = _server_assigned_client_id_        
+        self.AddRequest(new_request_)
     
-    def CancelOrderExch(self, client_id_, server_assigned_order_sequence, buysell, int_price):
+    def CancelOrderExch(self, _server_assigned_client_id_, _server_assigned_order_sequence_, _buysell_, _int_price_):
         '''Cancellation logic here'''
-        new_request = Request()
-        new_request.wakeup_time = self.watch_.tv()
-        new_request.request_type = "CANCEL"
-        new_request.order.buy_sell = buysell
-        new_request.order.int_price = int_price
-        new_request.server_assigned_client_id_ = client_id_
-        new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
-        new_request.postpone_once = False
-        self.AddRequest(new_request)
+        new_request_ = Request()
+        new_request_.wakeup_time = self.watch_.tv()
+        new_request_.request_type = 'CANCEL'
+        new_request_.order.buysell_ = _buysell_
+        new_request_.order.int_price_ = _int_price_
+        new_request_.server_assigned_client_id_ = _server_assigned_client_id_
+        new_request_.server_assigned_order_sequence_ = _server_assigned_order_sequence_
+        new_request_.postpone_once = False
+        self.AddRequest(new_request_)
     
-    def CancelReplaceOrderExch(self, client_id_,server_assigned_order_sequence,buysell, int_price, _new_size_requested_ ):
+    def CancelReplaceOrderExch(self, _server_assigned_client_id_, _server_assigned_order_sequence_, _buysell_, _int_price_, _new_size_requested_):
         '''Replace logic here'''
-        new_request = Request()
-        new_request.wakeup_time = self.watch_.tv()
-        new_request.request_type = "REPLACE"
-        new_request.order.buy_sell = buysell
-        new_request.order.int_price = int_price
-        new_request.server_assigned_client_id_ = client_id_
-        new_request.server_assigned_order_sequence_ = server_assigned_order_sequence
-        new_request.order.size_remaining = _new_size_requested_
-        new_request.postpone_once = False
-        self.AddRequest(new_request)
-        
+        new_request_ = Request()
+        new_request_.wakeup_time_ = self.watch_.tv()
+        new_request_.request_type_ = 'REPLACE'
+        new_request_.order.buysell_ = _buysell_
+        new_request_.order.int_price_ = _int_price_
+        new_request_.server_assigned_client_id_ = _server_assigned_client_id_
+        new_request_.server_assigned_order_sequence_ = _server_assigned_order_sequence_
+        new_request_.order.size_remaining_ = _new_size_requested_
+        new_request_.postpone_once_ = False
+        self.AddRequest(new_request_)
     
-    def ReplayOrderExch(self, client_id_,client_assigned_order_sequence,buysell,int_price, server_assigned_order_sequence):
-        #not adding relpay now.. 
+    def ReplayOrderExch(self, _server_assigned_client_id_, _client_assigned_order_sequence_, _buysell_, _int_price_, _server_assigned_order_sequence_):
+        #not adding relpay now...
         return
         

@@ -79,6 +79,7 @@ class BaseOrderManager:
         self.p_ticks_to_keep_bid_int_price_ = None
         self.p_ticks_to_keep_ask_int_price_ = None
         self.throttle_manager_ = None
+        self.client_assigned_order_sequence_ = 0
         
         bid_order_vec_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, std::vector < BaseOrder * > ( ) );
         sum_bid_confirmed_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, 0 );
@@ -358,16 +359,18 @@ class BaseOrderManager:
         order_.size_requested = _size_requested_
         order_.size_remaining = 0
         order_.order_status = None
+        order_.client_assigned_order_sequence_ = self.client_assigned_order_sequence_
+        self.client_assigned_order_sequence_ += 1
         
         if (_buysell_ == 0): # Buy
-            t_bid_index_ = self.GetBidIndexAndAdjustIntPrice(_int_price_)
+            t_bid_index_ = self.GetBidIndex(_int_price_)
             self.sum_bid_unconfirmed_[t_bid_index_] += _size_requested_
             self.AdjustTopBottomUnconfirmedBidIndexes(t_bid_index_)
             self.unsequenced_bids_.append(order)
             self.num_unconfirmed_orders_ += 1
             self.sum_bid_sizes_ += _size_requested_
         else:
-            t_ask_index_ = self.GetAskIndexAndAdjustIntPrice(_int_price_)
+            t_ask_index_ = self.GetAskIndex(_int_price_)
             self.sum_ask_unconfirmed_[t_ask_index_] += _size_requested_
             self.AdjustTopBottomUnconfirmedAskIndexes(t_ask_index_)
             self.unsequenced_bids_.append(order)
