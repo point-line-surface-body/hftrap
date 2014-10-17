@@ -1,6 +1,6 @@
 #from OrderManager.base_sim_market_maker import BaseSimMarketMaker    
     
-class BaseSimTrader():
+class BaseTrader():
     
     def __init__(self, account, base_sim_market_maker_):
         self.account_string_ = account
@@ -22,7 +22,3 @@ class BaseSimTrader():
     #may not be required
     def GetClientId(self):
         return self.client_id_
-
-    
-        
-    

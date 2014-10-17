@@ -378,3 +378,160 @@ class BaseOrderManager:
         
         self.total_size_placed_ += _size_requested_
         self.send_order_count += 1
+        
+    '''Adjust Function''' 
+    def AdjustTopBottomUnconfirmedBidIndexes(self, _bid_index_):
+        if (self.sum_bid_unconfirmed_[_bid_index_] == 0):
+            if (_bid_index_ == self.unconfirmed_top_bid_index_ and _bid_index_ == self.unconfirmed_bottom_bid_index_):
+                self.unconfirmed_top_bid_index_ = -1
+                self.unconfirmed_bottom_bid_index_ = -1
+            elif (_bid_index_ == self.unconfirmed_top_bid_index_):
+                while (self.sum_bid_unconfirmed[self.unconfirmed_top_bid_index_] == 0):
+                    self.unconfirmed_top_bid_index_ -= 1
+            elif (_bid_index_ == self.unconfirmed_bottom_bid_index_):
+                while (self.sum_bid_unconfirmed[self.unconfirmed_bottom_bid_index_] == 0):
+                    self.unconfirmed_bottom_bid_index_ += 1
+            else:
+                pass
+        else:
+            if (self.unconfirmed_top_bid_index_ == -1):
+                assert self.unconfirmed_bottom_bid_index_ == -1
+                self.unconfirmed_bottom_bid_index_ = _bid_index_
+                self.unconfirmed_top_bid_index_ = _bid_index_
+            elif (_bid_index_ > self.unconfirmed_top_bid_index_):
+                self.unconfirmed_top_bid_index_ = _bid_index_
+            elif (_bid_index_ < self.unconfirmed_bottom_bid_index_):
+                self.unconfirmed_bottom_bid_index_ = _bid_index_
+            else:
+                pass
+        assert self.unconfirmed_bottom_bid_index_ <= self.unconfirmed_top_bid_index_
+        
+    def AdjustTopBottomConfirmedBidIndexes(self, _bid_index_):
+        if (self.sum_bid_confirmed_[_bid_index_] == 0):
+            if (_bid_index_ == self.confirmed_top_bid_index_ and _bid_index_ == self.confirmed_bottom_bid_index_):
+                self.confirmed_top_bid_index_ = -1
+                self.confirmed_bottom_bid_index_ = -1
+            elif (_bid_index_ == self.confirmed_top_bid_index_):
+                while (self.sum_bid_confirmed[self.confirmed_top_bid_index_] == 0):
+                    self.confirmed_top_bid_index_ -= 1
+            elif (_bid_index_ == self.confirmed_bottom_bid_index_):
+                while (self.sum_bid_confirmed[self.confirmed_bottom_bid_index_] == 0):
+                    self.confirmed_bottom_bid_index_ += 1
+            else:
+                pass
+        else:
+            if (self.confirmed_top_bid_index_ == -1):
+                assert self.confirmed_bottom_bid_index_ == -1
+                self.confirmed_bottom_bid_index_ = _bid_index_
+                self.confirmed_top_bid_index_ = _bid_index_
+            elif (_bid_index_ > self.confirmed_top_bid_index_):
+                self.confirmed_top_bid_index_ = _bid_index_
+            elif (_bid_index_ < self.confirmed_bottom_bid_index_):
+                self.confirmed_bottom_bid_index_ = _bid_index_
+            else:
+                pass
+        assert self.confirmed_bottom_bid_index_ <= self.confirmed_top_bid_index_
+    
+    def AdjustTopBottomUnconfirmedAskIndexes(self, _ask_index_):
+        if (self.sum_ask_unconfirmed_[_ask_index_] == 0):
+            if (_ask_index_ == self.unconfirmed_top_ask_index_ and _ask_index_ == self.unconfirmed_bottom_ask_index_):
+                self.unconfirmed_top_ask_index_ = -1
+                self.unconfirmed_bottom_ask_index_ = -1
+            elif (_ask_index_ == self.unconfirmed_top_ask_index_):
+                while (self.sum_ask_unconfirmed[self.unconfirmed_top_ask_index_] == 0):
+                    self.unconfirmed_top_ask_index_ -= 1
+            elif (_ask_index_ == self.unconfirmed_bottom_ask_index_):
+                while (self.sum_ask_unconfirmed[self.unconfirmed_bottom_ask_index_] == 0):
+                    self.unconfirmed_bottom_ask_index_ += 1
+            else:
+                pass
+        else:
+            if (self.unconfirmed_top_ask_index_ == -1):
+                assert self.unconfirmed_bottom_ask_index_ == -1
+                self.unconfirmed_bottom_ask_index_ = _ask_index_
+                self.unconfirmed_top_ask_index_ = _ask_index_
+            elif (_ask_index_ > self.unconfirmed_top_ask_index_):
+                self.unconfirmed_top_ask_index_ = _ask_index_
+            elif (_ask_index_ < self.unconfirmed_bottom_ask_index_):
+                self.unconfirmed_bottom_ask_index_ = _ask_index_
+            else:
+                pass
+        assert self.unconfirmed_bottom_ask_index_ <= self.unconfirmed_top_ask_index_
+        
+    def AdjustTopBottomConfirmedAskIndexes(self, _ask_index_):
+        if (self.sum_ask_confirmed_[_ask_index_] == 0):
+            if (_ask_index_ == self.confirmed_top_ask_index_ and _ask_index_ == self.confirmed_bottom_ask_index_):
+                self.confirmed_top_ask_index_ = -1
+                self.confirmed_bottom_ask_index_ = -1
+            elif (_ask_index_ == self.confirmed_top_ask_index_):
+                while (self.sum_ask_confirmed[self.confirmed_top_ask_index_] == 0):
+                    self.confirmed_top_ask_index_ -= 1
+            elif (_ask_index_ == self.confirmed_bottom_ask_index_):
+                while (self.sum_ask_confirmed[self.confirmed_bottom_ask_index_] == 0):
+                    self.confirmed_bottom_ask_index_ += 1
+            else:
+                pass
+        else:
+            if (self.confirmed_top_ask_index_ == -1):
+                assert self.confirmed_bottom_ask_index_ == -1
+                self.confirmed_bottom_ask_index_ = _ask_index_
+                self.confirmed_top_ask_index_ = _ask_index_
+            elif (_ask_index_ > self.confirmed_top_ask_index_):
+                self.confirmed_top_ask_index_ = _ask_index_
+            elif (_ask_index_ < self.confirmed_bottom_ask_index_):
+                self.confirmed_bottom_ask_index_ = _ask_index_
+            else:
+                pass
+        assert self.confirmed_bottom_ask_index_ <= self.confirmed_top_ask_index_
+        
+    def AdjustTopBottomOrderVecAskIndexes(self, _ask_index_):
+        if (not self.ask_order_vec_[_ask_index_]):
+            if (_ask_index_ == self.order_vec_top_ask_index_ && _ask_index_ == self.order_vec_bottom_ask_index_):
+                self.order_vec_top_ask_index_ = -1
+                self.order_vec_bottom_ask_index_ = -1
+            elif (_ask_index_ == self.order_vec_top_ask_index_):
+                while (not self.ask_order_vec_[self.order_vec_top_ask_index_]):
+                    self.order_vec_top_ask_index_ -= 1
+            elif (_ask_index_ == self.order_vec_bottom_ask_index_):
+                while (not self.ask_order_vec_[self.order_vec_bottom_ask_index_]):
+                    self.order_vec_bottom_ask_index_ += 1
+            else:
+                pass
+        else:
+            if (self.order_vec_top_ask_index_ == -1):
+                assert self.order_vec_bottom_ask_index_ == -1
+                self.order_vec_top_ask_index_ = _ask_index_
+                self.order_vec_bottom_ask_index_ = _ask_index_
+            elif (_ask_index_ > self.order_vec_top_ask_index_):
+                self.order_vec_top_ask_index_ = _ask_index_
+            elif (_ask_index_ < self.order_vec_bottom_ask_index_):
+                self.order_vec_bottom_ask_index_ = _ask_index_
+            else:
+                pass
+        self.order_vec_bottom_ask_index_ <= self.order_vec_top_ask_index_
+        
+    def AdjustTopBottomOrderVecBidIndexes(self, _bid_index_):
+        if (not self.bid_order_vec_[_bid_index_]):
+            if (_bid_index_ == self.order_vec_top_bid_index_ && _bid_index_ == self.order_vec_bottom_bid_index_):
+                self.order_vec_top_bid_index_ = -1
+                self.order_vec_bottom_bid_index_ = -1
+            elif (_bid_index_ == self.order_vec_top_bid_index_):
+                while (not self.bid_order_vec_[self.order_vec_top_bid_index_]):
+                    self.order_vec_top_bid_index_ -= 1
+            elif (_bid_index_ == self.order_vec_bottom_bid_index_):
+                while (not self.bid_order_vec_[self.order_vec_bottom_bid_index_]):
+                    self.order_vec_bottom_bid_index_ += 1
+            else:
+                pass
+        else:
+            if (self.order_vec_top_bid_index_ == -1):
+                assert self.order_vec_bottom_bid_index_ == -1
+                self.order_vec_top_bid_index_ = _bid_index_
+                self.order_vec_bottom_bid_index_ = _bid_index_
+            elif (_bid_index_ > self.order_vec_top_bid_index_):
+                self.order_vec_top_bid_index_ = _bid_index_
+            elif (_bid_index_ < self.order_vec_bottom_bid_index_):
+                self.order_vec_bottom_bid_index_ = _bid_index_
+            else:
+                pass
+        self.order_vec_bottom_bid_index_ <= self.order_vec_top_bid_index_
