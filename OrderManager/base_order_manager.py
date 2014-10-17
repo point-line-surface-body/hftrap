@@ -20,6 +20,8 @@ class BaseOrderManager:
     unconfirmed_top_bid_index_
     uncomfirmed_bottom_bid_index_
     
+    INT_PRICE_RANGE = 2048
+    
     def __init__(self, _watch_, _base_trader_, _dep_shortcode_, _min_price_increment_):
         self.watch_ = _watch_
         self.base_trader_ = _base_trader_
@@ -92,17 +94,22 @@ class BaseOrderManager:
         return _int_price_ - self.bid_int_price_adjustment_
     
     def GetAskIndex(self, _int_price_):
-        return _int_price_ - self.ask_int_price_adjustment_
+        return (INT_PRICE_RANGE - (_int_price_ - self.ask_int_price_adjustment_))
     
-    def GetBidIndexAndAdjustIntPrice(self, _int_price_):
-        t_bid_index_ = self.GetBidIndex(_int_price_)
-        # Do some adjustment
-        return t_bid_index_
+    def SetInitialIntPriceAdjustment(self, _int_price_):
+        self.bid_int_price_adjustment_ = _int_price_ - INT_PRICE_RANGE / 2
+        self.ask_int_price_adjustment_ = _int_price_ - INT_PRICE_RANGE / 2
+        '''Assumption: No re-adjustment is needed'''
     
-    def GetAskIndexAndAdjustIntPrice(self, _int_price_):
-        t_ask_index_ = self.GetAskIndex(_int_price_)
-        # Do some adjustment
-        return t_ask_index_
+#     def GetBidIndexAndAdjustIntPrice(self, _int_price_):
+#         t_bid_index_ = self.GetBidIndex(_int_price_)
+#         # Do some adjustment
+#         return t_bid_index_
+#     
+#     def GetAskIndexAndAdjustIntPrice(self, _int_price_):
+#         t_ask_index_ = self.GetAskIndex(_int_price_)
+#         # Do some adjustment
+#         return t_ask_index_
     
     def CancelAllOrders(self):
         self.CancelAllBidOrders()
@@ -230,8 +237,105 @@ class BaseOrderManager:
         t_retval_ = 0
         for t_order_ in _order_vec_:
             if (self.Cancel(t_order_))
-                t_retval_ += t_order_.SizeRemaining()
+                t_retval_ += t_order_.size_remaining()
         return t_retval_
+
+    '''Aggregator functions'''
+    
+    '''Bid version'''    
+    def SumBidSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
+        if (self.unconfirmed_top_bid_index_ == -1):
+            return
+        t_bid_index_ = self.GetBidIndex(_intpx_)
+        t_index_ = self.unconfirmed_top_bid_index_
+        t_retval_ = 0
+        while (t_index >= max(t_bid_index_, self.unconfirmed_bottom_bid_index_)):
+            t_retval_ += self.sum_bid_unconfirmed_[t_index_]
+            t_index_ -= 1
+        return t_retval_
+    
+    def SumBidSizeConfirmedEqAboveIntPrice(self, _intpx_):
+        if (self.confirmed_top_bid_index_ == -1):
+            return
+        t_bid_index_ = self.GetBidIndex(_intpx_)
+        t_index_ = self.confirmed_top_bid_index_
+        t_retval_ = 0
+        while (t_index_ >= max(t_bid_index_, self.confirmed_bottom_bid_index_)):
+            t_retval_ += self.sum_bid_confirmed_[t_index_]
+            t_index_ -= 1
+        return t_retval_
+    
+    def SumBidSizeConfirmedAboveIntPrice(self, _intpx_):
+        if (self.confirmed_top_bid_index_ == -1):
+            return
+        t_bid_index_ = self.GetBidIndex(_intpx_)
+        t_index_ = self.confirmed_top_bid_index_
+        t_retval_ = 0
+        while (t_index > max(t_bid_index_, self.confirmed_bottom_bid_index_ - 1)):
+            t_retval_ += self.sum_bid_confirmed_[t_index_]
+            t_index -= 1
+        return t_retval_
+    
+    def SumBidSizes(self):
+        t_retval_ = 0
+        if (self.unconfirmed_top_bid_index_ != -1):
+            t_index_ = self.unconfirmed_top_bid_index_
+            while (t_index_ >= self.unconfirmed_bottom_bid_index_):
+                t_retval_ += self.sum_bid_unconfirmed_[t_index_]
+                t_index_ -= 1
+        if (self.confirmed_top_bid_index_ != -1):
+            t_index_ = self.confirmed_top_bid_index_
+            while (t_index_ >= self.confirmed_bottom_bid_index_):
+                t_retval_ += self.sum_bid_confirmed_[t_index_]
+                t_index_ -= 1
+
+    '''Ask version'''
+    def SumAskSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
+        if (self.unconfirmed_top_ask_index_ == -1):
+            return
+        t_ask_index_ = self.GetAskIndex(_intpx_)
+        t_index_ = self.unconfirmed_top_ask_index_
+        t_retval_ = 0
+        while (t_index >= max(t_ask_index_, self.unconfirmed_bottom_ask_index_)):
+            t_retval_ += self.sum_ask_unconfirmed_[t_index_]
+            t_index_ -= 1
+        return t_retval_
+    
+    def SumAskSizeConfirmedEqAboveIntPrice(self, _intpx_):
+        if (self.confirmed_top_ask_index_ == -1):
+            return
+        t_ask_index_ = self.GetAskIndex(_intpx_)
+        t_index_ = self.confirmed_top_ask_index_
+        t_retval_ = 0
+        while (t_index_ >= max(t_ask_index_, self.confirmed_bottom_ask_index_)):
+            t_retval_ += self.sum_ask_confirmed_[t_index_]
+            t_index_ -= 1
+        return t_retval_
+    
+    def SumAskSizeConfirmedAboveIntPrice(self, _intpx_):
+        if (self.confirmed_top_ask_index_ == -1):
+            return
+        t_ask_index_ = self.GetAskIndex(_intpx_)
+        t_index_ = self.confirmed_top_ask_index_
+        t_retval_ = 0
+        while (t_index > max(t_ask_index_, self.confirmed_bottom_ask_index_ - 1)):
+            t_retval_ += self.sum_ask_confirmed_[t_index_]
+            t_index -= 1
+        return t_retval_
+    
+    def SumAskSizes(self):
+        t_retval_ = 0
+        if (self.unconfirmed_top_ask_index_ != -1):
+            t_index_ = self.unconfirmed_top_ask_index_
+            while (t_index_ >= self.unconfirmed_bottom_ask_index_):
+                t_retval_ += self.sum_ask_unconfirmed_[t_index_]
+                t_index_ -= 1
+        if (self.confirmed_top_ask_index_ != -1):
+            t_index_ = self.confirmed_top_ask_index_
+            while (t_index_ >= self.confirmed_bottom_ask_index_):
+                t_retval_ += self.sum_ask_confirmed_[t_index_]
+                t_index_ -= 1
+
         
     def Cancel(self, _order_):
         if (_order_.CanBeCanceled()):

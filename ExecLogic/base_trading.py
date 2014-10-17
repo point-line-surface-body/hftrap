@@ -111,7 +111,6 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 	def UpdatePosition(self):
 		self.my_position_ += self.position_offset_
 			
-	
 	def InitializeTradeVarSet(self):
 		self.current_tradevarset_.l1bid_aggressive = self.param_set_.bid_aggress_threshold_
 		self.current_tradevarset_.l1bid_improve_ = self.param_set_.bid_improve_threshold_
