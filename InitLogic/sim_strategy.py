@@ -98,8 +98,10 @@ def __main__():
 
     '''Run Historical Dispatcher'''
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
+    print('data_seek_time: '+str(data_seek_time_))
     historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
     historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() # add 1 hour
+    print('historical_dispatcher_end_time: '+str(historical_dispatcher_end_time_))
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
 
     '''Print Results'''

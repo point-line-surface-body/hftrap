@@ -21,7 +21,7 @@ class Watch(ExternalTimeListener):
     def OnTimeReceived(self, _tv_sec_, _tv_usec_):
         if (self.tv_sec_ == 0):
             t_time = gmtime(_tv_sec_)
-            t_date = str(t_time.tm_year)+str(t_time.tm_mon)+str(t_time.tm_day)
+            t_date = str(t_time.tm_year)+str(t_time.tm_mon)+str(t_time.tm_mday)
             if (not t_date == self.trading_date_):
                 print 'Warning: Trading Date not equal to Time Received'
             self.msecs_from_midnight_ = _tv_sec_ % 3600

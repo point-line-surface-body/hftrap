@@ -16,9 +16,9 @@ class FileSource(ExternalDataListener):
         return
         
     def ProcessThisEvent(self):
-        self.watch_.OnTimeReceived(self.next_event.timestamp)
+        self.watch_.OnTimeReceived(self.next_event_.sec_, self.next_event_.usec_)
         '''OnTradePrint'''
-        if (self.next_event_.type == 'T'):
+        if (self.next_event_.type_ == 'T'):
             '''TODO: Fill this'''
             self.smv_.OnTrade()
         else:
@@ -26,19 +26,25 @@ class FileSource(ExternalDataListener):
             self.smv_.OnL1PriceUpdate()
     
     def SeekToFirstEventAfter(self, _start_time_):
+        print('Filesource.SeekToFirstEventAfter')
+        iter_ = 0
         while (1):
-            this_bytes_ = self.file_.read(calcsize('fcHHHHHH'))
-            if (len(this_bytes_) < calcsize('fcHHHHHH')):
+            this_bytes_ = self.file_.read(calcsize('QIccHHHHHHHH'))
+            if (len(this_bytes_) < calcsize('QIccHHHHHHHH')):
+                print('False'+' '+str(len(this_bytes_)))
                 return False
             self.next_event_ = Message(this_bytes_)
             self.next_event_timestamp_ = self.next_event_.timestamp_
             if (self.next_event_timestamp_ > _start_time_):
+                print('Turned True after '+str(iter_)+' iterations: '+str(self.next_event_timestamp_)+' '+str(_start_time_))
                 return True
+            iter_ += 1
+        print('Never returned true')
         return
     
     def ComputeEarliestDataTimestamp(self):
-        this_bytes_ = self.file_.read(calcsize('fcHHHHHH'))
-        if (len(this_bytes_) < calcsize('fcHHHHHH')):
+        this_bytes_ = self.file_.read(calcsize('QIccHHHHHHHH'))
+        if (len(this_bytes_) < calcsize('QIccHHHHHHHH')):
             self.next_event_timestamp_ = 0
             return False
         else:
