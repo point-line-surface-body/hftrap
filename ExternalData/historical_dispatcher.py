@@ -10,9 +10,6 @@ class HistoricalDispatcher() :
 	
 	def __init__(self):
 		return
-
-	def __del__(self):
-		self.DeleteSource()
 		
 	def AddExternalDataListener(self, _new_listener_):
 		self.external_data_listener_vec.append(_new_listener_)

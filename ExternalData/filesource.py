@@ -28,22 +28,22 @@ class FileSource(ExternalDataListener):
     def SeekToFirstEventAfter(self, _start_time_):
         while (1):
             this_bytes = self.file.read(calcsize('fcHHHHHH'))
-            if (calcsize(this_bytes) < calcsize('fcHHHHHH')):
+            if (len(this_bytes) < calcsize('fcHHHHHH')):
                 return False
             self.next_event = Message(this_bytes)
-            self.next_event_timestamp = self.next_event.time
+            self.next_event_timestamp = self.next_event.timestamp
             if (self.next_event_timestamp > _start_time_):
                 return True
         return
     
     def ComputeEarliestDataTimestamp(self):
         this_bytes = self.file.read(calcsize('fcHHHHHH'))
-        if (calcsize(bytes) < calcsize('fcHHHHHH')):
+        if (len(this_bytes) < calcsize('fcHHHHHH')):
             self.next_event_timestamp = 0
             return False
         else:
             self.next_event = Message(this_bytes)
-            self.next_event_timestamp = self.next_event.time
+            self.next_event_timestamp = self.next_event.timestamp
             return True
     
     def SetNextTimeStamp(self):
