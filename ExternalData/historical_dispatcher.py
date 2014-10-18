@@ -15,18 +15,24 @@ class HistoricalDispatcher() :
 		self.external_data_listener_vec.append(_new_listener_)
 
 	def RunHist(self, _endtime_):
+		print('HistoricalDispatcher.RunHist')
+		print('Number of ExternalDataListeners: '+str(len(self.external_data_listener_vec)))
 		'''This condition is required: Some sources may have gotten empty due to 
 		Seek and RunHist may be called multiple times.'''
 		if (not self.first_event_enqueued):
 			for edl in self.external_data_listener_vec[:]:
 				hasevents = edl.ComputeEarliestDataTimestamp()
+				print('hasevents: '+str(hasevents))
 				if (not hasevents):
 					self.prev_external_data_listener_vec.append(edl)
 					self.external_data_listener_vec.remove(edl)
 			self.first_event_enqueued = True
 			
 		if (len(self.external_data_listener_vec) == 1):
+			print('No heap required')
+			print('Processing till '+str(_endtime_))
 			self.external_data_listener_vec[0].ProcessEventsTill(_endtime_)
+			print('All events processed')
 			self.prev_external_data_listener_vec.append(self.external_data_listener_vec[0])
 			self.external_data_listener_vec.pop()
 

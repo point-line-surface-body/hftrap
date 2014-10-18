@@ -35,7 +35,7 @@ class StrategyDesc():
                 strategy_line_.trading_start_time_ = tokens_[5]
                 strategy_line_.trading_start_time_mfm_ = GetMSecsFromUTC(int(tokens_[5]))
                 strategy_line_.trading_end_time_ = tokens_[6]
-                strategy_line_.trading_end_time_mfm_= GetMSecsFromUTC(int(tokens_[5]))
+                strategy_line_.trading_end_time_mfm_= GetMSecsFromUTC(int(tokens_[6]))
                 strategy_line_.runtime_id_ = int(tokens_[7])
                 strategy_line_.strategy_full_line_ = line_
                 for i in range(len(self.strategy_vec_)):

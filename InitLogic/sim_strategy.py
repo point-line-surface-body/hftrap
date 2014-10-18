@@ -79,20 +79,21 @@ def __main__():
     base_pnl_ = BasePnl(watch_, order_manager_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
     order_manager_.SetBasePNL(base_pnl_)
 
-    if (sim_market_maker_ is not None and order_manager_ is not None):
-        sim_market_maker_.AddOrderNotFoundListener(order_manager_)
-        sim_market_maker_.AddOrderSequencedListener(order_manager_)
-        sim_market_maker_.AddOrderConfirmedListener(order_manager_)
-        sim_market_maker_.AddOrderCanceledListener(order_manager_)
-        sim_market_maker_.AddOrderSequencedListener(order_manager_)
-        sim_market_maker_.AddOrderRejectedListener(order_manager_)
-
+# '''
+#     if (sim_market_maker_ is not None and order_manager_ is not None):
+#         sim_market_maker_.AddOrderNotFoundListener(order_manager_)
+#         sim_market_maker_.AddOrderSequencedListener(order_manager_)
+#         sim_market_maker_.AddOrderConfirmedListener(order_manager_)
+#         sim_market_maker_.AddOrderCanceledListener(order_manager_)
+#         sim_market_maker_.AddOrderSequencedListener(order_manager_)
+#         sim_market_maker_.AddOrderRejectedListener(order_manager_)'''
+    
     base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
     for smv_ in smv_vec_:
         smv_.SubscribeOnReady(base_model_math_)
     
-    market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_, tradingdate_ )
+    market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_, tradingdate_)
     market_update_manager_.start()
 
     '''Run Historical Dispatcher'''

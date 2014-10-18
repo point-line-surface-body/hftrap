@@ -56,6 +56,7 @@ class ModelCreator():
                     t_current_phase_ = 4
             elif (t_current_phase_ == 4):
                 break
+        print('ModelCreator.CollectShortCodes--------------------------')
   
     @staticmethod
     def GetIndicatorFromTokens(_watch_, _tokens_, _dep_base_pricetype_):
@@ -95,6 +96,7 @@ class ModelCreator():
                     t_weight_ = float(t_tokens_[1])
                     t_indicator_ = ModelCreator.GetIndicatorFromTokens(_watch_, t_tokens_, t_dep_base_pricetype_)
                     if (t_indicator_ is not None):
+                        print 'Indicator Added '+t_tokens_[2]
                         t_readiness_required_ = t_indicator_.GetReadinessRequired(t_dep_shortcode_, t_tokens_)
                         t_model_math_.AddIndicator(t_indicator_, t_weight_, t_readiness_required_)
                     else:
@@ -107,5 +109,5 @@ class ModelCreator():
             
             elif (t_current_phase_ == 4): #IndicatorEnded
                 break
-        print('-------------------------------')
+        print('ModelCreator.CreateModelMathComponent---------------------------')
         return t_model_math_
