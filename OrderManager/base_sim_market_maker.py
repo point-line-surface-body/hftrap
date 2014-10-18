@@ -369,6 +369,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
     def OnTimePeriodUpdate(self, num_pages_to_add_):
         if len(self.all_requests) > 0 :
             self.ProcessRequestQueue(False) 
+            
             '''False is needed ao that cancel req will not be removed '''
 '''         
     def BroadcastConfirm(self):

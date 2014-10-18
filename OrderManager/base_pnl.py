@@ -3,9 +3,11 @@ from OrderManager.order_manager_listeners import ExecutionListener
 
 class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
     
-    def __init__(self, _order_manager_, _shortcode_):
+    def __init__(self, _watch_, _order_manager_, _dep_market_view_, _runtime_id_):
+        self.watch_ = _watch_
         self.order_manager_ = _order_manager_
-        self.shortcode_ = _shortcode_
+        self.dep_market_view_ = _dep_market_view_
+        self.runtime_id_ = _runtime_id_
         self.pnl_ = 0
         self.realized_pnl_ = 0
         self.position_ = 0

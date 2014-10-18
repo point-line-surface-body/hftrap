@@ -114,6 +114,9 @@ class BaseOrderManager:
 #         t_ask_index_ = self.GetAskIndex(_int_price_)
 #         # Do some adjustment
 #         return t_ask_index_
+
+    def SetBasePNL(self, _base_pnl_):
+        self.base_pnl_ = _base_pnl_
     
     def CancelAllOrders(self):
         self.CancelAllBidOrders()
