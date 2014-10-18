@@ -12,6 +12,7 @@ from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTradin
 from OrderManager.base_trader import BaseTrader
 from SimMarketMaker.order_level_sim_market_maker import OrderLevelSimMarketMaker
 from OrderManager.base_order_manager import BaseOrderManager
+from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
 def __main__():
      
@@ -23,6 +24,7 @@ def __main__():
     tradingdate_ = sys.argv[2]
 
     watch_ = Watch(tradingdate_)
+    ShortcodeSecurityMarketViewMap.watch_ = watch_
 
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
     strategy_desc_.Dump()
@@ -40,8 +42,8 @@ def __main__():
 
     for i_ in range(0, len(source_shortcode_vec_)):
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
-        smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
-        smv_vec_.append(smv_)
+        #smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
+        smv_vec_.append(ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(source_shortcode_vec_[i_]))
 
     sim_market_maker_ = OrderLevelSimMarketMaker(watch_, smv_vec_[0])
     base_trader_ = BaseTrader(sim_market_maker_)

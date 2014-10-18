@@ -1,5 +1,6 @@
 from ModelMath.linear_model_aggregator import LinearModelAggregator
 from Indicators.simple_trend import SimpleTrend
+from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
 class ModelCreator():
     
@@ -8,7 +9,7 @@ class ModelCreator():
     
     @staticmethod
     def GetIndicatorFromTokens(_watch_, _tokens_, _dep_base_pricetype_):
-        '''Add more later'''
+        '''Add more later''' 
         if (_tokens_[2] == 'SimpleTrend'):
             return SimpleTrend.GetUniqueInstance(_watch_, _tokens_, _dep_base_pricetype_)
     
