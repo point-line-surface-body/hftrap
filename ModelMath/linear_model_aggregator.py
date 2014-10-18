@@ -5,8 +5,8 @@ class LinearModelAggregator(BaseModelMath):
     def __init__(self, _watch_, _model_filename_):
         super(LinearModelAggregator, self).__init__(_watch_, _model_filename_)
         #self.dep_market_view = _dep_market_view_
-        self.prev_value_vec = []
-        self.sum_vars = 0
+        self.prev_value_vec_ = []
+        self.sum_vars_ = 0
         self.last_propagated_target_price = 0
         self.model_intercept = 0
     
@@ -20,39 +20,39 @@ class LinearModelAggregator(BaseModelMath):
         return True
             
     def OnIndicatorUpdate(self, _indicator_index_, _new_value_):
-        if (not self.is_ready):
-            self.is_ready_vec[_indicator_index_] = True
-            self.is_ready = self.AreAllReady()
-            if (not self.is_ready):
+        if (not self.is_ready_):
+            self.is_ready_vec_[_indicator_index_] = True
+            self.is_ready_ = self.AreAllReady()
+            if (not self.is_ready_):
                 # Some indicator is not ready but at least one other is ready
-                for i in range(0, len(self.indicator_vec)):
-                    if (not self.is_ready_vec[i]):
+                for i in range(0, len(self.indicator_vec_)):
+                    if (not self.is_ready_vec_[i]):
                         # This indicator is not ready
-                        if (self.indicator_vec[i].IsIndicatorReady()):
-                            self.is_ready_vec[i] = True
-                            self.is_ready = self.AreAllReady()
+                        if (self.indicator_vec_[i].IsIndicatorReady()):
+                            self.is_ready_vec_[i] = True
+                            self.is_ready_ = self.AreAllReady()
                         else:
-                            print 'Indicator Not Ready '+str(i)+' '+self.indicator_vec[i].ConciseIndicatorDescription()
-                            self.indicator_vec[i].WhyNotReady()
-            if (self.is_ready):
-                self.last_is_ready = True
+                            print 'Indicator Not Ready '+str(i)+' '+self.indicator_vec_[i].ConciseIndicatorDescription()
+                            self.indicator_vec_[i].WhyNotReady()
+            if (self.is_ready_):
+                self.last_is_ready_ = True
         else:
             # Check for nan value in _new_value_
-            if (abs(_new_value_-self.prev_value_vec[_indicator_index_]) > 10*self.dep_market_view.min_price_increment()):
+            if (abs(_new_value_-self.prev_value_vec_[_indicator_index_]) > 10*self.dep_market_view_.min_price_increment()):
                 print 'HUGE value in sum_vars'
-            self.sum_vars += (_new_value_-self.prev_value_vec[_indicator_index_])
-            self.prev_value_vec[_indicator_index_] = _new_value_
+            self.sum_vars_ += (_new_value_-self.prev_value_vec_[_indicator_index_])
+            self.prev_value_vec_[_indicator_index_] = _new_value_
     
     # What?
     def MultiplyIndicatorNodeValuesBy(self, _mult_factor_):
-        for i in range(0, len(self.indicator_vec)):
-            self.indicator_vec[i].MultiplyIndicatorListenerWeight(self, _mult_factor_)
-        self.sum_vars += (_mult_factor_-1)*self.model_intercept
-        self.model_intercept *= _mult_factor_
+        for i in range(0, len(self.indicator_vec_)):
+            self.indicator_vec_[i].MultiplyIndicatorListenerWeight(self, _mult_factor_)
+        self.sum_vars_ += (_mult_factor_-1)*self.model_intercept_
+        self.model_intercept_ *= _mult_factor_
         
     def ShowIndicatorValues(self):
-        for i in range(0, len(self.indicator_vec)):
-            print ' value: '+self.prev_value_vec[i]/self.dep_market_view.min_price_increment() + ' of '+self.indicator_vec[i].ConciseIndicatorDescription() 
+        for i in range(0, len(self.indicator_vec_)):
+            print ' value: '+self.prev_value_vec_[i]/self.dep_market_view_.min_price_increment() + ' of '+self.indicator_vec_[i].ConciseIndicatorDescription() 
 
     def SMVOnReady(self):
         self.CalcAndPropagate()
