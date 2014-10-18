@@ -40,15 +40,15 @@ class BaseSimMarketMaker:
                         return order
     
     def AddRequest(self, _request_):
-        if (self.all_requests_lock):
-            self.pending_requests.append(_request_)
+        if (self.all_requests_lock_):
+            self.pending_requests_.append(_request_)
         else:
-            self.all_requests.append(_request_)
-            self.all_requests.sort() #stable_sort(self.all_requests) # Corrected this)
+            self.all_requests_.append(_request_)
+            self.all_requests_.sort() #stable_sort(self.all_requests) # Corrected this)
     
     #We might need bool variable so that we can keep the cancel request on next time update.. 
     def ProcessRequestQueue(self): # Later find out whether that boolean variable is needed
-        if (self.all_requests_lock):
+        if (self.all_requests_lock_):
             return
         self.all_requests_lock = True
         for request in self.all_requests:
