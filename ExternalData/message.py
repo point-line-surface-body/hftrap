@@ -17,6 +17,3 @@ class Message:
         self.trade_size_ = attributes_[10]
         self.trade_price_ = attributes_[11]
         self.timestamp_ = (self.sec_ * 1000 + self.usec_ / 1000) % 86400000
-        
-    def __del__(self):
-        return
