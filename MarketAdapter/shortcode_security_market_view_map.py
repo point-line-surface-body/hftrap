@@ -1,15 +1,15 @@
 from MarketAdapter.security_market_view import SecurityMarketView
 
 class ShortcodeSecurityMarketViewMap():
-    shortcode_smv_map_ = dict()
-    unique_instance = dict()
+    shortcode_smv_map_ = {}
+    unique_instance = {}
     watch_ = None  
     
     def __init__(self):
         return
     
     @staticmethod
-    def GetUniqueInstance(watch):
+    def GetUniqueInstance():
         if ShortcodeSecurityMarketViewMap.unique_instance.has_key("instance"):
             return ShortcodeSecurityMarketViewMap.unique_instance["instance"]
         else :
@@ -21,7 +21,9 @@ class ShortcodeSecurityMarketViewMap():
         if _shortcode_ in ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys() :
             return ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_]
         else :
-            ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_] = SecurityMarketView(ShortcodeSecurityMarketViewMap.watch_, _shortcode_, len(ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys()))
+            l = len(ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys())
+            print l
+            ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_] = SecurityMarketView(ShortcodeSecurityMarketViewMap.watch_, _shortcode_, l)
             return ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_]
         
     def CheckValid(self, _shortcode_):
@@ -45,7 +47,8 @@ class ShortcodeSecurityMarketViewMap():
     def StaticCheckValid(_shortcode_):
         return ShortcodeSecurityMarketViewMap.GetUniqueInstance().CheckValid ( _shortcode_ )
     
-    def StaticGetSecurityMarketView(self,_shortcode_ ) :
+    @staticmethod
+    def StaticGetSecurityMarketView(_shortcode_) :
         return ShortcodeSecurityMarketViewMap.GetUniqueInstance().GetSecurityMarketView ( _shortcode_ )
 
         

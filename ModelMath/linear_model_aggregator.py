@@ -2,9 +2,9 @@ from ModelMath.base_model_math import BaseModelMath
 
 class LinearModelAggregator(BaseModelMath):
     
-    def __init__(self, _watch_, _model_filename_, _dep_market_view_, _dep_base_price_type_):
+    def __init__(self, _watch_, _model_filename_):
         super(LinearModelAggregator, self).__init__(_watch_, _model_filename_)
-        self.dep_market_view = _dep_market_view_
+        #self.dep_market_view = _dep_market_view_
         self.prev_value_vec = []
         self.sum_vars = 0
         self.last_propagated_target_price = 0

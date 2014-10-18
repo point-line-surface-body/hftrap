@@ -16,6 +16,12 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 		self.model_stdev = 1.00 # Check whether it is needed
 		self.model_math_listener_vec = [] # What is this
 		self.indicator_vec = []
+		
+	def SetBasePrice(self):
+		self.base_pricetype_ = 'MktSizeWPrice'
+		
+	def FinishCreation(self):
+		return
 
 	def GetModelFileName(self):
 		return self.model_filename;
@@ -23,7 +29,7 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 	def AddIndicator(self, _indicator_, _weight_, _readiness_required_):
 		_indicator_.AddIndicatorListener(len(self.indicator_vec), self, _weight_) # Why?
 		self.indicator_vec.append(_indicator_)
-		if (_indicator_.isIndicatorReady()):
+		if (_indicator_.IsIndicatorReady()):
 			self.is_ready_vec.append(True)
 			self.readiness_required_vec.append(False)
 		else:

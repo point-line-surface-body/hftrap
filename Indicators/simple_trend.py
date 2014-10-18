@@ -11,8 +11,8 @@ from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMa
 class SimpleTrend(CommonIndicator):
     
     def __init__(self, watch,concise_indicator_description_,  _indep_market_view_, _fractional_seconds_, _price_type_):
-        super(self, watch,concise_indicator_description_)
-        self.trend_histroy_msecs = _fractional_seconds_ * 1000.0
+        super(SimpleTrend, self).__init__(watch,concise_indicator_description_)
+        self.trend_history_msecs_ = _fractional_seconds_ * 1000.0
         self.price_type = _price_type_
         self.indep_market_view = _indep_market_view_
         self.moving_avg_price = 0.0
@@ -46,7 +46,7 @@ class SimpleTrend(CommonIndicator):
             _indep_market_view_ = argv[1]
             _fractional_seconds_ = argv[2]
             _price_type_ = argv[3]            
-        concise_indicator_description_= SimpleTrend.VarName() + " " + _indep_market_view_.secname ( ) +  " " + _fractional_seconds_ + " " + _price_type_
+        concise_indicator_description_= SimpleTrend.VarName() + " " + _indep_market_view_.shortcode( ) +  " " + str(_fractional_seconds_) + " " + _price_type_
         if concise_indicator_description_ not in CommonIndicator.concise_indicator_description_map_.keys() : 
             CommonIndicator.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
         return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] 
@@ -100,7 +100,8 @@ class SimpleTrend(CommonIndicator):
         self.last_new_page_msecs_ = self.watch_.msecs_from_midnight - (self.watch_.msecs_from_midnight % self.page_width_msecs_)
         self.indicator_value_ = 0;
     
-    def VarName(self):
+    @staticmethod
+    def VarName():
         return "SimpleTrend"
     
     def OnMarketDataInterrupted(self,_security_id_, msecs_since_last_receive_ ):

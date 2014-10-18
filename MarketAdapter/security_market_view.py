@@ -25,7 +25,7 @@ class PriceLevelInfo():
 
 class SecurityMarketView:
  
-    def __init_(self, watch, shortcode, security_id):
+    def __init__(self, watch, shortcode, security_id):
         self.watch_ = watch
         self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.YYMMDD())
         self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.YYMMDD())
@@ -76,7 +76,8 @@ class SecurityMarketView:
         self.running_hit_size_ = 0
         self.lift_base_index_ = 0
         self.hit_base_index_ = 0
-        self.last_raw_message_sequnece_applied_ = 0
+        self.last_raw_message_sequence_applied_ = 0
+        self.price_type_subscribed_ = {}
         self.price_type_subscribed_["MktSizeWPrice"] = False
         self.running_hit_size_vec_ = []
         self.running_lift_size_vec_ = []
@@ -92,8 +93,8 @@ class SecurityMarketView:
     def shortcode(self):
         return self.market_update_info_.shortcode_
     
-    def secname(self):
-        return self.market_update_info_.secname_
+#    def secname(self):
+#        return self.market_update_info_.secname_
     
     def security_id(self):
         return self.market_update_info_.security_id_

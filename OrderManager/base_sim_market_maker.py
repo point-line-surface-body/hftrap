@@ -10,6 +10,12 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
 
     '''constructor'''
     def __init__(self, watch, smv):
+        
+        self.global_position_ = 0
+        self.client_position_map_ = []
+        self.global_position_to_send_map_ = []
+        self.masked_from_market_data_bids_map_ = []
+        self.masked_from_market_data_asks_map_ = []
         self.watch_ = watch
         self.all_requests = []
         self.pending_requests = []

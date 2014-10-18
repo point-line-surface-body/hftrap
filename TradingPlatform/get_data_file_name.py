@@ -1,7 +1,7 @@
 import sys
 
 def GetFileSourceName(shortcode, trading_date):
-	return shortcode+'.'+trading_date
+	return 'Data/'+shortcode+'.'+trading_date
 
 def __main__():
 	USAGE = 'USAGE: EXEC SHORTCODE TRADING_DATE'	

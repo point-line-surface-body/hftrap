@@ -15,8 +15,11 @@ class ContractSpecification(object):
 class SecurityDefinitions(object):
     
     @staticmethod
-    def GetContractMinPriceIncrement( shortcode, yymmdd):
-        return
+    def GetContractMinPriceIncrement(_shortcode_, yymmdd):
+        if (_shortcode_ == 'ZN_0' or _shortcode_ == 'ZN_1'):
+            return 0.015625
+        else:
+            return 0
     
     @staticmethod
     def GetContractMinOrderSize(shortcode, yymmdd):
