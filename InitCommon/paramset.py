@@ -7,7 +7,10 @@ class ParamSet:
     def LoadParams(self, _paramfilename_):
         t_param_file_ = open(_paramfilename_, 'r')
         while (1):
-            t_tokens_ = t_param_file_.readline().split()
+            t_line_ = t_param_file_.readline()
+            if (t_line_ is None or t_line_ == ""):
+                break
+            t_tokens_ = t_line_.split()
             if (len(t_tokens_) < 3):
                 print 'Incorrect Param File'
                 return
