@@ -351,6 +351,13 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 self.bid_side_priority_order_size_ = 0
         
     def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
+        if (self.all_requests_):
+            self.ProcessRequestQueue(True)
+        if (_trade_print_info_.buysell_ == 'Buy'):
+            for price_ in self.intpx_to_ask_order_vec_:
+                pass
+        elif (_trade_print_info_.buysell_ == 'Sell'):
+            pass
         return
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):

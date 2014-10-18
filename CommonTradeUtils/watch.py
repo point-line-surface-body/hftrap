@@ -1,5 +1,6 @@
 from time import gmtime
 from ExternalData.external_time_listener import ExternalTimeListener
+from CDef.MathUtils import GetMSecsFromUTC
 
 class Watch(ExternalTimeListener):
     

@@ -22,9 +22,10 @@ def __main__():
     strategy_desc_filename_ = sys.argv[1] # decide the no. of arguments and order of arguments
     tradingdate_ = sys.argv[2]
 
+    watch_ = Watch(tradingdate_)
+
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
     strategy_desc_.Dump()
-    watch_ = Watch(tradingdate_)
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
 
     source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
