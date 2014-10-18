@@ -2,7 +2,7 @@ from MarketAdapter.security_market_view_change_listener import SecurityMarketVie
 from ExternalData.external_time_listener import TimePeriodListener
 from OrderManager.base_sim_market_maker import BaseSimMarketMaker
 
-class PriceLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListener,TimePeriodListener):
+class OrderLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListener,TimePeriodListener):
     shcToSMMmap = dict()
     def __init__(self, watch_, smv):
         self.watch_ = watch_
@@ -23,9 +23,9 @@ class PriceLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListe
     @staticmethod
     def GetUniqueInstance(watch_, smv):
         short_code = smv.shortcode()
-        if short_code not in PriceLevelSimMarketMaker.shcToSMMmap.keys():
-            PriceLevelSimMarketMaker.shcToSMMmap[short_code] = PriceLevelSimMarketMaker(watch_, smv)
-        return PriceLevelSimMarketMaker.shcToSMMmap[short_code]
+        if short_code not in OrderLevelSimMarketMaker.shcToSMMmap.keys():
+            OrderLevelSimMarketMaker.shcToSMMmap[short_code] = OrderLevelSimMarketMaker(watch_, smv)
+        return OrderLevelSimMarketMaker.shcToSMMmap[short_code]
     
     def OnMarketUpdate(self, _security_id_, _market_update_info_):
         old_bestbid_int_price_ = self.bestbid_int_price_
@@ -51,19 +51,10 @@ class PriceLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListe
                 self.bid_side_priority_order_exists_ = False
                 self.bid_side_priority_order_size_ = 0
         
-        
-
-
-
-
-
-
-
-        
-    
     def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
         return
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):
         if len(self.all_requests) > 0 :
-            self.ProcessRequestQueue(False) '''False is needed ao that cancel req will not be removed '''
+            self.ProcessRequestQueue(False) 
+            '''False is needed ao that cancel req will not be removed '''

@@ -1,22 +1,17 @@
 import sys
+sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
+print(sys.path)
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
-#from ExecLogic.base_trading import BaseTrading
 from InitCommon.strategy_desc import StrategyDesc
-from ExternalData.filesource import FileSource
 from ExternalData.historical_dispatcher import HistoricalDispatcher
-from MarketAdapter.security_market_view_old import SecurityMarketView
-import OrderManager
+from MarketAdapter.security_market_view import SecurityMarketView
 from CommonTradeUtils.market_update_manager import MarketUpdateManager
-from SimMarketMaker.price_level_sim_market_maker import PriceLevelSimMarketMaker
-from ExternalData.filesource_data_listener import FileSource
+from ExternalData.filesource import FileSource
 from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
-from OrderManager import base_trader
-
-
-SECONDS_TO_PREP = 1800
-MIN_YYYYMMDD = 20090920
-MAX_YYYYMMDD = 20141225
+from OrderManager.base_trader import BaseTrader
+from SimMarketMaker.order_level_sim_market_maker import OrderLevelSimMarketMaker
+from OrderManager.base_order_manager import BaseOrderManager
 
 def __main__():
      
@@ -45,12 +40,12 @@ def __main__():
         smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(smv_)
 
-    sim_market_maker_ = PriceLevelSimMarketMaker(watch_, smv_vec_[0])
-    base_trader_ = SimTrader(sim_market_maker_)
+    sim_market_maker_ = OrderLevelSimMarketMaker(watch_, smv_vec_[0])
+    base_trader_ = BaseTrader(sim_market_maker_)
     strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
     strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
     
-    order_manager_ = OrderManager(watch_, base_trader_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
+    order_manager_ = BaseOrderManager(watch_, base_trader_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
         
     if (strategy_desc_.strategy_vec_[0].strategy_name_ == 'DirectionalAggressiveTrading'):
         strategy_desc_.strategy_vec_[0].exec_ = DirectionalAggressiveTrading(watch_, smv_vec_[0], order_manager_, 
@@ -86,4 +81,4 @@ def __main__():
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
 
     '''Print Results'''
-    strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)
+    #strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)

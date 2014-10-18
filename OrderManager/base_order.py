@@ -77,6 +77,9 @@ class BaseOrder:
         self.size_executed_ += t_size_remaining_
         return t_size_remaining_
     
+    def MatchPartial(self, _further_match_):
+        '''Implement it'''
+    
     def Confirm(self):
         self.order_status_ = 'Conf'
         self.num_events_seen_ = 0
@@ -90,10 +93,10 @@ class BaseOrder:
             self.queue_size_ahead_ = _queue_size_
             self.num_events_seen_ += 1
         else:
-            
-            self.num_events_seen_ += 1
-       
+            '''Implement this'''
+'''       
     def ResetQueue(self):
         
         
     def SendToTop(self): 
+'''

@@ -1,6 +1,5 @@
 from InitCommon.paramset import ParamSet
 from ExecLogic.trade_vars import TradeVars
-from __builtin__ import None
 from ModelMath.model_math_listener import ModelMathListener
 
 class BaseTrading(ModelMathListener): #extends many classes.. add here
@@ -24,16 +23,16 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 		self.get_flat_due_to_max_opentrade_loss_ = False
 		self.get_flat_due_to_max_pnl_ = False
 		
-		self.best_nonself_bid_price_ = None
-		self.best_nonself_bid_int_price_ = None
-		self.best_nonself_bid_size_ = None
-		self.best_nonself_ask_price_ = None
-		self.best_nonself_ask_int_price_ = None
-		self.best_nonself_ask_size_ = None
+		self.best_nonself_bid_price_ = 0
+		self.best_nonself_bid_int_price_ = 0
+		self.best_nonself_bid_size_ = 0
+		self.best_nonself_ask_price_ = 0
+		self.best_nonself_ask_int_price_ = 0
+		self.best_nonself_ask_size_ = 0
 		
-		self.target_price_ = None
-		self.target_bias_numbers_ = None
-		self.model_stdevs_ = None
+		self.target_price_ = 0
+		self.target_bias_numbers_ = 0
+		self.model_stdevs_ = 0
 		
 		self.top_bid_place_ = False
 		self.top_bid_keep_ = False

@@ -18,6 +18,14 @@ class BaseSimMarketMaker:
         self.all_requests_lock = False
         return
     
+    def Connect(self):
+        t_server_assigned_client_id_ = len(self.client_position_map_)
+        self.client_position_map_.append(0)
+        self.global_position_to_send_map_.append(self.global_position_)
+        self.masked_from_market_data_bids_map_.append(0)
+        self.masked_from_market_data_asks_map_.append(0)
+        return t_server_assigned_client_id_
+    
     '''If an order exists in order_book, returns it otherwise returns None '''
     def FetchOrder(self, _buysell_, _int_price_, _server_assigned_order_sequence_):
         if (_buysell_ == 1):
@@ -171,16 +179,18 @@ class BaseSimMarketMaker:
                             else:
                                 if (order.num_events_seen() < 5):
                                     to_postpone = 2
-                                else
+                                else:
                                     if (self.dep_market_view.SpreadWiderThanNormal()):
                                         to_postpone = 3
                         if (order.IsExecuted()):
                             # Prematurely executed, just waiting on the OnTradePrint call.
                             to_postpone = 4
                         if (to_postpone == 0):
-                            UniqueVectorRemove(self.int_price_to_bid_order_vec[order.int_price], order)
-                            BroadcastCancelNotification(r_server_assigned_client_id, order)
+                            pass
+                            #UniqueVectorRemove(self.int_price_to_bid_order_vec[order.int_price], order)
+                            #BroadcastCancelNotification(r_server_assigned_client_id, order)
                         else:
+                            pass
                     else:
                         if (not request.postponed_once):
                             # if never postponed then see if it needs to be postponed
@@ -205,8 +215,9 @@ class BaseSimMarketMaker:
                             to_postpone = 4
                         if (to_postpone == 0):
                             '''Need to mae __eq__ () function for order'''
-                            UniqueVectorRemove (int_price_to_ask_order_vec[order.int_price], order)
-                            BroadcastCancelNotification(r_server_assigned_client_id_, order)
+                            #UniqueVectorRemove (int_price_to_ask_order_vec[order.int_price], order)
+                            #BroadcastCancelNotification(r_server_assigned_client_id_, order)
+                            pass
         
         if (self.pending_requests):
             for request in self.pending_requests:
@@ -236,7 +247,7 @@ class BaseSimMarketMaker:
         order_.order_sequenced_time_ = self.watch.tv()
         
         # Size requested must be a multiple of MinOrderSize
-        if (not _size_requested_ mod self.dep_market_view.min_order_size() != 0):
+        if (not _size_requested_ % self.dep_market_view.min_order_size() != 0):
             # Broadcast rejection
             self.BroadcastRejection(_server_assigned_client_id_, order_, 'kSendOrderRejectNotMinOrderMultiple')
             
@@ -285,7 +296,7 @@ class BaseSimMarketMaker:
     def BroadcastRejection(self, _server_assigned_client_id_, _order_, _order_rejection_reason_):
         for t_item_ in self.order_rejection_listener_vec_:
             t_item_.OrderRejected(_server_assigned_client_id_, _order_.client_assigned_order_sequence(), 
-                                  self.dep_shortcode_, _order_.price(), _order_.buysell()
+                                  self.dep_shortcode_, _order_.price(), _order_.buysell(), 
                                   _order_.size_remaining(), _order_rejection_reason_, _order_.int_price())
             
     # Add Client position
@@ -295,7 +306,7 @@ class BaseSimMarketMaker:
                                   _order_.server_assigned_order_sequence_, self.dep_shortcode_, _order_.price(), 
                                   _order_.buysell(), _order_.size_remaining(), _order_.size_executed(), 
                                   _order_.int_price())
-            
+'''         
     def BroadcastConfirm(self):
         
     def BroadcastCancelNotification(self):
@@ -349,4 +360,4 @@ class BaseSimMarketMaker:
     def OrderCancelRejected(self):
         
     def OrderExecuted(self):
-        
+        '''
