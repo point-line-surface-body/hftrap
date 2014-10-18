@@ -9,19 +9,19 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
     shcToSMMmap = dict()
 
     '''constructor'''
-    def __init__(self, watch, smv):
+    def __init__(self, _watch_, _smv_):
         
         self.global_position_ = 0
         self.client_position_map_ = []
         self.global_position_to_send_map_ = []
         self.masked_from_market_data_bids_map_ = []
         self.masked_from_market_data_asks_map_ = []
-        self.watch_ = watch
+        self.watch_ = _watch_
         self.all_requests = []
         self.pending_requests = []
         self.all_requests_lock = False
         
-        self.dep_market_view_ = smv
+        self.dep_market_view_ = _smv_
         self.bestbid_int_price_ = 0
         self.bestask_int_price_ = 0 
         self.bestbid_size_ = 0
@@ -33,7 +33,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.bid_side_priority_order_exists_ = False
         self.bid_side_priority_order_size_ = 0
         self.dep_market_view_.subscribe_price_type(self, "MktSizeWPrice")
-        self.watch_.subscribe_BigTimePeriod(self) # may make small Time period also in watch
+        self.watch_.SubscribeBigTimePeriod(self) # may make small Time period also in watch
         return
     
     @staticmethod

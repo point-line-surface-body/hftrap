@@ -38,7 +38,7 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
         for smv in self.security_id_to_smv_ :
             smv.subscribe_L1_Only(self)
         '''not sure if we need this '''
-        self. watch_.subscribe_BigTimePeriod (self)
+        self. watch_.SubscribeBigTimePeriod (self)
     
     def start(self):
         self.StartListening()

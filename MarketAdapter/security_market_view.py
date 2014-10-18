@@ -10,30 +10,29 @@ class OrderBook():
         self._bid_size_ = bid_sz
         self._ask_price_ = ask_px
         self._ask_size_ = ask_sz
-    
+
 class PriceLevelInfo():
     def __init__(self, *argv):
-        if len(argv) == 3 :
+        if len(argv) == 3:
             self.limit_price_ = (float)(argv[0])
             self. limit_size_ = (int)(argv[1])
             self.limit_ordercount_ = (int)(argv[2])
-        else :
+        else:
             self.limit_price_ = 0.0
             self. limit_size_ = 0
             self.limit_ordercount_ = 0
 
-
 class SecurityMarketView:
- 
+
     def __init__(self, watch, shortcode, security_id):
         self.watch_ = watch
-        self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.YYMMDD())
-        self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.YYMMDD())
+        self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(shortcode, watch.TradingDate())
+        self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(shortcode, watch.TradingDate())
         self.normal_spread_ = 1 * self.min_price_increment_
         self.is_ready_ = False
         self.computing_price_levels_ = False
-        self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(shortcode,watch.YYMMDD())
-        self.market_update_info_ = MarketUpdateInfo(shortcode,security_id, SecurityDefinitions.GetContractExchSource(shortcode, watch.YYMMDD()))
+        self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(shortcode,watch.TradingDate())
+        self.market_update_info_ = MarketUpdateInfo(shortcode,security_id, SecurityDefinitions.GetContractExchSource(shortcode, watch.TradingDate()))
         self.trade_print_info_ = TradePrintInfo()
         self.l1_price_listeners = []
         self.l1_size_listeners = []
@@ -41,7 +40,7 @@ class SecurityMarketView:
         self.price_type_subscribed = dict()
         self.use_order_level_book_ = False
         #following variables may not be needed
-        self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(shortcode, watch.YYMMDD())
+        self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(shortcode, watch.TradingDate())
         self.self_best_bid_ask_ = BestBidAskInfo()
         self.last_best_level_ = BestBidAskInfo()
         self.current_best_level_ = BestBidAskInfo()

@@ -16,16 +16,6 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 		self.model_stdev_ = 1.00 # Check whether it is needed
 		self.model_math_listener_vec_ = [] # What is this
 		self.indicator_vec_ = []
-		self.dep_market_view_ = None
-		self.dep_baseprice_type_ = None
-		
-	def SetBasePrice(self):
-		for t_indicator_ in self.indicator_vec_:
-			t_indicator_.SetBasepxPxtype(self.dep_market_view_, self.dep_baseprice_type_)
-		
-	def FinishCreation(self):
-		if (not self.is_ready_vec_):
-			self.is_ready_ = True
 
 	def GetModelFileName(self):
 		return self.model_filename_
