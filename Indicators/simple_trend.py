@@ -26,7 +26,8 @@ class SimpleTrend(CommonIndicator):
         self.current_indep_price_ = 0.0
         self.SetTimeDecayWeights()
 
-    def CollectShortCodes(self, _shortcodes_affecting_this_indicator_, r_tokens_):
+    @staticmethod
+    def CollectShortCodes(_shortcodes_affecting_this_indicator_, r_tokens_):
         if r_tokens_[3] not in _shortcodes_affecting_this_indicator_:
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
             ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(r_tokens_[3])

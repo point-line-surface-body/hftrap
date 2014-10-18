@@ -29,6 +29,7 @@ def __main__():
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
     strategy_desc_.Dump()
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
+    print(dependant_shortcode_)
 
     source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
     shortcode_to_sid_map_ = {}
@@ -38,12 +39,13 @@ def __main__():
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
 
     print_vector(source_shortcode_vec_)
-    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_, source_shortcode_vec_) # need to update smv_vec in this function itself
+    ModelCreator.CollectShortCodes(model_filename_, source_shortcode_vec_)
 
     for i_ in range(0, len(source_shortcode_vec_)):
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
         #smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(source_shortcode_vec_[i_]))
+    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_) # need to update smv_vec in this function itself
 
     sim_market_maker_ = BaseSimMarketMaker(watch_, smv_vec_[0])
     base_trader_ = BaseTrader(sim_market_maker_)
