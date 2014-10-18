@@ -1,6 +1,6 @@
 import sys
 sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
-print(sys.path)
+from DebugUtils.print_vector import print_vector
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
 from InitCommon.strategy_desc import StrategyDesc
@@ -23,6 +23,7 @@ def __main__():
     tradingdate_ = sys.argv[2]
 
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
+    strategy_desc_.Dump()
     watch_ = Watch(tradingdate_)
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
 
@@ -33,6 +34,7 @@ def __main__():
     source_shortcode_vec_.append(dependant_shortcode_)
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
 
+    print_vector(source_shortcode_vec_)
     base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_, source_shortcode_vec_) # need to update smv_vec in this function itself
 
     for i_ in range(0, len(source_shortcode_vec_)):
@@ -82,3 +84,6 @@ def __main__():
 
     '''Print Results'''
     #strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)
+    
+if __name__ == "__main__":
+    __main__()

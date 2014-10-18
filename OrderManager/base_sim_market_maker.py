@@ -1,22 +1,41 @@
 from OrderManager.base_order import BaseOrder
-class Request:
-    def __init__(self):
-        self.wakeup_time_ = 0
-        self.request_type_ = None #"CANCEL", "SEND" , "REPLACE"
-        self.order_ = BaseOrder()
-        self.server_assigned_client_id_ = 0
-        self.server_assigned_order_sequence_ = 0
-        self.postpone_once_ = False # do we need this ?
+from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
+from ExternalData.external_time_listener import TimePeriodListener
+from OrderManager.request import Request
         
 
-class BaseSimMarketMaker:
+class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
+    
+    shcToSMMmap = dict()
+
     '''constructor'''
-    def __init__(self, watch):
+    def __init__(self, watch, smv):
         self.watch_ = watch
         self.all_requests = []
         self.pending_requests = []
         self.all_requests_lock = False
+        
+        self.dep_market_view_ = smv
+        self.bestbid_int_price_ = 0
+        self.bestask_int_price_ = 0 
+        self.bestbid_size_ = 0
+        self.bestask_size_ = 0
+        self.last_bid_size_change_msecs_ = 0
+        self.last_ask_size_change_msecs_ = 0
+        self.ask_side_priority_order_exists_ = False
+        self.ask_side_priority_order_size_ = 0
+        self.bid_side_priority_order_exists_ = False
+        self.bid_side_priority_order_size_ = 0
+        self.dep_market_view_.subscribe_price_type(self, "MktSizeWPrice")
+        self.watch_.subscribe_BigTimePeriod(self) # may make small Time period also in watch
         return
+    
+    @staticmethod
+    def GetUniqueInstance(watch_, smv):
+        short_code = smv.shortcode()
+        if short_code not in BaseSimMarketMaker.shcToSMMmap.keys():
+            BaseSimMarketMaker.shcToSMMmap[short_code] = BaseSimMarketMaker(watch_, smv)
+        return BaseSimMarketMaker.shcToSMMmap[short_code]
     
     def Connect(self):
         t_server_assigned_client_id_ = len(self.client_position_map_)
@@ -306,6 +325,38 @@ class BaseSimMarketMaker:
                                   _order_.server_assigned_order_sequence_, self.dep_shortcode_, _order_.price(), 
                                   _order_.buysell(), _order_.size_remaining(), _order_.size_executed(), 
                                   _order_.int_price())
+            
+    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+        old_bestbid_int_price_ = self.bestbid_int_price_
+        old_bestbid_size_ = self.bestbid_size_
+        old_bestask_int_price_ = self.bestask_int_price_
+        old_bestask_size_ = self.bestask_size_
+        if self.bestbid_size_ < _market_update_info_.bestbid_size_ :
+            self.last_bid_size_change_msecs_ = self.watch_.GetMsecsFromMidnight()
+        if self.bestask_size_ < _market_update_info_.bestask_size_  :
+            self.last_ask_size_change_msecs_ = self.watch_.GetMsecsFromMidnight()
+        if old_bestask_int_price_ > _market_update_info_.bestask_int_price_ :
+            if self.dep_market_view_.market_update_info_.asklevels_[0].limit_ordercount_ ==1:
+                self.ask_side_priority_order_exists_ = True
+                self.ask_side_priority_order_size_ = self.dep_market_view_.market_update_info_.asklevels_[0].limit_size_
+            else:
+                self.ask_side_priority_order_exists_ = False
+                self.ask_side_priority_order_size_ = 0
+        if old_bestbid_int_price_ < _market_update_info_.bestbid_int_price_ :
+            if self.dep_market_view_.market_update_info_.bidlevels_[0].limit_ordercount_ ==1 :
+                self.bid_side_priority_order_exists_ = True
+                self.bid_side_priority_order_size_ = self.dep_market_view_.market_update_info_.bidlevels_[0].limit_size_
+            else :
+                self.bid_side_priority_order_exists_ = False
+                self.bid_side_priority_order_size_ = 0
+        
+    def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
+        return
+    
+    def OnTimePeriodUpdate(self, num_pages_to_add_):
+        if len(self.all_requests) > 0 :
+            self.ProcessRequestQueue(False) 
+            '''False is needed ao that cancel req will not be removed '''
 '''         
     def BroadcastConfirm(self):
         

@@ -31,7 +31,7 @@ class SimpleTrend(CommonIndicator):
             _shortcodes_affecting_this_indicator_.append(r_tokens_[3])
     
     @staticmethod
-    def GetUniqueInstance(*argv):
+    def GetUniqueInstance(argv):
         '''INDICATOR _this_weight_ _indicator_string_ _indep_market_view_ _fractional_seconds_ _price_type_'''
         if len(argv) <= 3 :
             r_watch_ = argv[0]
