@@ -1,5 +1,3 @@
-
-
 class ContractSpecification(object):
     def __init__(self, *argv):
         self.min_price_increment_ = 1.0
@@ -15,27 +13,24 @@ class ContractSpecification(object):
 class SecurityDefinitions(object):
     
     @staticmethod
-    def GetContractMinPriceIncrement(_shortcode_, yymmdd):
+    def GetContractMinPriceIncrement(_shortcode_, _date_):
         if (_shortcode_ == 'ZN_0' or _shortcode_ == 'ZN_1'):
             return 0.015625
         else:
             return 0
     
     @staticmethod
-    def GetContractMinOrderSize(shortcode, yymmdd):
-        return
+    def GetContractMinOrderSize(_shortcode_, _date_):
+        return 1
 
     @staticmethod
-    def GetTradeBeforeQuote(shortcode, date):
+    def GetTradeBeforeQuote(_shortcode_, _date_):
         return  # not necessary to  implement ??
     
     @staticmethod
-    def GetContractExchSource(shortcode, date):
+    def GetContractExchSource(_shortcode_, _date_):
         return
 
     @staticmethod
-    def GetConfToMarketUpdateMsecs(shortcode, date):
+    def GetConfToMarketUpdateMsecs(_shortcode_, _date_):
         return
-    
-    
-            

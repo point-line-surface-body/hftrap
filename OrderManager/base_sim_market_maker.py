@@ -32,7 +32,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.ask_side_priority_order_size_ = 0
         self.bid_side_priority_order_exists_ = False
         self.bid_side_priority_order_size_ = 0
-        self.dep_market_view_.subscribe_price_type(self, "MktSizeWPrice")
+        self.dep_market_view_.SubscribePriceType(self, "MktSizeWPrice")
         self.watch_.SubscribeBigTimePeriod(self) # may make small Time period also in watch
         return
     

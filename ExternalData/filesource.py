@@ -2,6 +2,7 @@ from struct import calcsize
 from ExternalData.message import Message
 from ExternalData.external_data_listener import ExternalDataListener
 from TradingPlatform.get_data_file_name import GetFileSourceName
+from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo
 
 class FileSource(ExternalDataListener):
     
@@ -11,6 +12,7 @@ class FileSource(ExternalDataListener):
         self.smv_ = _smv_
         self.file_name_ = GetFileSourceName(_shortcode_, _trading_date_)
         self.file_ = open(self.file_name_, 'rb')
+        self.events_left_ = 0
         
     def __del__(self):
         return
@@ -20,10 +22,19 @@ class FileSource(ExternalDataListener):
         '''OnTradePrint'''
         if (self.next_event_.type_ == 'T'):
             '''TODO: Fill this'''
-            self.smv_.OnTrade()
+            trade_print_info_ = TradePrintInfo()
+            trade_print_info_.buysell_ = self.next_event_.buysell_
+            trade_print_info_.int_trade_price_ = self.next_event_.trade_price_
+            trade_print_info_.size_traded_ = self.next_event_.trade_size_
         else:
             '''TODO: fill this'''
-            self.smv_.OnL1PriceUpdate()
+            market_update_info_ = MarketUpdateInfo()
+            market_update_info_.bestbid_int_price_ = self.next_event_.bid_price_
+            market_update_info_.bestbid_ordercount_ = self.next_event_.bid_orders_
+            market_update_info_.bestbid_size_ = self.next_event_.bid_size_
+            market_update_info_.bestask_int_price_ = self.next_event_.ask_price_
+            market_update_info_.bestask_ordercount_ = self.next_event_.ask_size_
+            market_update_info_.bestask_size_ = self.next_event_.ask_size_
     
     def SeekToFirstEventAfter(self, _start_time_):
         print('Filesource.SeekToFirstEventAfter')
@@ -59,7 +70,7 @@ class FileSource(ExternalDataListener):
             '''Why Non Intermediate?'''
             found_non_intermediate_event_ = False
             while (not found_non_intermediate_event_):
-                if (self.file_.read(self.next_event, )): #TODO
+                if (self.file_.read(self.next_event_, )): #TODO
                     self.next_event_timestamp_ = 0
                     return False
                 if (self.next_event_.time_ != 0):

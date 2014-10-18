@@ -199,7 +199,7 @@ class MarketUpdateInfo():
         if len(argv) ==3 :
             self.shortcode_ = argv[0]
             self.security_id_ = (int)(argv[1])
-            self._exch_source_ = argv[2]
+            self.exch_source_ = argv[2]
         self.bestbid_price_ = kInvalidPrice
         self.bestbid_size_ = 0
         self.bestbid_int_price_ = kInvalidIntPrice
