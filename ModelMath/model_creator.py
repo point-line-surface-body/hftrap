@@ -1,5 +1,6 @@
 from ModelMath.linear_model_aggregator import LinearModelAggregator
 from Indicators.simple_trend import SimpleTrend
+from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
 class ModelCreator():
     
@@ -55,8 +56,7 @@ class ModelCreator():
                     t_current_phase_ = 4
             elif (t_current_phase_ == 4):
                 break
-                
-    
+  
     @staticmethod
     def GetIndicatorFromTokens(_watch_, _tokens_, _dep_base_pricetype_):
         '''Add more later''' 
@@ -83,7 +83,7 @@ class ModelCreator():
                  
             elif (t_current_phase_ == 1): #PreModel
                 if (t_tokens_[1] == 'LINEAR'):
-                    t_model_math_ = LinearModelAggregator(_watch_, _model_filename_)
+                    t_model_math_ = LinearModelAggregator(_watch_, _model_filename_, ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(t_dep_shortcode_), t_dep_base_pricetype_)
                 t_current_phase_ = 2
                 
             elif (t_current_phase_ == 2): #PostModel

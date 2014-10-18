@@ -2,13 +2,22 @@ from ModelMath.base_model_math import BaseModelMath
 
 class LinearModelAggregator(BaseModelMath):
     
-    def __init__(self, _watch_, _model_filename_):
+    def __init__(self, _watch_, _model_filename_, _dep_market_view_, _base_pricetype_):
         super(LinearModelAggregator, self).__init__(_watch_, _model_filename_)
-        #self.dep_market_view = _dep_market_view_
+        self.dep_market_view_ = _dep_market_view_
+        self.dep_baseprice_type_ = _base_pricetype_
         self.prev_value_vec_ = []
         self.sum_vars_ = 0
         self.last_propagated_target_price = 0
         self.model_intercept = 0
+        
+    def SetBasePrice(self):
+        for t_indicator_ in self.indicator_vec_:
+            t_indicator_.SetBasepxPxtype(self.dep_market_view_, self.dep_baseprice_type_)
+        
+    def FinishCreation(self):
+        if (not self.is_ready_vec_):
+            self.is_ready_ = True
     
     def AreAllReady(self):
         if (not self.dep_market_view.is_ready()):

@@ -20,14 +20,16 @@ def __main__():
         print 'USAGE: EXEC STRATEGY_FILE_NAME TRADING_DATE'
         exit(0)
 
-    strategy_desc_filename_ = sys.argv[1] # decide the no. of arguments and order of arguments
+    strategy_desc_filename_ = sys.argv[1]
     tradingdate_ = sys.argv[2]
 
     watch_ = Watch(tradingdate_)
+    
     ShortcodeSecurityMarketViewMap.watch_ = watch_
 
     strategy_desc_ = StrategyDesc(strategy_desc_filename_, tradingdate_)
     strategy_desc_.Dump()
+    
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
     print(dependant_shortcode_)
 
@@ -38,19 +40,23 @@ def __main__():
     source_shortcode_vec_.append(dependant_shortcode_)
     model_filename_ = strategy_desc_.strategy_vec_[0].model_filename_
 
-    print_vector(source_shortcode_vec_)
     ModelCreator.CollectShortCodes(model_filename_, source_shortcode_vec_)
+    print('source_shortcode_vec_:'),
+    print(source_shortcode_vec_)
 
     for i_ in range(0, len(source_shortcode_vec_)):
         shortcode_to_sid_map_[source_shortcode_vec_[i_]] = i_
         #smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(source_shortcode_vec_[i_]))
+
     base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_) # need to update smv_vec in this function itself
 
     sim_market_maker_ = BaseSimMarketMaker(watch_, smv_vec_[0])
+    
     base_trader_ = BaseTrader(sim_market_maker_)
+    
     strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
-    strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
+    strategy_desc_.strategy_vec_[0].base_trader_ = sim_market_maker_
     
     order_manager_ = BaseOrderManager(watch_, base_trader_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
         

@@ -1,6 +1,9 @@
 from time import gmtime
 from ExternalData.external_time_listener import ExternalTimeListener
-from CDef.MathUtils import GetMSecsFromUTC
+
+'''
+TODO: (1) Rename YYMMDD
+'''
 
 class Watch(ExternalTimeListener):
     
@@ -34,10 +37,10 @@ class Watch(ExternalTimeListener):
     def GetMsecsFromMidnight(self):
         return self.msecs_from_midnight_
     
-    def subscribe_BigTimePeriod(self, _this_listener_):
-        if _this_listener_ is not None :
-            if not self.big_time_period_listener_vec_.__contains__(_this_listener_) :
+    def SubscribeBigTimePeriod(self, _this_listener_):
+        if _this_listener_ is not None:
+            if not self.big_time_period_listener_vec_.__contains__(_this_listener_):
                 self.big_time_period_listener_vec_.append(_this_listener_)
                 
-    def YYMMDD(self):
+    def TradingDate(self):
         return self.trading_date_
