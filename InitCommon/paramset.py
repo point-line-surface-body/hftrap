@@ -10,6 +10,7 @@ class ParamSet:
             t_tokens_ = t_param_file_.readline().split()
             if (len(t_tokens_) < 3):
                 print 'Incorrect Param File'
+                return
             assert t_tokens_[0] == 'PARAMVALUE'
             if (t_tokens_[1] == 'WORST_CASE_POSITION'):
                 self.worst_case_position_ = int(t_tokens_[2])

@@ -1,9 +1,8 @@
 class BaseTrader():
     
-    def __init__(self, account, _base_sim_market_maker_):
-        self.account_string_ = account
+    def __init__(self, _base_sim_market_maker_):
         self.base_sim_market_maker_ = _base_sim_market_maker_
-        self.client_id_ = self._base_sim_market_maker_.Connect()
+        self.client_id_ = self.base_sim_market_maker_.Connect()
         
     def SendTrade(self, _order_):
         self.base_sim_market_maker_.SendOrderExch(self.client_id_, _order_.security_name(), _order_.buysell(), _order_.price(), _order_.size_requested(), _order_.int_price(), _order_.client_assigned_order_sequence())

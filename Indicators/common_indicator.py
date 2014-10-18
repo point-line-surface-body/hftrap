@@ -13,7 +13,6 @@ from indicator_listener import IndicatorListenerPair, UnweightedIndicatorListene
 class CommonIndicator(SecurityMarketViewChangeListener):
     concise_indicator_description_map_ = dict()
     def __init__(self, *args):
-        self.watch = Watch()
         self.concise_indicator_description_ = ""
         self.indicator_listener_pairs_ = []
         self.unweighted_indicator_listener_pairs_ = []
@@ -68,7 +67,7 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         return
  
     def AddIndicatorListener(self, _indicator_index_, _indicator_listener_,  _node_value_):   
-        if _indicator_listener_ is not None and not self.IsWeightedListenerPresent(self, _indicator_listener_):
+        if _indicator_listener_ is not None and not self.IsWeightedListenerPresent(_indicator_listener_):
             _new_indicator_listener_pair_ = IndicatorListenerPair(_indicator_index_, _indicator_listener_, _node_value_)
             self.indicator_listener_pairs_.append(_new_indicator_listener_pair_)
     

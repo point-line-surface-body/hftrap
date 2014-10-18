@@ -39,7 +39,7 @@ class ModelCreator():
                 assert t_tokens_[0] == 'MODELMATH'
                 assert t_tokens_[1] == 'LINEAR'
                 assert t_tokens_[2] == 'CHANGE'
-                if (t_tokens_ == 'LINEAR'):
+                if (t_tokens_[1] == 'LINEAR'):
                     t_model_math_ = LinearModelAggregator(_watch_, _model_filename_)
                 t_current_phase_ = 2
                 
@@ -59,6 +59,7 @@ class ModelCreator():
                         print 'ModelFile Incorrect'
                         exit()
                     t_weight_ = float(t_tokens_[1])
+                    print t_tokens_
                     t_indicator_ = ModelCreator.GetIndicatorFromTokens(_watch_, t_tokens_, t_dep_base_pricetype_)
                     if (t_indicator_ is not None):
                         t_readiness_required_ = t_indicator_.GetReadinessRequired(t_dep_shortcode_, t_tokens_)
@@ -68,8 +69,8 @@ class ModelCreator():
                         print 'Error in Indicator Creation'
                         exit()
                 else:
-                    t_model_file_.SetBasePrice()
-                    t_model_file_.FinishCreation()
+                    t_model_math_.SetBasePrice()
+                    t_model_math_.FinishCreation()
                     t_current_phase_ = 4
             
             elif (t_current_phase_ == 4): #IndicatorEnded

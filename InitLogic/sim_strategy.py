@@ -10,9 +10,9 @@ from CommonTradeUtils.market_update_manager import MarketUpdateManager
 from ExternalData.filesource import FileSource
 from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
 from OrderManager.base_trader import BaseTrader
-from SimMarketMaker.order_level_sim_market_maker import OrderLevelSimMarketMaker
 from OrderManager.base_order_manager import BaseOrderManager
 from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
+from OrderManager.base_sim_market_maker import BaseSimMarketMaker
 
 def __main__():
      
@@ -45,7 +45,7 @@ def __main__():
         #smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(source_shortcode_vec_[i_]))
 
-    sim_market_maker_ = OrderLevelSimMarketMaker(watch_, smv_vec_[0])
+    sim_market_maker_ = BaseSimMarketMaker(watch_, smv_vec_[0])
     base_trader_ = BaseTrader(sim_market_maker_)
     strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
     strategy_desc_.strategy_vec_[0].p_base_trader_ = sim_market_maker_
@@ -55,8 +55,8 @@ def __main__():
     if (strategy_desc_.strategy_vec_[0].strategy_name_ == 'DirectionalAggressiveTrading'):
         strategy_desc_.strategy_vec_[0].exec_ = DirectionalAggressiveTrading(watch_, smv_vec_[0], order_manager_, 
                                                                              strategy_desc_.strategy_vec_[0].param_filename_, 
-                                                                             strategy_desc_.strategy_vec_[0].trading_start_mfm_, 
-                                                                             strategy_desc_.strategy_vec_[0].trading_end_mfm_,
+                                                                             strategy_desc_.strategy_vec_[0].trading_start_time_mfm_, 
+                                                                             strategy_desc_.strategy_vec_[0].trading_end_time_mfm_,
                                                                              strategy_desc_.strategy_vec_[0].runtime_id_, 
                                                                              source_shortcode_vec_) 
 

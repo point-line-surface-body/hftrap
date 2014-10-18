@@ -9,6 +9,6 @@ class ModelMathListener():
     def UpdateTarget(self, _new_target_, _new_sum_vars_):
         return
     
-    @abstractmethod
-    def TargetNotReady(self):
-        return
+    #@abstractmethod
+    #def TargetNotReady(self):
+    #    return

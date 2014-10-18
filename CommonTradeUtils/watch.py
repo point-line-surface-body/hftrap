@@ -12,6 +12,9 @@ class Watch(ExternalTimeListener):
         self.prev_midnight_sec_ = 0
         self.big_time_period_listener_vec_ = [] # TimePeriodListener
         
+    def tv(self):
+        return self.tv_sec_
+        
     def OnTimeReceived(self, _tv_sec_, _tv_usec_):
         if (self.tv_sec_ == 0):
             t_time = gmtime(_tv_sec_)
@@ -35,3 +38,6 @@ class Watch(ExternalTimeListener):
         if _this_listener_ is not None :
             if not self.big_time_period_listener_vec_.__contains__(_this_listener_) :
                 self.big_time_period_listener_vec_.append(_this_listener_)
+                
+    def YYMMDD(self):
+        return self.trading_date_
