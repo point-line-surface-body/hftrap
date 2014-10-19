@@ -97,6 +97,26 @@ class SecurityMarketView:
 #     def security_id(self):
 #         return self.market_update_info_.security_id_
 
+    def bestbid_price(self):
+        self.market_update_info_.bestbid_price_
+        
+    def bestask_price(self):
+        self.market_update_info_.bestask_price_
+        
+#     def bestbid_price(self):
+#         self.market_update_info_.bestbid_price_
+#         
+#     def bestask_price(self):
+#         self.market_update_info_.bestask_price_
+        
+    def bestbid_size(self):
+        self.market_update_info_.bestbid_size_
+        
+    def bestask_size(self):
+        self.market_update_info_.bestask_size_
+        
+    
+
     def MinPriceIncrement(self):
         return self.min_price_increment_
     
@@ -123,7 +143,7 @@ class SecurityMarketView:
     
     def SubscribeL1Only(self, _new_listener_):
         if not self.l1_price_listeners_.__contains__(_new_listener_):
-            print('********Added Listener********')
+            #print('********Added Listener********')
             self.l1_price_listeners_.append(_new_listener_)
         if not self.l1_size_listeners_.__contains__(_new_listener_):
             self.l1_size_listeners_.append(_new_listener_)
@@ -144,8 +164,8 @@ class SecurityMarketView:
         self.market_update_info_.mkt_size_weighted_price_ = (self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_) / (self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_)
 
     def NotifyL1PriceListeners(self):
-        print('NotifyL1PriceListeners')
-        print(self.is_ready_)
+        #print('NotifyL1PriceListeners')
+        #print(self.is_ready_)
         if not self.is_ready_:
             return
         #if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_:

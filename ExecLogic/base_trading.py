@@ -6,6 +6,7 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 
 	def __init__(self, _watch_, _dep_market_view_, _order_manager_, _paramfilename_, _trading_start_time_, 
                  _trading_end_time_, _runtime_id_, _model_source_shortcode_vec_):
+		self.watch_ = _watch_
 		self.param_set_ = ParamSet(_paramfilename_)
 		self.current_tradevarset_ = TradeVars()
 		self.InitializeTradeVarSet()
@@ -74,12 +75,19 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 		return self.my_position_
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
-		if (not self.is_ready):
-			if ((self.watch_.msecs_from_midnight() > self.trading_start_time_) and
-				(self.dep_market_view_.is_ready()) and
+		print('UpdateTarget Called')
+		print(self.is_ready_)
+		if (not self.is_ready_):
+			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
+			print(str(_new_target_))
+			print(self.dep_market_view_)
+			print(self.dep_market_view_.bestbid_price())
+			print(self.dep_market_view_.bestask_price())
+			if ((self.watch_.GetMsecsFromMidnight() > self.trading_start_time_) and
+				(self.dep_market_view_.is_ready_) and
 				(_new_target_ >= self.dep_market_view_.bestbid_price()) and
 				(_new_target_ <= self.dep_market_view_.bestask_price())):
-				self.is_ready = True
+				self.is_ready_ = True
 		else:
 			self.target_price_ = _new_target_
 			self.target_bias_numbers_ = _new_sum_vars_
