@@ -2,7 +2,6 @@ from struct import calcsize
 from ExternalData.message import Message
 from ExternalData.external_data_listener import ExternalDataListener
 from TradingPlatform.get_data_file_name import GetFileSourceName
-from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo
 
 class FileSource(ExternalDataListener):
     
@@ -18,25 +17,13 @@ class FileSource(ExternalDataListener):
         
     def ProcessThisEvent(self):
         self.watch_.OnTimeReceived(self.next_event_.sec_, self.next_event_.usec_)
-        '''OnTradePrint'''
         if (self.next_event_.type_ == 'T'):
-            '''TODO: Fill this'''
-            trade_print_info_ = TradePrintInfo()
-            trade_print_info_.buysell_ = self.next_event_.buysell_
-            trade_print_info_.int_trade_price_ = self.next_event_.trade_price_
-            trade_print_info_.size_traded_ = self.next_event_.trade_size_
+            print('OnTrade called')
+            self.smv_.OnTrade(self.next_event_.trade_price_, self.next_event_.trade_size_, self.next_event_.type_)
         else:
-            '''TODO: fill this'''
-            smv_.OnMarketUpdate()
-            
-            
-            market_update_info_ = MarketUpdateInfo()
-            market_update_info_.bestbid_int_price_ = self.next_event_.bid_price_
-            market_update_info_.bestbid_ordercount_ = self.next_event_.bid_orders_
-            market_update_info_.bestbid_size_ = self.next_event_.bid_size_
-            market_update_info_.bestask_int_price_ = self.next_event_.ask_price_
-            market_update_info_.bestask_ordercount_ = self.next_event_.ask_size_
-            market_update_info_.bestask_size_ = self.next_event_.ask_size_
+            print('OnMarketUpdate called')
+            self.smv_.OnMarketUpdate(self.next_event_.bid_price_, self.next_event_.bid_size_, self.next_event_.bid_orders_, 
+                                     self.next_event_.ask_price_, self.next_event_.ask_size_, self.next_event_.ask_orders_)
     
     def SeekToFirstEventAfter(self, _start_time_):
         print('Filesource.SeekToFirstEventAfter')
