@@ -14,12 +14,17 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.global_position_ = 0
         self.client_position_map_ = []
         self.global_position_to_send_map_ = []
+        self.masked_asks_ = False
+        self.masked_bids_ = False
         self.masked_from_market_data_bids_map_ = []
         self.masked_from_market_data_asks_map_ = []
         self.watch_ = _watch_
-        self.all_requests = []
-        self.pending_requests = []
-        self.all_requests_lock = False
+        self.all_requests_ = []
+        self.pending_requests_ = []
+        self.all_requests_lock_ = False
+        
+        self.intpx_to_ask_order_vec_ = {}
+        self.intpx_to_bid_order_vec_ = {}
         
         self.dep_market_view_ = _smv_
         self.bestbid_int_price_ = 0
@@ -332,7 +337,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                   _order_.buysell(), _order_.size_remaining(), _order_.size_executed(), 
                                   _order_.int_price())
             
-    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+    def OnMarketUpdate(self, _market_update_info_):
         return
         # Saving old values (required only for CFE): for matching trades with market quotes
         old_bestbid_int_price_ = self.bestbid_int_price_
@@ -615,11 +620,11 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             else:
                 break
         
-    def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
+    def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         if (self.all_requests_):
             self.ProcessRequestQueue(True)
         t_trade_print_info_buysell_ = _trade_print_info_.buysell_
-        if (t_trade_print_info_buysell_ == self.kTradeTypeBuy):
+        if (t_trade_print_info_buysell_ == 'B'):
             askside_trade_size_ = _trade_print_info_.size_traded_
             if (self.masked_asks_):
                 self.masked_asks_ = False
@@ -674,7 +679,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                 if (order_.size_remaining() <= 0):
                                     order_vec_.remove(order_)
     
-        if (t_trade_print_info_buysell_ == self.kTradeTypeSell):
+        if (t_trade_print_info_buysell_ == 'S'):
             # trade was a HIT, i.e. removing liquidity on the bid side
             bidside_trade_size_ = _trade_print_info_.size_traded_
             if (self.masked_bids_):

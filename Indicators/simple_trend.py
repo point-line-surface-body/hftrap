@@ -57,7 +57,7 @@ class SimpleTrend(CommonIndicator):
     '''
     Main logic is written here. This is the function which calculates the indicator value.
     '''
-    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+    def OnMarketUpdate(self, _market_update_info_):
         #print('SimpleTrend.OnMarketUpdate called')   
         self.current_indep_price_ = self.indep_market_view_.GetPriceFromType(self.price_type_)
         if not self.is_ready_:
@@ -119,7 +119,7 @@ class SimpleTrend(CommonIndicator):
             self.InitializeValues()
             self.data_interrupted_ = False
 
-    def OnTradePrint(self,_security_id_, _trade_print_info_, _market_update_info_ ):
-        self.OnMarketUpdate(self,_security_id_, _market_update_info_ )
+    def OnTradePrint(self, _trade_print_info_, _market_update_info_):
+        self.OnMarketUpdate(_market_update_info_)
     
     
