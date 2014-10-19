@@ -36,6 +36,7 @@ class SecurityMarketView:
 #        self.l1_size_listeners_ = []
         self.onready_listeners_ = []
         self.price_type_subscribed_ = {}
+        self.count_ = 0
 #         self.use_order_level_book_ = False
 #         #following variables may not be needed
 #         self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(_shortcode_, self.watch_.TradingDate())
@@ -217,7 +218,26 @@ class SecurityMarketView:
         self.trade_print_info_.trade_price_ = _trade_price_
         self.trade_print_info_.size_traded_ = _trade_size_
         self.trade_print_info_.int_trade_price_ = float(_trade_price_) * self.MinPriceIncrement()
-        self.OnMarketUpdate(bid_int_price_, bid_size_, bid_order_count_, ask_int_price_, ask_size_, ask_order_count_)
+
+        ask_price = float(ask_int_price_) * self.MinPriceIncrement()
+        bid_price_ = float(bid_int_price_) * self.MinPriceIncrement()
+        self.market_update_info_.bestask_price_ = ask_price
+        self.market_update_info_.bestask_size_ = ask_size_
+        self.market_update_info_.bestask_int_price_ = ask_int_price_
+        self.market_update_info_.bestask_ordercount_ = ask_order_count_
+        self.market_update_info_.bestbid_price_ = bid_price_
+        self.market_update_info_.bestbid_size_ = bid_size_
+        self.market_update_info_.bestbid_int_price_ = bid_int_price_
+        self.market_update_info_.bestask_ordercount_ = bid_order_count_
+        
+        self.count_ += 1
+        self.UpdateL1Prices()
+        self.is_ready_ = True
+        self.NotifyL1PriceListeners()
+        self.NotifyTradeListeners()
+        self.NotifyOnReadyListeners()
+        if (self.count_ == 10):
+            exit()
         #print('trade_before_quote:'),
         #print(self.trade_before_quote_)
         #if self.trade_before_quote_:
@@ -237,7 +257,7 @@ class SecurityMarketView:
         #else:
         #    self.NotifyTradeListeners()
         #    self.NotifyOnReadyListeners()
-        self.NotifyTradeListeners()
+        #self.NotifyTradeListeners()
 
  
 #     def Uncross(self):
@@ -276,7 +296,7 @@ class SecurityMarketView:
         #self.top_ask_level_to_mask_trades_on_ = 0
         #self.top_bid_level_to_mask_trades_on_ = 0
         ask_price = float(ask_int_price_) * self.MinPriceIncrement()
-        bid_price_ = float(bid_int_price_)* self.MinPriceIncrement()
+        bid_price_ = float(bid_int_price_) * self.MinPriceIncrement()
         #while ask_int_price_ > self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_ ].limit_int_price_ and self.top_ask_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.asklevels_) - 1 ) : 
         #    self.top_ask_level_to_mask_trades_on_ += 1
         #while bid_int_price_ < self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_ ].limit_int_price_ and self.top_bid_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.bidlevels_) - 1 ) :
@@ -289,10 +309,19 @@ class SecurityMarketView:
         self.market_update_info_.bestbid_size_ = bid_size_
         self.market_update_info_.bestbid_int_price_ = bid_int_price_
         self.market_update_info_.bestask_ordercount_ = bid_order_count_
+        #print 'Listeners of SMV:'
+        #print self.l1_price_listeners_
+        #print self.onready_listeners_
         #self.OnL1PriceUpdate()
+        
+        self.count_ += 1
+        print 'SMV.OnMarketUpdate: '+str(self.count_)
         self.UpdateL1Prices()
+        self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyOnReadyListeners()
+        if (self.count_ == 10):
+            exit()
         
         #print self.bestask_price(), self.market_update_info_.bestask_price_
 '''     

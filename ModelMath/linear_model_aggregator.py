@@ -9,6 +9,7 @@ class LinearModelAggregator(BaseModelMath):
         self.sum_vars_ = 0
         self.last_propagated_target_price_ = 0
         self.model_intercept_ = 0
+        self.count_ = 0
         
     def SetBasePrice(self):
         for t_indicator_ in self.indicator_vec_:
@@ -28,7 +29,8 @@ class LinearModelAggregator(BaseModelMath):
         return True
             
     def OnIndicatorUpdate(self, _indicator_index_, _new_value_):
-        #print('LMA.OnIndicatorUpdate '+str(_indicator_index_)+' '+str(_new_value_))
+        self.count_ += 1
+        print('LMA.OnIndicatorUpdate: '+str(self.count_)+' '+str(_indicator_index_)+' '+str(_new_value_))
         #print(len(self.prev_value_vec_))
         if (not self.is_ready_):
             self.is_ready_vec_[_indicator_index_] = True
@@ -72,12 +74,12 @@ class LinearModelAggregator(BaseModelMath):
     def CalcAndPropagate(self):
         #print('*******************************'+str(self.is_ready_)+'*******************************')
         if (self.is_ready_):
+            print 'LMA.CalcAndPropagate: '+str(self.count_)
             t_new_target_bias = self.sum_vars_
             t_new_target_price = self.dep_market_view_.GetPriceFromType(self.dep_baseprice_type_) + t_new_target_bias
             
             kMinTicksMoved = 0.015
             if ((t_new_target_price - self.last_propagated_target_price_) > kMinTicksMoved*self.dep_market_view_.MinPriceIncrement()):
-                print('Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi ')
                 self.PropagateNewTargetPrice(t_new_target_price, t_new_target_bias)
                 self.last_propagated_target_price_ = t_new_target_price
         else:

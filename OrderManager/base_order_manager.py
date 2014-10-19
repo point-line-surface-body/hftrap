@@ -27,7 +27,7 @@ class BaseOrderManager:
     def __init__(self, _watch_, _base_trader_, _dep_shortcode_, _min_price_increment_):
         self.watch_ = _watch_
         self.base_trader_ = _base_trader_
-        self.dep_shortcode_ = _dep_shortcode_
+        self.shortcode_ = _dep_shortcode_
         
         self.initial_adjustment_set_ = False
         self.bid_int_price_adjustment_ = 0
@@ -252,7 +252,7 @@ class BaseOrderManager:
     '''Bid version'''    
     def SumBidSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
         if (self.unconfirmed_top_bid_index_ == -1):
-            return
+            return 0
         t_bid_index_ = self.GetBidIndex(_intpx_)
         t_index_ = self.unconfirmed_top_bid_index_
         t_retval_ = 0
@@ -263,7 +263,7 @@ class BaseOrderManager:
     
     def SumBidSizeConfirmedEqAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_bid_index_ == -1):
-            return
+            return 0
         t_bid_index_ = self.GetBidIndex(_intpx_)
         t_index_ = self.confirmed_top_bid_index_
         t_retval_ = 0
@@ -274,7 +274,7 @@ class BaseOrderManager:
     
     def SumBidSizeConfirmedAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_bid_index_ == -1):
-            return
+            return 0
         t_bid_index_ = self.GetBidIndex(_intpx_)
         t_index_ = self.confirmed_top_bid_index_
         t_retval_ = 0
@@ -299,7 +299,7 @@ class BaseOrderManager:
     '''Ask version'''
     def SumAskSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
         if (self.unconfirmed_top_ask_index_ == -1):
-            return
+            return 0
         t_ask_index_ = self.GetAskIndex(_intpx_)
         t_index_ = self.unconfirmed_top_ask_index_
         t_retval_ = 0
@@ -310,7 +310,7 @@ class BaseOrderManager:
     
     def SumAskSizeConfirmedEqAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_ask_index_ == -1):
-            return
+            return 0
         t_ask_index_ = self.GetAskIndex(_intpx_)
         t_index_ = self.confirmed_top_ask_index_
         t_retval_ = 0
@@ -321,7 +321,7 @@ class BaseOrderManager:
     
     def SumAskSizeConfirmedAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_ask_index_ == -1):
-            return
+            return 0
         t_ask_index_ = self.GetAskIndex(_intpx_)
         t_index_ = self.confirmed_top_ask_index_
         t_retval_ = 0
