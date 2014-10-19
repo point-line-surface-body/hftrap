@@ -28,8 +28,8 @@ class LinearModelAggregator(BaseModelMath):
         return True
             
     def OnIndicatorUpdate(self, _indicator_index_, _new_value_):
-        print('LMA.OnIndicatorUpdate '+str(_indicator_index_)+' '+str(_new_value_))
-        print(len(self.prev_value_vec_))
+        #print('LMA.OnIndicatorUpdate '+str(_indicator_index_)+' '+str(_new_value_))
+        #print(len(self.prev_value_vec_))
         if (not self.is_ready_):
             self.is_ready_vec_[_indicator_index_] = True
             self.is_ready_ = self.AreAllReady()
@@ -48,7 +48,8 @@ class LinearModelAggregator(BaseModelMath):
                 self.last_is_ready_ = True
         else:
             # Check for nan value in _new_value_
-            print('indicator_index: '+str(_indicator_index_))
+            #print('indicator_index: '+str(_indicator_index_))
+            print(str(_new_value_)+' '+str(self.prev_value_vec_[_indicator_index_]))
             if (abs(_new_value_-self.prev_value_vec_[_indicator_index_]) > 10*self.dep_market_view_.MinPriceIncrement()):
                 print 'HUGE value in sum_vars'
             self.sum_vars_ += (_new_value_-self.prev_value_vec_[_indicator_index_])
@@ -69,12 +70,14 @@ class LinearModelAggregator(BaseModelMath):
         self.CalcAndPropagate()
             
     def CalcAndPropagate(self):
+        #print('*******************************'+str(self.is_ready_)+'*******************************')
         if (self.is_ready_):
             t_new_target_bias = self.sum_vars_
-            t_new_target_price = 0.0 #something
+            t_new_target_price = self.dep_market_view_.GetPriceFromType(self.dep_baseprice_type_) + t_new_target_bias
             
             kMinTicksMoved = 0.015
             if ((t_new_target_price - self.last_propagated_target_price_) > kMinTicksMoved*self.dep_market_view_.MinPriceIncrement()):
+                print('Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi Hi ')
                 self.PropagateNewTargetPrice(t_new_target_price, t_new_target_bias)
                 self.last_propagated_target_price_ = t_new_target_price
         else:
