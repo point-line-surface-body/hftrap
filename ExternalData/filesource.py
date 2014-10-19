@@ -27,6 +27,9 @@ class FileSource(ExternalDataListener):
             trade_print_info_.size_traded_ = self.next_event_.trade_size_
         else:
             '''TODO: fill this'''
+            smv_.OnMarketUpdate()
+            
+            
             market_update_info_ = MarketUpdateInfo()
             market_update_info_.bestbid_int_price_ = self.next_event_.bid_price_
             market_update_info_.bestbid_ordercount_ = self.next_event_.bid_orders_
