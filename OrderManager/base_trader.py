@@ -5,9 +5,18 @@ class BaseTrader():
         self.client_id_ = self.base_sim_market_maker_.Connect()
         
     def SendTrade(self, _order_):
+        print 'BaseTrader.SendTrade'
+        print self.client_id_
+        print _order_.security_name()
+        print _order_.buysell()
+        print _order_.price()
+        print _order_.size_requested()
+        print _order_.int_price()
+        print _order_.client_assigned_order_sequence()
+        
         self.base_sim_market_maker_.SendOrderExch(self.client_id_, _order_.security_name(), _order_.buysell(), _order_.price(), _order_.size_requested(), _order_.int_price(), _order_.client_assigned_order_sequence())
         
-    def Cancel (self, _order_):
+    def Cancel(self, _order_):
         self.base_sim_market_maker_.CancelOrderExch(self.client_id_,_order_.server_assigned_order_sequence(), _order_.buysell(), _order_.int_price())
     
     def Modify(self, _order_, _new_size_requested_):

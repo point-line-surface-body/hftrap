@@ -134,7 +134,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                         canceled_size_ += self.order_manager_.CancelBidsFromFar(self.current_tradevarset_.l1bid_trade_size_)
                 else:
                     self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, 
-                                                  self.current_tradevarset_.l1bid_trade_size_, 0, 'A' ) # 0 => Buy
+                                                  self.current_tradevarset_.l1bid_trade_size_, 'B') # 0 => Buy
                     placed_bids_this_round_ = True
                     self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_buy_msecs_ = self.watch_.mecs_from_midnight()
@@ -148,7 +148,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                 if (self.my_position_ + self.order_manager_.SumBidSizes() + self.current_tradevarset_.l1bid_trade_size_ >= self.param_set_.worst_case_position_ ):
                     canceled_size_ += self.order_manager_.CancelBidsFromFar(self.current_tradevarset_.l1bid_trade_size_)
                 else:
-                    self.order_manager_.SendTradeIntPx((self.best_nonself_bid_int_price_ + 1), self.current_tradevarset_.l1bid_trade_size_, 0, 'A')
+                    self.order_manager_.SendTradeIntPx((self.best_nonself_bid_int_price_ + 1), self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
                     self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
@@ -163,7 +163,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
-                    self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
+                    self.last_buy_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
                 if (not self.top_bid_keep_):
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
@@ -186,7 +186,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                     if (allowance_for_aggressive_sell_ > canceled_size_):
                         canceled_size_ += self.order_manager_.CancelAsksFromFar(self.current_tradevarset_.l1ask_trade_size_)
                 else:
-                    self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1ask_trade_size_, 1, 'A') # 1 => Sell
+                    self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1ask_trade_size_, 'S') # 1 => Sell
                     placed_asks_this_round_ = True
                     self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
@@ -200,7 +200,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                 if (- self.my_position_ + self.order_manager_.SumAskSizes() + self.current_tradevarset_.l1ask_trade_size_ >= self.param_set_.worst_case_position_):
                     canceled_size_ += self.order_manager_.CancelAsksFromFar(self.current_tradevarset_.l1ask_trade_size_)
                 else:
-                    self.order_manager_.SendTradeIntPx((self.best_nonself_ask_int_price_ - 1), self.current_tradevarset_.l1ask_trade_size_, 1, 'A' )
+                    self.order_manager_.SendTradeIntPx((self.best_nonself_ask_int_price_ - 1), self.current_tradevarset_.l1ask_trade_size_, 'S') # add extra paramater for aggresive
                     placed_asks_this_round_ = True
                     self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
                     self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
@@ -213,9 +213,9 @@ class DirectionalAggressiveTrading(BaseTrading):
                 if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
-                    self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, self.current_tradevarset_.l1ask_trade_size_, 1, 'B')
+                    self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, self.current_tradevarset_.l1ask_trade_size_, 'S')
                     placed_asks_this_round_ = True
-                    self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
+                    self.last_sell_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
                 if (not self.top_ask_keep_ ):
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
