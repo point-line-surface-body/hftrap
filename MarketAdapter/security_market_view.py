@@ -185,7 +185,7 @@ class SecurityMarketView:
         self.trade_print_info_.buysell_ = _trade_type_
         self.trade_print_info_.trade_price_ = _trade_price_
         self.trade_print_info_.size_traded_ = _trade_size_
-        self.trade_print_info_.int_trade_price_ = (int)(round(_trade_price_ / self.min_price_increment() , 0))
+        self.trade_print_info_.int_trade_price_ = (int)(round(_trade_price_ / self.MinPriceIncrement(), 0))
         if self.trade_before_quote_:
             if self.trade_print_info_.buysell_ == 'BUY':
                 self.SetBestLevelAskVariablesOnLift()
@@ -207,6 +207,9 @@ class SecurityMarketView:
         else:
             self.NotifyTradeListeners()
             self.NotifyOnReadyListeners()
+            
+    def NotifyTradeListeners(self):
+        return
  
     def Uncross(self):
         res = False
@@ -317,6 +320,3 @@ class SecurityMarketView:
                 self.market_update_info_.bestbid_size_ = t_trade_masked_best_bid_size_
                 self.market_update_info_.bestbid_int_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_
                 self.market_update_info_.bestbid_ordercount_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_ordercount_
-  
-    
-    
