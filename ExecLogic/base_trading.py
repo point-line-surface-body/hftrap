@@ -55,6 +55,8 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.last_sell_int_price_ = 0
 		self.last_agg_buy_msecs_ = 0
 		self.last_agg_sell_msecs_ = 0
+		
+		self.dep_market_view_.SubscribeL1Only(self)
 		return
 	
 	def TradingLogic(self):
@@ -77,10 +79,10 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.best_nonself_ask_int_price_ = self.dep_market_view_.bestask_int_price()
 		self.best_nonself_ask_size_ = self.dep_market_view_.bestask_size()
 		
-	def OnMarketUpdate(self):
+	def OnMarketUpdate(self, _market_update_info_):
 		self.NonSelfMarketUpdate()
 		
-	def OnTradePrint(self):
+	def OnTradePrint(self, _trade_print_info_, _market_update_info_):
 		self.NonSelfMarketUpdate()
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):

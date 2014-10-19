@@ -1,4 +1,3 @@
-from CDef.defines import DEF_MARKET_DEPTH
 from CDef.security_definitions import SecurityDefinitions
 from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo
 
@@ -34,9 +33,9 @@ class SecurityMarketView:
         self.market_update_info_ = MarketUpdateInfo(_shortcode_, _security_id_, SecurityDefinitions.GetContractExchSource(_shortcode_, self.watch_.TradingDate()))
         self.trade_print_info_ = TradePrintInfo()
         self.l1_price_listeners_ = []
-        self.l1_size_listeners_ = []
+#        self.l1_size_listeners_ = []
         self.onready_listeners_ = []
-        self.price_type_subscribed = dict()
+        self.price_type_subscribed_ = {}
 #         self.use_order_level_book_ = False
 #         #following variables may not be needed
 #         self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(_shortcode_, self.watch_.TradingDate())
@@ -75,7 +74,6 @@ class SecurityMarketView:
 #         self.lift_base_index_ = 0
 #         self.hit_base_index_ = 0
 #        self.last_raw_message_sequence_applied_ = 0
-        self.price_type_subscribed_ = {}
         self.price_type_subscribed_['MktSizeWPrice'] = False
 #         self.running_hit_size_vec_ = []
 #         self.running_lift_size_vec_ = []
@@ -85,8 +83,8 @@ class SecurityMarketView:
 #             self.running_lift_size_vec_.append(0)
 #             i = i+1
       
-    def __eq__(self, obj):
-        return self.shortcode() == obj.shortcode()
+    def __eq__(self, _obj_):
+        return self.shortcode() == _obj_.shortcode()
     
     def shortcode(self):
         return self.market_update_info_.shortcode_
@@ -103,11 +101,11 @@ class SecurityMarketView:
     def bestask_price(self):
         return self.market_update_info_.bestask_price_
         
-#     def bestbid_price(self):
-#         self.market_update_info_.bestbid_price_
-#         
-#     def bestask_price(self):
-#         self.market_update_info_.bestask_price_
+    def bestbid_int_price(self):
+        return self.market_update_info_.bestbid_int_price_
+      
+    def bestask_int_price(self):
+        return self.market_update_info_.bestask_int_price_
         
     def bestbid_size(self):
         return self.market_update_info_.bestbid_size_
@@ -146,20 +144,20 @@ class SecurityMarketView:
         if not self.l1_price_listeners_.__contains__(_new_listener_):
             #print('********Added Listener********')
             self.l1_price_listeners_.append(_new_listener_)
-        if not self.l1_size_listeners_.__contains__(_new_listener_):
-            self.l1_size_listeners_.append(_new_listener_)
-        print(len(self.l1_price_listeners_))
-        print(self.l1_price_listeners_)
+#         if not self.l1_size_listeners_.__contains__(_new_listener_):
+#             self.l1_size_listeners_.append(_new_listener_)
+#         print(len(self.l1_price_listeners_))
+#         print(self.l1_price_listeners_)
         
     def SubscribeOnReady(self, _new_listener_):
         if not self.onready_listeners_.__contains__(_new_listener_):
             self.onready_listeners_.append(_new_listener_)
-        
-    def OnL1PriceUpdate(self):
-        self.UpdateL1Prices()
-        self.is_ready_ = True
-        self.NotifyL1PriceListeners()
-        self.NotifyOnReadyListeners()
+#         
+#     def OnL1PriceUpdate(self):
+#         self.UpdateL1Prices()
+#         self.is_ready_ = True
+#         self.NotifyL1PriceListeners()
+#         self.NotifyOnReadyListeners()
        
     def UpdateL1Prices(self):
         self.market_update_info_.mkt_size_weighted_price_ = (self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_) / (self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_)
@@ -172,7 +170,7 @@ class SecurityMarketView:
         #if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_:
         #    return
         for i in range(len(self.l1_price_listeners_)):
-            self.l1_price_listeners_[i].OnMarketUpdate(self.market_update_info_.security_id_, self.market_update_info_)
+            self.l1_price_listeners_[i].OnMarketUpdate(self.market_update_info_)
         #self.market_update_info_.l1events_ += 1
     
     def NotifyOnReadyListeners(self):
@@ -182,6 +180,11 @@ class SecurityMarketView:
         #    return
         for i in range(len(self.onready_listeners_)):
             self.onready_listeners_[i].SMVOnReady()
+            
+    def NotifyTradeListeners(self):
+        for x in self.l1_price_listeners_:
+            x.OnTradePrint(self.trade_print_info_, self.market_update_info_)
+        return
             
 #     def StorePreTrade(self):
 #         if self.market_update_info_.storing_pretrade_state_:
@@ -203,7 +206,7 @@ class SecurityMarketView:
         else:
             return self.market_update_info_.mkt_size_weighted_price_
     
-    def OnTrade(self, _trade_price_, _trade_size_, _trade_type_, 
+    def OnTradePrint(self, _trade_price_, _trade_size_, _trade_type_, 
                 bid_int_price_, bid_size_, bid_order_count_, ask_int_price_, ask_size_, ask_order_count_):
         #if self.trade_print_info_.computing_last_book_tdiff_ and self.prev_bid_was_quote_ and self.prev_ask_was_quote_:
         #    self.market_update_info_.last_book_mkt_size_weighted_price_ = self.market_update_info_.mkt_size_weighted_price_
@@ -223,8 +226,8 @@ class SecurityMarketView:
         #else:
         #    self.SetBestLevelBidVariablesOnHit()
         #if self.is_ready_:
-        self.NotifyTradeListeners()
-        self.NotifyOnReadyListeners()
+#         self.NotifyTradeListeners()
+#         self.NotifyOnReadyListeners()
         
         #else:
         #    if self.is_ready_:
@@ -234,9 +237,8 @@ class SecurityMarketView:
         #else:
         #    self.NotifyTradeListeners()
         #    self.NotifyOnReadyListeners()
-            
-    def NotifyTradeListeners(self):
-        return
+        self.NotifyTradeListeners()
+
  
 #     def Uncross(self):
 #         res = False
@@ -269,7 +271,7 @@ class SecurityMarketView:
 
     def OnMarketUpdate(self, bid_int_price_, bid_size_, bid_order_count_, ask_int_price_, ask_size_, ask_order_count_):
         #print('SMV.OnMarketUpdate')
-        print self.bestask_price(), self.market_update_info_.bestask_price_
+        #print self.bestask_price(), self.market_update_info_.bestask_price_
 
         #self.top_ask_level_to_mask_trades_on_ = 0
         #self.top_bid_level_to_mask_trades_on_ = 0
@@ -287,7 +289,10 @@ class SecurityMarketView:
         self.market_update_info_.bestbid_size_ = bid_size_
         self.market_update_info_.bestbid_int_price_ = bid_int_price_
         self.market_update_info_.bestask_ordercount_ = bid_order_count_
-        self.OnL1PriceUpdate()
+        #self.OnL1PriceUpdate()
+        self.UpdateL1Prices()
+        self.NotifyL1PriceListeners()
+        self.NotifyOnReadyListeners()
         
         #print self.bestask_price(), self.market_update_info_.bestask_price_
 '''     

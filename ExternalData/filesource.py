@@ -21,7 +21,7 @@ class FileSource(ExternalDataListener):
         if (self.next_event_.type_ == 'T'):
             #print('OnTrade called')
             #self.next_event_.Dump()
-            self.smv_.OnTrade(self.next_event_.trade_price_, self.next_event_.trade_size_, self.next_event_.buysell_, 
+            self.smv_.OnTradePrint(self.next_event_.trade_price_, self.next_event_.trade_size_, self.next_event_.buysell_, 
                               self.next_event_.bid_price_, self.next_event_.bid_size_, self.next_event_.bid_orders_, 
                               self.next_event_.ask_price_, self.next_event_.ask_size_, self.next_event_.ask_orders_)
         else:
