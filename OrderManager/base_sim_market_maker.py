@@ -355,6 +355,8 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             else :
                 self.bid_side_priority_order_exists_ = False
                 self.bid_side_priority_order_size_ = 0
+                
+        '''Incomplete function.. Need to write more'''
         
     def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
         if (self.all_requests_):
