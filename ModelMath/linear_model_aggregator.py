@@ -49,7 +49,7 @@ class LinearModelAggregator(BaseModelMath):
         else:
             # Check for nan value in _new_value_
             #print('indicator_index: '+str(_indicator_index_))
-            print(str(_new_value_)+' '+str(self.prev_value_vec_[_indicator_index_]))
+            #print(str(_new_value_)+' '+str(self.prev_value_vec_[_indicator_index_]))
             if (abs(_new_value_-self.prev_value_vec_[_indicator_index_]) > 10*self.dep_market_view_.MinPriceIncrement()):
                 print 'HUGE value in sum_vars'
             self.sum_vars_ += (_new_value_-self.prev_value_vec_[_indicator_index_])

@@ -139,22 +139,22 @@ class BaseOrderManager:
             for t_order_ in self.ask_order_vec_[t_index_]:
                 self.Cancel(t_order_)
             t_index_ -= 1
-            
+    #TODO: Fix A Bug
     def CancelBidsEqAboveIntPrice(self, _intpx_):
         t_retval_ = 0
-        t_retval_ += self.CancelBidsAtIntPrice(self, _intpx_)
-        t_retval_ += self.CancelBidsAboveIntPrice(self, _intpx_)
+        t_retval_ += self.CancelBidsAtIntPrice(_intpx_)
+        t_retval_ += self.CancelBidsAboveIntPrice(_intpx_)
         return t_retval_
     
     def CancelBidsEqBelowIntPrice(self, _intpx_):
         t_retval_ = 0
-        t_retval_ += self.CancelBidsAtIntPrice(self, _intpx_)
-        t_retval_ += self.CancelBidsBelowIntPrice(self, _intpx_)
+        t_retval_ += self.CancelBidsAtIntPrice(_intpx_)
+        t_retval_ += self.CancelBidsBelowIntPrice(_intpx_)
         return t_retval_
         
     def CancelBidsAtIntPrice(self, _intpx_):
         if (self.order_vec_top_bid_index_ == -1):
-            return
+            return 0
         t_index_ = self.GetBidIndex(_intpx_)
         return self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
     
@@ -192,19 +192,19 @@ class BaseOrderManager:
     
     def CancelAsksEqAboveIntPrice(self, _intpx_):
         t_retval_ = 0
-        t_retval_ += self.CancelAsksAtIntPrice(self, _intpx_)
-        t_retval_ += self.CancelAsksAboveIntPrice(self, _intpx_)
+        t_retval_ += self.CancelAsksAtIntPrice(_intpx_)
+        t_retval_ += self.CancelAsksAboveIntPrice(_intpx_)
         return t_retval_
     
     def CancelAsksEqBelowIntPrice(self, _intpx_):
         t_retval_ = 0
-        t_retval_ += self.CancelAsksAtIntPrice(self, _intpx_)
-        t_retval_ += self.CancelAsksBelowIntPrice(self, _intpx_)
+        t_retval_ += self.CancelAsksAtIntPrice(_intpx_)
+        t_retval_ += self.CancelAsksBelowIntPrice(_intpx_)
         return t_retval_
         
     def CancelAsksAtIntPrice(self, _intpx_):
         if (self.order_vec_top_ask_index_ == -1):
-            return
+            return 0
         t_index_ = self.GetAskIndex(_intpx_)
         return self.CancelOrdersInVec(self.ask_order_vec_[t_index_])
     
@@ -354,6 +354,8 @@ class BaseOrderManager:
             return False
                 
     def SendTrade(self, _price_, _int_price_, _size_requested_, _buysell_):
+        print('SendTrade')
+        
         if (_size_requested_ <= 0):
             print 'SendTrade: _size_requested_ <= 0'
             return

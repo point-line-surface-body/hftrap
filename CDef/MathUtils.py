@@ -14,8 +14,9 @@ def GetMSecsFromUTC(utc_time):
     return secs*1000
 
 #return milli seconds from midnight
-def GetMsecsFromEpoch(epoch_time):
-    msecs = 1000*(epoch_time - (int)(epoch_time))
+def GetMsecsFromEpoch(_tv_sec_, _tv_usec_):
+    epoch_time = _tv_sec_ + float(_tv_usec_) / 1000000
+    msecs = int(1000*(epoch_time - (int)(epoch_time)))
     t = time.gmtime(epoch_time)
     hr = t.tm_hour
     mins = t.tm_min
@@ -23,5 +24,3 @@ def GetMsecsFromEpoch(epoch_time):
     total_secs = hr*60*60 + mins *60 + secs
     total_msecs = total_secs * 1000 + msecs
     return total_msecs
-    
-    
