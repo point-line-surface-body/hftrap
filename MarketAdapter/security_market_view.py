@@ -236,8 +236,8 @@ class SecurityMarketView:
         self.NotifyL1PriceListeners()
         self.NotifyTradeListeners()
         self.NotifyOnReadyListeners()
-        if (self.count_ == 10):
-            exit()
+        #if (self.count_ == 10):
+        #    exit()
         #print('trade_before_quote:'),
         #print(self.trade_before_quote_)
         #if self.trade_before_quote_:
@@ -289,6 +289,9 @@ class SecurityMarketView:
 #         res += " " +  str(self.market_update_info_.asklevels_[0].limit_size_)  + " " + self.market_update_info_.asklevels_[0].limit_int_price_level_
 #         return res 
 
+    def trade_before_quote(self):
+        return False
+
     def OnMarketUpdate(self, bid_int_price_, bid_size_, bid_order_count_, ask_int_price_, ask_size_, ask_order_count_):
         #print('SMV.OnMarketUpdate')
         #print self.bestask_price(), self.market_update_info_.bestask_price_
@@ -320,8 +323,8 @@ class SecurityMarketView:
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyOnReadyListeners()
-        if (self.count_ == 10):
-            exit()
+        #if (self.count_ == 10):
+        #    exit()
         
         #print self.bestask_price(), self.market_update_info_.bestask_price_
 '''     

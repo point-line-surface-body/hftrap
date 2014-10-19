@@ -71,7 +71,7 @@ class BaseOrder:
     def server_assigned_client_id(self):
         self.server_assigned_client_id_
     
-    def execute_remaining(self):
+    def ExecuteRemaining(self):
         t_size_remaining_ = self.size_remaining_
         self.size_remaining_ = 0
         self.size_executed_ += t_size_remaining_

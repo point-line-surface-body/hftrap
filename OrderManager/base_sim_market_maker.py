@@ -46,6 +46,8 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.order_rejection_listener_vec_ = []
         self.order_sequenced_listener_vec_ = []
         
+        self.saci_to_executed_size_ = []
+        
         return
     
     @staticmethod
@@ -92,106 +94,108 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             self.all_requests_.sort() #stable_sort(self.all_requests) # Corrected this)
     
     #We might need bool variable so that we can keep the cancel request on next time update.. 
-    def ProcessRequestQueue(self): # Later find out whether that boolean variable is needed
+    def ProcessRequestQueue(self, find_out_why_): # Later find out whether that boolean variable is needed
         if (self.all_requests_lock_):
             return
-        self.all_requests_lock = True
-        for request in self.all_requests:
-            server_assigned_client_id = request.server_assigned_client_id_
-            if (request.wakeup_time > self.watch.tv()):
+        self.all_requests_lock_ = True
+        for request in self.all_requests_:
+            server_assigned_client_id_ = request.server_assigned_client_id_
+            if (request.wakeup_time_ > self.watch_.tv()):
                 continue
-            if (request.request_type == "SEND"):
-                order = request.order
+            if (request.request_type_ == "SEND"):
+                order = request.order_
                 # This order will always get confirmed
                 order.Confirm()
                 # Broadcast this information
-                if (order.buy_sell == 1): # Buy
+                if (order.buysell_ == 'B'): # Buy
                     
                     # Bid side order         
                     # Update queue sizes
-                    order.queue_size_behind = 0
-                    order.queue_size_ahead = self.dep_market_view.bid_size_at_int_price(order.int_price)
+                    order.queue_size_behind_ = 0
+                    order.queue_size_ahead_ = self.dep_market_view_.bid_size_at_int_price(order.int_price) # How? TODO:
                     
                     # Check if aggressive
-                    if (order.int_price >= self.dep_market_view.best_ask_int_price()):
+                    if (order.int_price >= self.dep_market_view_.bestask_int_price()):
                         # Reset to the best ask level
-                        order.int_price = self.dep_market_view.best_ask_int_price()
-                        order.price = self.dep_market_view.best_ask_price()
+                        order.int_price = self.dep_market_view_.bestask_int_price()
+                        order.price = self.dep_market_view_.bestask_price()
                         
                         # Execute the order, update position, send Exec
-                        if (self.dep_market_view.bestask_size()-self.masked_from_market_data_asks_map[order.server_assigned_client_id] > 0):
-                            if ((self.dep_market_view.bestask_size()-self.masked_from_market_data_asks_map[order.server_assigned_client_id]) >= order.size_remaining()):
+                        if (self.dep_market_view_.bestask_size() - self.masked_from_market_data_asks_map_[order.server_assigned_client_id_] > 0):
+                            if ((self.dep_market_view_.bestask_size() - self.masked_from_market_data_asks_map_[order.server_assigned_client_id_]) >= order.size_remaining()):
                                 # Full execution
                                 size_executed = order.ExecuteRemaining()
-                                self.client_position_map[server_assigned_client_id] += size_executed
-                                self.global_position_to_send_map[server_assigned_client_id] += size_executed
+                                self.client_position_map_[server_assigned_client_id_] += size_executed
+                                self.global_position_to_send_map_[server_assigned_client_id_] += size_executed
 
                                 # BroadcastExecNotification ( r_server_assigned_client_id_, p_new_sim_order_ ) ;
-                                self.masked_from_market_data_asks_map[server_assigned_client_id] += size_executed
+                                self.masked_from_market_data_asks_map_[server_assigned_client_id_] += size_executed
                                 self.masked_asks = True
                             else:
                                 # Partial execution
-                                size_executed = order.MatchPartial(self.dep_market_view.bestask_size()-self.masked_from_market_data_asks_map[server_assigned_client_id])
-                                self.client_position_map[server_assigned_client_id] += size_executed
-                                self.global_position_to_send_map[server_assigned_client_id] += size_executed
+                                size_executed = order.MatchPartial(self.dep_market_view_.bestask_size()-self.masked_from_market_data_asks_map_[server_assigned_client_id_])
+                                self.client_position_map_[server_assigned_client_id_] += size_executed
+                                self.global_position_to_send_map_[server_assigned_client_id_] += size_executed
 
                                 # BroadcastExecNotification ( r_server_assigned_client_id_, p_new_sim_order_ ) ;
-                                self.masked_from_market_data_asks_map[server_assigned_client_id] += size_executed
+                                self.masked_from_market_data_asks_map_[server_assigned_client_id_] += size_executed
                                 self.masked_asks = True
 
-                                self.int_price_to_bid_order_vec[order.int_price].append(order)
-                                if (order.int_price > self.dep_market_view_.bestbid_int_price()):
+                                self.intpx_to_bid_order_vec_[order.int_price_].append(order)
+                                if (order.int_price_ > self.dep_market_view_.bestbid_int_price()):
                                     order.alone_above_best_market_ = True
                     else:
                         # Add liquidity order
-                        self.int_price_to_bid_order_vec[order.int_price].append(order)
-                        if (order.int_price > self.dep_market_view.bestbid_int_price()):
-                            order.alone_above_best_market = True
+                        self.intpx_to_bid_order_vec_[order.int_price_].append(order)
+                        if (order.int_price_ > self.dep_market_view_.bestbid_int_price()):
+                            order.alone_above_best_market_ = True
                 else:
                     
                     # Ask side order
                     # Update queue sizes
-                    order.queue_size_behind = 0
-                    order.queue_size_ahead = self.dep_market_view.ask_size_at_int_price(order.int_price)
+                    order.queue_size_behind_ = 0
+                    order.queue_size_ahead_ = self.dep_market_view_.asksize_at_int_price(order.int_price)
                     
                     # Check if aggressive
-                    if (order.int_price <= self.dep_market_view.bestbid_int_price()):
+                    if (order.int_price <= self.dep_market_view_.bestbid_int_price()):
                         # Reset to the best ask level
-                        order.int_price = self.dep_market_view.bestbid_int_price()
-                        order.price = self.dep_market_view.bestbid_price()
+                        order.int_price = self.dep_market_view_.bestbid_int_price()
+                        order.price = self.dep_market_view_.bestbid_price()
                         
                         # Execute the order, update position, send Exec
-                        if (self.dep_market_view.bestbid_size()-self.masked_from_market_data_bids_map[order.server_assigned_client_id] > 0):
-                            if ((self.dep_market_view.bestbid_size()-self.masked_from_market_data_bids_map[order.server_assigned_client_id]) >= order.size_remaining()):
+                        if (self.dep_market_view_.bestbid_size()-self.masked_from_market_data_bids_map_[order.server_assigned_client_id_] > 0):
+                            if ((self.dep_market_view_.bestbid_size()-self.masked_from_market_data_bids_map_[order.server_assigned_client_id_]) >= order.size_remaining()):
                                 # Full execution
                                 size_executed = order.ExecuteRemaining()
-                                self.client_position_map[server_assigned_client_id] += size_executed
-                                self.global_position_to_send_map[server_assigned_client_id] += size_executed
+                                self.client_position_map_[server_assigned_client_id_] += size_executed
+                                self.global_position_to_send_map_[server_assigned_client_id_] += size_executed
 
                                 # BroadcastExecNotification ( r_server_assigned_client_id_, p_new_sim_order_ ) ;
-                                self.masked_from_market_data_bids_map[server_assigned_client_id] += size_executed
-                                self.masked_asks = True
+                                self.masked_from_market_data_bids_map_[server_assigned_client_id_] += size_executed
+                                self.masked_asks_ = True
                             else:
                                 # Partial execution
-                                size_executed = order.MatchPartial(self.dep_market_view.bestbid_size()-self.masked_from_market_data_asks_map[server_assigned_client_id])
-                                self.client_position_map[server_assigned_client_id] += size_executed
-                                self.global_position_to_send_map[server_assigned_client_id] += size_executed
+                                size_executed = order.MatchPartial(self.dep_market_view.bestbid_size()-self.masked_from_market_data_asks_map[server_assigned_client_id_])
+                                self.client_position_map_[server_assigned_client_id_] += size_executed
+                                self.global_position_to_send_map_[server_assigned_client_id_] += size_executed
 
                                 # BroadcastExecNotification ( r_server_assigned_client_id_, p_new_sim_order_ ) ;
-                                self.masked_from_market_data_bids_map[server_assigned_client_id] += size_executed
-                                self.masked_asks = True
+                                self.masked_from_market_data_bids_map_[server_assigned_client_id_] += size_executed
+                                self.masked_asks_ = True
 
-                                self.int_price_to_ask_order_vec[order.int_price].append(order)
-                                if (order.int_price > self.dep_market_view_.bestask_int_price()):
+                                self.intpx_to_ask_order_vec_[order.int_price_].append(order)
+                                if (order.int_price_ > self.dep_market_view_.bestask_int_price()):
                                     order.alone_above_best_market_ = True
                     else:
                         # Add liquidity order
-                        self.int_price_to_ask_order_vec[order.int_price].append(order)
-                        if (order.int_price > self.dep_market_view.bestask_int_price()):
-                            order.alone_above_best_market = True
+                        if (not order.int_price_ in self.intpx_to_ask_order_vec_.keys()):
+                            self.intpx_to_ask_order_vec_[order.int_price_] = []
+                        self.intpx_to_ask_order_vec_[order.int_price_].append(order)
+                        if (order.int_price_ > self.dep_market_view_.bestask_int_price()):
+                            order.alone_above_best_market_ = True
                             
             elif (request.request_type == "CANCEL"):
-                if (self.process_only_sendtrades):
+                if (self.process_only_sendtrades_):
                     return
                 to_postpone = 0
                 server_assigned_order_sequence = request.sreq_.scor_.server_assigned_order_sequence_
@@ -201,7 +205,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 order = self.FetchOrder(buysell, int_price, server_assigned_order_sequence)
 
                 # Probably only the first condition is required
-                if (order is not None and (order.server_assigned_client_id == server_assigned_client_id)):
+                if (order is not None and (order.server_assigned_client_id == server_assigned_client_id_)):
                     if (buysell == 1):
                         if (not request.postponed_once):
                             # if never postponed then see if it needs to be postponed
@@ -256,11 +260,11 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                             #BroadcastCancelNotification(r_server_assigned_client_id_, order)
                             pass
         
-        if (self.pending_requests):
-            for request in self.pending_requests:
+        if (self.pending_requests_):
+            for request in self.pending_requests_:
                 self.all_requests.append(request)
-            self.pending_request = []
-        self.all_requests_lock = False    
+            self.pending_requests_ = []
+        self.all_requests_lock_ = False    
     
     def SendOrderExch(self, _server_assigned_client_id_, _security_name_, _buysell_, _price_, _size_requested_, _int_price_, _client_assigned_order_sequence_):
         print 'SendOrderExch'
@@ -630,6 +634,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 break
         
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
+        return
         if (self.all_requests_):
             self.ProcessRequestQueue(True)
         t_trade_print_info_buysell_ = _trade_print_info_.buysell_
@@ -648,7 +653,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             for price_ in self.intpx_to_ask_order_vec_.keys():
                 if (price_ <= _trade_print_info_.int_trade_price_):
                     continue
-                order_vec_ = self.intpx_to_ask_vec_[price_]
+                order_vec_ = self.intpx_to_ask_order_vec_[price_]
                 if (price_ < _trade_print_info_.int_trade_price_):
                     # Limit Ask Order at a higher level than Lift Price (currently not checking masks ... simply filling)
                     if (order_vec_):
