@@ -236,6 +236,25 @@ class SecurityMarketView:
         res += " X " + str(self.market_update_info_.asklevels_[0].limit_int_price_)+ " " + str(self.market_update_info_.asklevels_[0].limit_price_) + " " + str(self.market_update_info_.asklevels_[0].limit_ordercount_)
         res += " " +  str(self.market_update_info_.asklevels_[0].limit_size_)  + " " + self.market_update_info_.asklevels_[0].limit_int_price_level_
         return res 
+
+    def OnMarketUpdate(self, bid_int_price_, bid_size_, bid_order_count, ask_int_price_, ask_size_, ask_order_count_):
+        self.top_ask_level_to_mask_trades_on_ = 0
+        self.top_bid_level_to_mask_trades_on_ = 0
+        ask_price = round((float)(ask_int_price_)/(SecurityDefinitions.GetContractMinPriceIncrement(self.shortcode())), 0)
+        bid_price_ = round((float)(bid_int_price_)/(SecurityDefinitions.GetContractMinPriceIncrement(self.shortcode())), 0)
+        while ask_int_price_ > self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_ ].limit_int_price_ and self.top_ask_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.asklevels_) - 1 ) : 
+            self.top_ask_level_to_mask_trades_on_ += 1
+        while bid_int_price_ < self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_ ].limit_int_price_ and self.top_bid_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.bidlevels_) - 1 ) :
+            self.top_bid_level_to_mask_trades_on_ += 1
+        self.market_update_info_.bestask_price_ = ask_price
+        self.market_update_info_.bestask_size_ = ask_size_
+        self.market_update_info_.bestask_int_price_ = ask_int_price_
+        self.market_update_info_.bestask_ordercount_ = ask_order_count_
+        self.market_update_info_.bestbid_price_ = bid_price_
+        self.market_update_info_.bestbid_size_ = bid_size_
+        self.market_update_info_.bestbid_int_price_ = bid_int_price_
+        self.market_update_info_.bestask_ordercount_ = bid_order_count
+        self.OnL1PriceUpdate()
      
     def SetBestLevelAskVariablesOnLift(self):
         if self.prev_ask_was_quote_ :
