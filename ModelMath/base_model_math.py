@@ -16,6 +16,7 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 		self.model_stdev_ = 1.00 # Check whether it is needed
 		self.model_math_listener_vec_ = [] # What is this
 		self.indicator_vec_ = []
+		self.prev_value_vec_ = []
 
 	def GetModelFileName(self):
 		return self.model_filename_
@@ -23,6 +24,7 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 	def AddIndicator(self, _indicator_, _weight_, _readiness_required_):
 		_indicator_.AddIndicatorListener(len(self.indicator_vec_), self, _weight_) # Why?
 		self.indicator_vec_.append(_indicator_)
+		self.prev_value_vec_.append(0)
 		if (_indicator_.IsIndicatorReady()):
 			self.is_ready_vec_.append(True)
 			self.readiness_required_vec_.append(False)

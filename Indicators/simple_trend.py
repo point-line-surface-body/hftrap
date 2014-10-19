@@ -64,10 +64,10 @@ class SimpleTrend(CommonIndicator):
             self.is_ready_ = True 
             self.InitializeValues ( )
         elif not self.data_interupted_:
-            if self.watch.msecs_from_midnight - self.last_new_page_msecs_ < self.page_width_msecs_ :
+            if self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_ < self.page_width_msecs_ :
                 self.moving_avg_price_ += self.inv_decay_sum_ * (self.current_indep_price_ - self.last_price_recorded_)
             else :
-                num_pages_to_add_ = (int) (math.floor ( ( self.watch_.msecs_from_midnight - self.last_new_page_msecs_ ) / self.page_width_msecs_ ))
+                num_pages_to_add_ = (int) (math.floor ( ( self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_ ) / self.page_width_msecs_ ))
                 if num_pages_to_add_ >= len(self.decay_vector_) :
                     self.InitializeValues()
                 else :
