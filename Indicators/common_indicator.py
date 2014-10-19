@@ -17,15 +17,15 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         self.indicator_listener_pairs_ = []
         self.unweighted_indicator_listener_pairs_ = []
         self.indicator_value_ = 0.0
-        self.is_ready = False
+        self.is_ready_ = False
         self.data_interupted = False
         self.base_price_type = "MidPrice"
         if len(args) == 3:
-            self.watch = args[0]
+            self.watch_ = args[0]
             self.concise_indicator_description_ = args[1]
             self.price_type = args[2]
         if len(args) == 2:
-            self.watch = args[0]
+            self.watch_ = args[0]
             self.concise_indicator_description_ = args[1]
              
     def SetBasepxPxtype (self, smv, base_px_type):
@@ -38,10 +38,10 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         return  self.concise_indicator_description_
     
     def IsIndicatorReady(self):
-        return self.is_ready
+        return self.is_ready_
     
     def IsDataInterrupted(self):
-        return self.data_interupted
+        return self.data_interupted_
     
     def IndicatorValue (self, is_ready):
         if is_ready :
@@ -73,23 +73,23 @@ class CommonIndicator(SecurityMarketViewChangeListener):
     
     def UpdateIndicatorListenerWeight(self, _indicator_listener__, _node_value_):
         for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener == _indicator_listener__ :
+            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
                 self.indicator_listener_pairs_[x].node_value_ = _node_value_ ;
     
     def MultiplyIndicatorListenerWeight (self, _indicator_listener__,_node_value_mult_factor_ ):
         for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener == _indicator_listener__ :
+            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
                 self.indicator_listener_pairs_[x].node_value_ *= _node_value_mult_factor_ ;
   
     def GetIndicatorListenerWeight (self, _indicator_listener__):
         for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener == _indicator_listener__ :
+            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
                 return self.indicator_listener_pairs_[x].node_value_
         return -100000000
     
     def IsWeightedListenerPresent (self,_indicator_listener__ ):
         for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener == _indicator_listener__ :
+            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
                 return True
         return False
     

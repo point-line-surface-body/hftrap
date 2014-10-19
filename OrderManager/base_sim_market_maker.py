@@ -341,10 +341,10 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         old_bestask_size_ = self.bestask_size_
     
         if (self.bestbid_size_ < _market_update_info_.bestbid_size_):
-            last_bid_size_change_msecs_ = self.watch_.msecs_from_midnight()
+            last_bid_size_change_msecs_ = self.watch_.GetMsecsFromMidnight()
     
         if (self.bestask_size_ < _market_update_info_.bestask_size_):
-            last_ask_size_change_msecs_ = self.watch_.msecs_from_midnight () ;
+            last_ask_size_change_msecs_ = self.watch_.GetMsecsFromMidnight() ;
     
         if (old_bestask_int_price_ > _market_update_info_.bestask_int_price_): 
             if (self.dep_market_view_.ask_order(0) == 1):

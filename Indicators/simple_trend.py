@@ -11,11 +11,12 @@ from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMa
 class SimpleTrend(CommonIndicator):
     
     def __init__(self, watch,concise_indicator_description_,  _indep_market_view_, _fractional_seconds_, _price_type_):
+        print('SimpleTrend.__init__')
         super(SimpleTrend, self).__init__(watch,concise_indicator_description_)
         self.trend_history_msecs_ = _fractional_seconds_ * 1000.0
-        self.price_type = _price_type_
-        self.indep_market_view = _indep_market_view_
-        self.moving_avg_price = 0.0
+        self.price_type_ = _price_type_
+        self.indep_market_view_ = _indep_market_view_
+        self.moving_avg_price_ = 0.0
         self.last_new_page_msecs_ = 0
         self.page_width_msecs_ = 500
         self.decay_page_factor_ = 0.95
@@ -25,6 +26,7 @@ class SimpleTrend(CommonIndicator):
         self.last_price_recorded_ = 0.0
         self.current_indep_price_ = 0.0
         self.SetTimeDecayWeights()
+        self.indep_market_view_.SubscribePriceType(self, 'MktSizeWPrice')
 
     @staticmethod
     def CollectShortCodes(_shortcodes_affecting_this_indicator_, r_tokens_):
@@ -55,12 +57,13 @@ class SimpleTrend(CommonIndicator):
     '''
     Main logic is written here. This is the function which calculates the indicator value.
     '''
-    def OnMarketUpdate(self,_security_id_, _market_update_info_ ):   
-        self.current_indep_price_ = SecurityMarketView.GetPriceFromType ( self.price_type_, _market_update_info_ );
-        if not self.is_ready and self.indep_market_view_.is_ready_complex(2):
+    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+        print('SimpleTrend.OnMarketUpdate called')   
+        self.current_indep_price_ = self.indep_market_view_.GetPriceFromType(self.price_type_)
+        if not self.is_ready_:
             self.is_ready_ = True 
             self.InitializeValues ( )
-        elif not self.data_interupted :
+        elif not self.data_interupted_:
             if self.watch.msecs_from_midnight - self.last_new_page_msecs_ < self.page_width_msecs_ :
                 self.moving_avg_price_ += self.inv_decay_sum_ * (self.current_indep_price_ - self.last_price_recorded_)
             else :
@@ -98,7 +101,7 @@ class SimpleTrend(CommonIndicator):
     def InitializeValues(self):
         self.moving_avg_price_ = self.current_indep_price_ ;
         self.last_price_recorded_ = self.current_indep_price_ ;
-        self.last_new_page_msecs_ = self.watch_.msecs_from_midnight - (self.watch_.msecs_from_midnight % self.page_width_msecs_)
+        self.last_new_page_msecs_ = self.watch_.GetMsecsFromMidnight() - (self.watch_.GetMsecsFromMidnight() % self.page_width_msecs_)
         self.indicator_value_ = 0;
     
     @staticmethod
