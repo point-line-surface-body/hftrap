@@ -29,6 +29,8 @@ class BaseOrderManager:
         self.base_trader_ = _base_trader_
         self.shortcode_ = _dep_shortcode_
         
+        self.sum_ask_unconfirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
+        self.sum_bid_unconfirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
         self.initial_adjustment_set_ = False
         self.bid_int_price_adjustment_ = 0
         self.ask_int_price_adjustment_ =  0
@@ -95,14 +97,19 @@ class BaseOrderManager:
         return
     
     def GetBidIndex(self, _int_price_):
+        if (not self.initial_adjustment_set_):
+            self.SetInitialIntPriceAdjustment(_int_price_)
         return _int_price_ - self.bid_int_price_adjustment_
     
     def GetAskIndex(self, _int_price_):
+        if (not self.initial_adjustment_set_):
+            self.SetInitialIntPriceAdjustment(_int_price_)
         return (self.INT_PRICE_RANGE - (_int_price_ - self.ask_int_price_adjustment_))
     
     def SetInitialIntPriceAdjustment(self, _int_price_):
         self.bid_int_price_adjustment_ = _int_price_ - self.INT_PRICE_RANGE / 2
         self.ask_int_price_adjustment_ = _int_price_ - self.INT_PRICE_RANGE / 2
+        self.initial_adjustment_set_ = True
         '''Assumption: No re-adjustment is needed'''
     
 #     def GetBidIndexAndAdjustIntPrice(self, _int_price_):
@@ -360,17 +367,17 @@ class BaseOrderManager:
             print 'SendTrade: _size_requested_ <= 0'
             return
         order_ = BaseOrder()
-        order_.security_name = self.shortcode_
-        order_.buy_sell = _buysell_
-        order_.price = _price_
-        order_.int_price = _int_price_
-        order_.size_requested = _size_requested_
-        order_.size_remaining = 0
-        order_.order_status = None
+        order_.security_name_ = self.shortcode_
+        order_.buysell_ = _buysell_
+        order_.price_ = _price_
+        order_.int_price_ = _int_price_
+        order_.size_requested_ = _size_requested_
+        order_.size_remaining_ = 0
+        order_.order_status_ = None
         order_.client_assigned_order_sequence_ = self.client_assigned_order_sequence_
         self.client_assigned_order_sequence_ += 1
         
-        if (_buysell_ == 0): # Buy
+        if (_buysell_ == 'B'): # Buy
             t_bid_index_ = self.GetBidIndex(_int_price_)
             self.sum_bid_unconfirmed_[t_bid_index_] += _size_requested_
             self.AdjustTopBottomUnconfirmedBidIndexes(t_bid_index_)
@@ -379,16 +386,17 @@ class BaseOrderManager:
             self.sum_bid_sizes_ += _size_requested_
         else:
             t_ask_index_ = self.GetAskIndex(_int_price_)
+            print t_ask_index_
             self.sum_ask_unconfirmed_[t_ask_index_] += _size_requested_
             self.AdjustTopBottomUnconfirmedAskIndexes(t_ask_index_)
             self.unsequenced_bids_.append(order_)
             self.num_unconfirmed_orders_ += 1
             self.sum_ask_sizes_ += _size_requested_
-            
+        
         self.base_trader_.SendTrade(order_)
         
         self.total_size_placed_ += _size_requested_
-        self.send_order_count += 1
+        self.send_order_count_ += 1
         
     '''Adjust Function''' 
     def AdjustTopBottomUnconfirmedBidIndexes(self, _bid_index_):

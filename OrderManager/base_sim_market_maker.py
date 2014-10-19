@@ -39,6 +39,13 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.bid_side_priority_order_size_ = 0
         self.dep_market_view_.SubscribePriceType(self, "MktSizeWPrice")
         self.watch_.SubscribeBigTimePeriod(self) # may make small Time period also in watch
+        
+        self.server_assigned_order_sequence_ = 0
+        self.saos_to_seqd_time_ = [] # server_assigned_order_sequence
+        
+        self.order_rejection_listener_vec_ = []
+        self.order_sequenced_listener_vec_ = []
+        
         return
     
     @staticmethod
@@ -256,6 +263,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.all_requests_lock = False    
     
     def SendOrderExch(self, _server_assigned_client_id_, _security_name_, _buysell_, _price_, _size_requested_, _int_price_, _client_assigned_order_sequence_):
+        print 'SendOrderExch'
         order_ = BaseOrder()
         order_.security_name_ = _security_name_
         order_.buysell_ = _buysell_
@@ -272,16 +280,17 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         order_.server_assigned_order_sequence_ = self.server_assigned_order_sequence_
         self.server_assigned_order_sequence_ += 1
         
-        order_.server_assigned_client_id_ = self.servr
+        order_.server_assigned_client_id_ = _server_assigned_client_id_
         
-        order_.order_sequenced_time_ = self.watch.tv()
+        order_.order_sequenced_time_ = self.watch_.tv()
         
         # Size requested must be a multiple of MinOrderSize
-        if (not _size_requested_ % self.dep_market_view.min_order_size() != 0):
+        if (not _size_requested_ % self.dep_market_view_.MinOrderSize() != 0):
             # Broadcast rejection
             self.BroadcastRejection(_server_assigned_client_id_, order_, 'kSendOrderRejectNotMinOrderMultiple')
             
-        self.saos_to_seqd_time_[order_.server_assigned_order_sequence_] = self.watch_.tv()
+        self.saos_to_seqd_time_.append(self.watch_.tv())
+        self.server_assigned_order_sequence_ += 1
         # Broadcast sequenced
         self.BroadcastSequenced(_server_assigned_client_id_, order_)
         
