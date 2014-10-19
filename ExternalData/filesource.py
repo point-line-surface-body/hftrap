@@ -12,7 +12,6 @@ class FileSource(ExternalDataListener):
         self.smv_ = _smv_
         self.file_name_ = GetFileSourceName(_shortcode_, _trading_date_)
         self.file_ = open(self.file_name_, 'rb')
-        self.events_left_ = 0
         
     def __del__(self):
         return
@@ -64,27 +63,14 @@ class FileSource(ExternalDataListener):
             return True
     
     def SetNextTimeStamp(self):
-        '''@Ashwin Can it be less than zero?'''
-        if (self.events_left_ <= 0):
-            self.events_left_ = 0
-            '''Why Non Intermediate?'''
-            found_non_intermediate_event_ = False
-            while (not found_non_intermediate_event_):
-                if (self.file_.read(self.next_event_, )): #TODO
-                    self.next_event_timestamp_ = 0
-                    return False
-                if (self.next_event_.time_ != 0):
-                    next_non_intermediate_time_ = self.next_event_.time_
-                    found_non_intermediate_event_ = True
-            self.event_queue_.append(self.next_event_)
-            self.events_left_ += 1
-        if (self.events_left_ > 0):
-            self.next_event_ = self.event_queue_[0]
-            self.next_event_timestamp_ = next_non_intermediate_time_
-            self.events_left_ -= 1
-            self.event_queue_.pop()
+        this_bytes_ = self.file_.read(calcsize('QIccHHHHHHHH'))
+        if (len(this_bytes_) < calcsize('QIccHHHHHHHH')):
+            self.next_event_timestamp_ = 0
+            return False
+        else:
+            self.next_event_ = Message(this_bytes_)
+            self.next_event_timestamp_ = self.next_event_.timestamp_
             return True
-        return True
         
     def ProcessAllEvents(self):
         while (1):
