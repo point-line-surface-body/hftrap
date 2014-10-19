@@ -18,7 +18,7 @@ class SecurityDefinitions(object):
             SecurityDefinitions.contract_specification_map_["ZN_0"] = ContractSpecification(0.015625, 1000, 1)
     
     @staticmethod
-    def GetContractMinPriceIncrement(_shortcode_, _date_):
+    def GetContractMinPriceIncrement(_shortcode_, *argv):
         if (_shortcode_ == 'ZN_0' or _shortcode_ == 'ZN_1'):
             return 0.015625
         else:
