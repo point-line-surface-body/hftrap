@@ -1,8 +1,9 @@
 from InitCommon.paramset import ParamSet
 from ExecLogic.trade_vars import TradeVars
 from ModelMath.model_math_listener import ModelMathListener
+from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 
-class BaseTrading(ModelMathListener): #extends many classes.. add here
+class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends many classes.. add here
 
 	def __init__(self, _watch_, _dep_market_view_, _order_manager_, _paramfilename_, _trading_start_time_, 
                  _trading_end_time_, _runtime_id_, _model_source_shortcode_vec_):
@@ -59,12 +60,6 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 	def TradingLogic(self):
 		return
 	
-	def OnMarketUpdate(self):
-		return
-	
-	def OnTradePrint(self):
-		return
-	
 	def SetModelMathComponent(self, _base_model_math_):
 		self.base_model_math_ = _base_model_math_
 	
@@ -74,13 +69,27 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 	def GetPosition(self):
 		return self.my_position_
 	
+	def NonSelfMarketUpdate(self):
+		self.best_nonself_bid_price_ = self.dep_market_view_.bestbid_price()
+		self.best_nonself_bid_int_price_ = self.dep_market_view_.bestbid_int_price()
+		self.best_nonself_bid_size_ = self.dep_market_view_.bestbid_size()
+		self.best_nonself_ask_price_ = self.dep_market_view_.bestask_price()
+		self.best_nonself_ask_int_price_ = self.dep_market_view_.bestask_int_price()
+		self.best_nonself_ask_size_ = self.dep_market_view_.bestask_size()
+		
+	def OnMarketUpdate(self):
+		self.NonSelfMarketUpdate()
+		
+	def OnTradePrint(self):
+		self.NonSelfMarketUpdate()
+	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
 		print('UpdateTarget Called')
 		print(self.is_ready_)
 		if (not self.is_ready_):
 			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
 			print(str(_new_target_))
-			print(self.dep_market_view_)
+			#print(self.dep_market_view_)
 			print(self.dep_market_view_.bestbid_price())
 			print(self.dep_market_view_.bestask_price())
 			if ((self.watch_.GetMsecsFromMidnight() > self.trading_start_time_) and
@@ -90,7 +99,7 @@ class BaseTrading(ModelMathListener): #extends many classes.. add here
 				self.is_ready_ = True
 		else:
 			self.target_price_ = _new_target_
-			self.target_bias_numbers_ = _new_sum_vars_
+			self.targetbias_numbers_ = _new_sum_vars_
 			self.ShouldBeGettingFlat()
 			if (not self.should_be_getting_flat_):
 				self.TradingLogic()
