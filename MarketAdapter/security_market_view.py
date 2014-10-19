@@ -33,8 +33,8 @@ class SecurityMarketView:
         self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(_shortcode_, self.watch_.TradingDate())
         self.market_update_info_ = MarketUpdateInfo(_shortcode_, _security_id_, SecurityDefinitions.GetContractExchSource(_shortcode_, self.watch_.TradingDate()))
         self.trade_print_info_ = TradePrintInfo()
-        self.l1_price_listeners = []
-        self.l1_size_listeners = []
+        self.l1_price_listeners_ = []
+        self.l1_size_listeners_ = []
         self.onready_listeners_ = []
         self.price_type_subscribed = dict()
         self.use_order_level_book_ = False
@@ -122,10 +122,13 @@ class SecurityMarketView:
             return False
     
     def SubscribeL1Only(self, _new_listener_):
-        if not self.l1_price_listeners.__contains__(_new_listener_):
-            self.l1_price_listeners.append(_new_listener_)
-        if not self.l1_size_listeners.__contains__(_new_listener_):
-            self.l1_size_listeners.append(_new_listener_)
+        if not self.l1_price_listeners_.__contains__(_new_listener_):
+            print('********Added Listener********')
+            self.l1_price_listeners_.append(_new_listener_)
+        if not self.l1_size_listeners_.__contains__(_new_listener_):
+            self.l1_size_listeners_.append(_new_listener_)
+        print(len(self.l1_price_listeners_))
+        print(self.l1_price_listeners_)
         
     def SubscribeOnReady(self, _new_listener_):
         if not self.onready_listeners_.__contains__(_new_listener_):
@@ -133,6 +136,7 @@ class SecurityMarketView:
         
     def OnL1PriceUpdate(self):
         self.UpdateL1Prices()
+        self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyOnReadyListeners()
        
@@ -140,12 +144,14 @@ class SecurityMarketView:
         self.market_update_info_.mkt_size_weighted_price_ = (self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_) / (self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_)
 
     def NotifyL1PriceListeners(self):
+        print('NotifyL1PriceListeners')
+        print(self.is_ready_)
         if not self.is_ready_:
             return
-        if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_:
-            return
+        #if self.using_order_level_data_ and self.watch_.tv() <= self.skip_listener_notification_end_time_:
+        #    return
         for i in range(len(self.l1_price_listeners_)):
-            self.l1_price_listeners[i].OnMarketUpdate(self.market_update_info_.security_id_, self.market_update_info_)
+            self.l1_price_listeners_[i].OnMarketUpdate(self.market_update_info_.security_id_, self.market_update_info_)
         self.market_update_info_.l1events_ += 1
     
     def NotifyOnReadyListeners(self):
@@ -166,7 +172,7 @@ class SecurityMarketView:
             self.market_update_info_.pretrade_bestask_size_ = self.market_update_info_.bestask_size_
             self.market_update_info_.pretrade_mid_price_ = self.market_update_info_.mid_price_    
                     
-    def GetPriceFromType(self, _price_type_, _market_update_info_):
+    def GetPriceFromType(self, _price_type_):
         if _price_type_ == 'MktSizeWPrice':
             return self.market_update_info_.mkt_size_weighted_price_
         elif _price_type_ == 'AskPrice':

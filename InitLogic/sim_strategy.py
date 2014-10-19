@@ -93,8 +93,8 @@ def __main__():
     for smv_ in smv_vec_:
         smv_.SubscribeOnReady(base_model_math_)
     
-    market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_, tradingdate_)
-    market_update_manager_.start()
+    #market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_, tradingdate_)
+    #market_update_manager_.start()
 
     '''Run Historical Dispatcher'''
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
