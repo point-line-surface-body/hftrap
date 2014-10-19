@@ -113,14 +113,13 @@ class SecurityMarketView:
         self.use_order_level_book_ = False
             
     def SubscribePriceType(self, _new_listener_, _price_type_):
-        res = True
         if _price_type_ == 'MktSizeWPrice':
-            self.price_type_subscribed[_price_type_] = True
-            if _new_listener_ is not None :
+            self.price_type_subscribed_[_price_type_] = True
+            if _new_listener_ is not None:
                 self.SubscribeL1Only(_new_listener_)
-        else :
-            res = False
-        return res
+            return True
+        else:
+            return False
     
     def SubscribeL1Only(self, _new_listener_):
         if not self.l1_price_listeners.__contains__(_new_listener_):
@@ -138,7 +137,7 @@ class SecurityMarketView:
         self.NotifyOnReadyListeners()
        
     def UpdateL1Prices(self):
-        self.market_update_info_.mkt_size_weighted_price_ = ( self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_ ) / ( self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_ ) ;
+        self.market_update_info_.mkt_size_weighted_price_ = (self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_) / (self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_)
 
     def NotifyL1PriceListeners(self):
         if not self.is_ready_:

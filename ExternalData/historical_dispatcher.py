@@ -66,9 +66,11 @@ class HistoricalDispatcher() :
 		return
 
 	def SeekHistFileSourcesTo(self, _endtime_):
-		'''I have removed the condition here, will it affect?'''
+		if (self.first_event_enqueued):
+			return
 		for edl in self.external_data_listener_vec[:]:
 			hasevents = edl.SeekToFirstEventAfter(_endtime_)
 			if (not hasevents):
 				self.prev_external_data_listener_vec.append(edl)
 				self.external_data_listener_vec.remove(edl)
+		self.first_event_enqueued = True
