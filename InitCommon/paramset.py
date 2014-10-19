@@ -6,6 +6,7 @@ class ParamSet:
     '''Currently thresholds are independent of position'''    
     def LoadParams(self, _paramfilename_):
         t_param_file_ = open(_paramfilename_, 'r')
+        self.max_int_spread_to_place_ = 5
         while (1):
             t_line_ = t_param_file_.readline()
             if (t_line_ is None or t_line_ == ""):

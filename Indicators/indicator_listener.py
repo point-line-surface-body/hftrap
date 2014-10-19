@@ -31,5 +31,3 @@ class UnweightedIndicatorListenerPair():
     
     def OnIndicatorUpdate(self, indicator_value):
         self.indicator_listener.OnIndicatorUpdate(self.indicator_index,indicator_value)
-        
-        

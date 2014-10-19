@@ -24,17 +24,15 @@ class DirectionalAggressiveTrading(BaseTrading):
         if (self.current_tradevarset_.l1bid_trade_size_ == 0):
             return #not return correct this
         if ((self.last_buy_msecs_ > 0) and 
-            (self.watch_.GetMSecsFromMidnight() - self.last_buy_msecs_ < self.param_set_.cooloff_interval_)):
+            (self.watch_.GetMsecsFromMidnight() - self.last_buy_msecs_ < self.param_set_.cooloff_interval_)):
             pass
         else:
-            print('GetMSecsFromMidnight() GetMSecsFromMidnight() GetMSecsFromMidnight() GetMSecsFromMidnight()')
-            print self
             if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance_) or 
                 (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
                 self.top_bid_place_ = True
                 self.top_bid_keep_ = True
                 
-                if (self.watch_.GetMSecsFromMidnight() - self.last_agg_buy_msecs_ > self.param_set_.agg_cooloff_interval_):
+                if (self.watch_.GetMsecsFromMidnight() - self.last_agg_buy_msecs_ > self.param_set_.agg_cooloff_interval_):
                     
                     if ((self.param_set_.allowed_to_aggress_) and 
                         (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_aggressive_) and 
@@ -76,7 +74,7 @@ class DirectionalAggressiveTrading(BaseTrading):
         if (self.current_tradevarset_.l1ask_trade_size_ == 0):
             return #not return correct this
         if ((self.last_sell_msecs_ > 0) and 
-            (self.watch_.GetMSecsFromMidnight() - self.last_sell_msecs_ < self.param_set_.cooloff_interval_)):
+            (self.watch_.GetMsecsFromMidnight() - self.last_sell_msecs_ < self.param_set_.cooloff_interval_)):
             pass
         else:
             if ((self.best_nonself_ask_size_ > self.param_set_.safe_distance_) or 
@@ -84,7 +82,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                 self.top_ask_place_ = True
                 self.top_ask_keep_ = True
                 
-                if (self.watch_.GetMSecsFromMidnight() - self.last_agg_sell_msecs_ > self.param_set_.agg_cooloff_interval_):
+                if (self.watch_.GetMsecsFromMidnight() - self.last_agg_sell_msecs_ > self.param_set_.agg_cooloff_interval_):
                     
                     if ((self.param_set_.allowed_to_aggress_) and 
                         (self.my_position_ >= self.param_set_.min_position_to_hit_) and 
@@ -163,7 +161,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                 if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
                     (self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
-                    self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1bid_trade_size_, 0, 'B')
+                    self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
                     self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
             else:
