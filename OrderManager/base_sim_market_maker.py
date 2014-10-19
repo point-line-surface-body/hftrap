@@ -333,93 +333,66 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                   _order_.int_price())
             
     def OnMarketUpdate(self, _security_id_, _market_update_info_):
+        
+        # Saving old values (required only for CFE): for matching trades with market quotes
         old_bestbid_int_price_ = self.bestbid_int_price_
         old_bestbid_size_ = self.bestbid_size_
         old_bestask_int_price_ = self.bestask_int_price_
         old_bestask_size_ = self.bestask_size_
-        if self.bestbid_size_ < _market_update_info_.bestbid_size_ :
-            self.last_bid_size_change_msecs_ = self.watch_.GetMsecsFromMidnight()
-        if self.bestask_size_ < _market_update_info_.bestask_size_  :
-            self.last_ask_size_change_msecs_ = self.watch_.GetMsecsFromMidnight()
-        if old_bestask_int_price_ > _market_update_info_.bestask_int_price_ :
-            if self.dep_market_view_.market_update_info_.asklevels_[0].limit_ordercount_ ==1:
-                self.ask_side_priority_order_exists_ = True
-                self.ask_side_priority_order_size_ = self.dep_market_view_.market_update_info_.asklevels_[0].limit_size_
-            else:
-                self.ask_side_priority_order_exists_ = False
-                self.ask_side_priority_order_size_ = 0
-        if old_bestbid_int_price_ < _market_update_info_.bestbid_int_price_ :
-            if self.dep_market_view_.market_update_info_.bidlevels_[0].limit_ordercount_ ==1 :
-                self.bid_side_priority_order_exists_ = True
-                self.bid_side_priority_order_size_ = self.dep_market_view_.market_update_info_.bidlevels_[0].limit_size_
-            else :
-                self.bid_side_priority_order_exists_ = False
-                self.bid_side_priority_order_size_ = 0
-                
-        '''Incomplete function.. Need to write more'''
-                
-                
-    def OnMarketUpdate(_security_id_, _market_update_info_):
-        
-        # Saving old values (required only for CFE): for matching trades with market quotes
-        old_bestbid_int_price_ = bestbid_int_price_
-        old_bestbid_size_ = bestbid_size_
-        old_bestask_int_price_ = bestask_int_price_
-        old_bestask_size_ = bestask_size_
     
-        if (bestbid_size_ < _market_update_info_.bestbid_size_):
-            last_bid_size_change_msecs_ = watch_.msecs_from_midnight()
+        if (self.bestbid_size_ < _market_update_info_.bestbid_size_):
+            last_bid_size_change_msecs_ = self.watch_.msecs_from_midnight()
     
-        if (bestask_size_ < _market_update_info_.bestask_size_):
-            last_ask_size_change_msecs_ = watch_.msecs_from_midnight () ;
+        if (self.bestask_size_ < _market_update_info_.bestask_size_):
+            last_ask_size_change_msecs_ = self.watch_.msecs_from_midnight () ;
     
         if (old_bestask_int_price_ > _market_update_info_.bestask_int_price_): 
             if (self.dep_market_view_.ask_order(0) == 1):
-                FillInValue(ask_side_priority_order_exists_map_, True)
-                FillInValue(ask_side_priority_order_size_map_ , self.dep_market_view_.ask_size(0))
+                self.FillInValue(self.ask_side_priority_order_exists_map_, True)
+                self.FillInValue(self.ask_side_priority_order_size_map_ , self.dep_market_view_.ask_size(0))
             else:
-                FillInValue(ask_side_priority_order_exists_map_, False)
-                FillInValue(ask_side_priority_order_size_map_, 0)
+                self.FillInValue(self.ask_side_priority_order_exists_map_, False)
+                self.FillInValue(self.ask_side_priority_order_size_map_, 0)
     
         if (old_bestbid_int_price_ < _market_update_info_.bestbid_int_price_): 
             if (self.dep_market_view_.bid_order(0) == 1):
-                FillInValue(bid_side_priority_order_exists_map_, True)
-                FillInValue(bid_side_priority_order_size_map_, self.dep_market_view_.bid_size(0))
+                self.FillInValue(self.bid_side_priority_order_exists_map_, True)
+                self.FillInValue(self.bid_side_priority_order_size_map_, self.dep_market_view_.bid_size(0))
             else:
-                FillInValue(bid_side_priority_order_exists_map_, False)
-                FillInValue(bid_side_priority_order_size_map_, 0)
+                self.FillInValue(self.bid_side_priority_order_exists_map_, False)
+                self.FillInValue(self.bid_side_priority_order_size_map_, 0)
     
         # currently strictly removing rhe proority order if queue size changes
         # Can change if sim -real is still bad 
         if (old_bestask_int_price_ == self.dep_market_view_.ask_int_price (0) and old_bestask_size_ > self.dep_market_view_.ask_size(0)):
-            FillInValue(ask_side_priority_order_exists_map_, false ) ;
-            FillInValue(ask_side_priority_order_size_map_, 0)
+            self.FillInValue(self.ask_side_priority_order_exists_map_, False)
+            self.FillInValue(self.ask_side_priority_order_size_map_, 0)
     
-        if (old_bestbid_int_price_  == dep_market_view_.bid_int_price( 0 ) && old_bestbid_size_ > dep_market_view_.bid_size(0) ):
-            FillInValue(bid_side_priority_order_exists_map_, False)
-            FillInValue(bid_side_priority_order_size_map_, 0)
+        if (old_bestbid_int_price_  == self.dep_market_view_.bid_int_price( 0 ) and old_bestbid_size_ > self.dep_market_view_.bid_size(0) ):
+            self.FillInValue(self.bid_side_priority_order_exists_map_, False)
+            self.FillInValue(self.bid_side_priority_order_size_map_, 0)
     
         if (self.sid_to_sim_config_[self.dep_security_id_].use_aggressor_side_estimate_):
             if (not self.dep_market_view_.IsBidBookEmpty()):
-                if (not last_bestbid_int_price_[0]):
+                if (not self.last_bestbid_int_price_[0]):
                     # first time
-                    last_bestbid_int_price_[0] = self.dep_market_view_.bid_int_price(0)
-                if (not last_bestbid_int_price_[1]):
+                    self.last_bestbid_int_price_[0] = self.dep_market_view_.bid_int_price(0)
+                if (not self.last_bestbid_int_price_[1]):
                     # first time
-                    last_bestbid_int_price_[1] = self.dep_market_view_.bid_int_price(0)
-                if (last_bestbid_int_price_[0] != dep_market_view_.bid_int_price(0))
-                    last_bestbid_int_price_[1] = last_bestbid_int_price_[0]
-                    last_bestbid_int_price_[0] = dep_market_view_.bid_int_price(0)
+                    self.last_bestbid_int_price_[1] = self.dep_market_view_.bid_int_price(0)
+                if (self.last_bestbid_int_price_[0] != self.dep_market_view_.bid_int_price(0)):
+                    self.last_bestbid_int_price_[1] = self.last_bestbid_int_price_[0]
+                    self.last_bestbid_int_price_[0] = self.dep_market_view_.bid_int_price(0)
             if (not self.dep_market_view_.IsAskBookEmpty()):
-                if (not last_bestask_int_price_[0]):
+                if (not self.last_bestask_int_price_[0]):
                     # first time
-                    last_bestask_int_price_[0] = self.dep_market_view_.ask_int_price(0)
-                if (not last_bestask_int_price_[1]):
+                    self.last_bestask_int_price_[0] = self.dep_market_view_.ask_int_price(0)
+                if (not self.last_bestask_int_price_[1]):
                     # first time
-                    last_bestask_int_price_[1] = self.dep_market_view_.ask_int_price(0)
-                if (not last_bestask_int_price_ [0] == dep_market_view_.ask_int_price(0)):
-                    last_bestask_int_price_[1] = last_bestask_int_price_[0]
-                    last_bestask_int_price_[0] = self.dep_market_view_.ask_int_price(0)
+                    self.last_bestask_int_price_[1] = self.dep_market_view_.ask_int_price(0)
+                if (not self.last_bestask_int_price_ [0] == self.dep_market_view_.ask_int_price(0)):
+                    self.last_bestask_int_price_[1] = self.last_bestask_int_price_[0]
+                    self.last_bestask_int_price_[0] = self.dep_market_view_.ask_int_price(0)
         if (self.sid_to_sim_config_ [self.dep_security_id_].max_conf_orders_above_best_level_ >= 0):
             self.CxlOrdersAboveBestLevel(self.sid_to_sim_config_[self.dep_security_id_].max_conf_orders_above_best_level_)
     
@@ -429,42 +402,42 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         # TODO check if best market changed and if it changed on the bid side then clear masked_from_market_data_bids_map_, if ask best level 
         # changed then clear masked_from_market_data_asks_map_
         if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
-            if (not bestbid_int_price_ == self.dep_market_view_.bid_int_price(0)):
+            if (not self.bestbid_int_price_ == self.dep_market_view_.bid_int_price(0)):
                 bestbid_int_price_ = self.dep_market_view_.bid_int_price(0)
                 # reset masks on the bidside
                 if (self.masked_bids_):
                     # this means that masks had been set, hence the need to unmask
-                    FillInValue(self.masked_from_market_data_bids_map_, 0)
+                    self.FillInValue(self.masked_from_market_data_bids_map_, 0)
             bestbid_size_ = self.dep_market_view_.bid_size(0)
         else:
-            if (not bestbid_int_price_ == dep_market_view_.market_update_info_.bestbid_int_price_):
-                bestbid_int_price_ = dep_market_view_.market_update_info_.bestbid_int_price_;
+            if (not bestbid_int_price_ == self.dep_market_view_.market_update_info_.bestbid_int_price_):
+                bestbid_int_price_ = self.dep_market_view_.market_update_info_.bestbid_int_price_;
                 # reset masks on the bidside
                 if (self.masked_bids_):
                     # this means that masks had been set, hence the need to unmask
-                    FillInValue(self.masked_from_market_data_bids_map_, 0)
+                    self.FillInValue(self.masked_from_market_data_bids_map_, 0)
             bestbid_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
     
         if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
-            if (not bestask_int_price_ == self.dep_market_view_.ask_int_price(0)):
+            if (not self.bestask_int_price_ == self.dep_market_view_.ask_int_price(0)):
                 bestask_int_price_ = self.dep_market_view_.ask_int_price(0)
                 # reset masks on the askside
                 if (self.masked_asks_):
                     # this means that masks had been set, hence the need to unmask
-                    FillInValue(self.masked_from_market_data_asks_map_, 0)
+                    self.FillInValue(self.masked_from_market_data_asks_map_, 0)
             bestask_size_ = self.dep_market_view_.ask_size(0)
         else:
             if (not bestask_int_price_ == self.dep_market_view_.market_update_info_.bestask_int_price_):
-                bestask_int_price_ = dep_market_view_.market_update_info_.bestask_int_price_
+                bestask_int_price_ = self.dep_market_view_.market_update_info_.bestask_int_price_
                 # reset masks on the askside
                 if (self.masked_asks_):
                     # this means that masks had been set, hence the need to unmask
-                    FillInValue (masked_from_market_data_asks_map_, 0)
+                    self.FillInValue(self.masked_from_market_data_asks_map_, 0)
             bestask_size_ = self.dep_market_view_.market_update_info_.bestask_size_
     
         if (self.sid_to_sim_config_[self.dep_security_id_].use_tgt_sim_market_maker_ or self.sid_to_sim_config_[self.dep_security_id_].use_baseprice_tgt_sim_market_maker_):
             flag = True
-            prev_dep_price_change_ = p_dep_price_change_indicator_->indicator_value(flag)
+            prev_dep_price_change_ = self.p_dep_price_change_indicator_.indicator_value(flag)
     
         # Check if any orders have become aggressive if so fill them
         # Call Enqueue on orders at or above best market
@@ -492,32 +465,38 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                         if (order_.size_remaining() == 0):
                             order_vec_.remove(order_)
-            elif (price_ > bestbid_int_price_): // above best nonself market ... Enqueue ( 0 )
+            elif (price_ > bestbid_int_price_): # above best nonself market ... Enqueue ( 0 )
                 for order_ in order_vec_:
                     order_.Enqueue(0)
-            elif (price_ == bestbid_int_price_): // at best nonself market ... To Enqueue
+            elif (price_ == bestbid_int_price_): # at best nonself market ... To Enqueue
                 for order_ in order_vec_[:]:
                     if (order_ is None):
                         continue
-                    prev_size_ = order_.queue_size_behind_ + order_->queue_size_ahead_
-                    new_size_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.bid_size(0) : 
-                                self.dep_market_view_.market_update_info_.bestbid_size_
-                    new_ordercount_ = self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_ ? self.dep_market_view_.bid_order(0) : 
-                                self.dep_market_view_.market_update_info_.bestbid_ordercount_
+                    prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
+                    if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                        new_size_ = self.dep_market_view_.bid_size(0)
+                    else: 
+                        new_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
+                    if (self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_):
+                        new_ordercount_ = self.dep_market_view_.bid_order(0)
+                    else: 
+                        new_ordercount_ = self.dep_market_view_.market_update_info_.bestbid_ordercount_
                     if (not self.dep_market_view_.trade_before_quote() and (not new_size_ == prev_size_ or order_.num_events_seen_ == 1)):
                         self.BackupQueueSizes(order_)
-                    if (order_.num_events_seen_ == 0): // first time ... before this do not fill
+                    if (order_.num_events_seen_ == 0): # first time ... before this do not fill
                         order_.queue_size_behind_ = 0
-                        order_.queue_size_ahead_ = self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_ ? self.dep_market_view_.bid_size(0) : 
-                                                    self.dep_market_view_.market_update_info_.bestbid_size_
+                        if (self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_):
+                            order_.queue_size_ahead_ = self.dep_market_view_.bid_size(0)
+                        else: 
+                            self.dep_market_view_.market_update_info_.bestbid_size_
                         order_.num_events_seen_ = 1
-                    else: // not the first time
-                        if (self.sid_to_sim_config_[ dep_security_id_ ].use_tgt_sim_market_maker_):
+                    else: # not the first time
+                        if (self.sid_to_sim_config_[self.dep_security_id_].use_tgt_sim_market_maker_):
                             self.UpdateQueueSizesTargetPrice(new_size_, prev_size_, order_)
-                        elif (self.sid_to_sim_config_[ dep_security_id_ ].use_baseprice_tgt_sim_market_maker_):
-                            self.UpdateQueueSizesBasePriceBasedTargetPrice(new_size_, prev_size_, p_sim_order_)
-                        elif (self.sid_to_sim_config_[ dep_security_id_ ].use_fgbm_sim_market_maker_):
-                            self.UpdateQueueSizesTradeBased(new_size_, prev_size_, p_sim_order_)
+                        elif (self.sid_to_sim_config_[self.dep_security_id_].use_baseprice_tgt_sim_market_maker_):
+                            self.UpdateQueueSizesBasePriceBasedTargetPrice(new_size_, prev_size_, order_)
+                        elif (self.sid_to_sim_config_[self.dep_security_id_].use_fgbm_sim_market_maker_):
+                            self.UpdateQueueSizesTradeBased(new_size_, prev_size_, order_)
                         else:
                             self.UpdateQueueSizes(new_size_, prev_size_, order_)
             elif (self.sid_to_sim_config_[self.dep_security_id_].adjust_non_best_order_queues_):
@@ -525,23 +504,29 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     if (order_ is None):
                         continue
                     prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
-                    new_size_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.bid_size(0) : self.dep_market_view_.market_update_info_.bestbid_size_
+                    if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                        new_size_ = self.dep_market_view_.bid_size(0)
+                    else: 
+                        new_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
                     if (not self.dep_market_view_.trade_before_quote() and (not new_size_ == prev_size_ or order_.num_events_seen_ == 1)):
                         self.BackupQueueSizes(order_)
-                    if (order_.num_events_seen_ == 0): // first time ... before this do not fill
+                    if (order_.num_events_seen_ == 0): # first time ... before this do not fill
                         order_.queue_size_behind_ = 0
-                        order_.queue_size_ahead_ = self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_ ? self.dep_market_view_.bid_size(0) : self.dep_market_view_.market_update_info_.bestbid_size_
-                        order_->num_events_seen_ = 1
-                    else: // not the first time
+                        if (self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_):
+                            order_.queue_size_ahead_ = self.dep_market_view_.bid_size(0)
+                        else:
+                            order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestbid_size_
+                        order_.num_events_seen_ = 1
+                    else: # not the first time
                         if (self.sid_to_sim_config_[self.dep_security_id_ ].use_tgt_sim_market_maker_):
                             self.UpdateQueueSizesTargetPrice(new_size_, prev_size_, order_)
                         elif (self.sid_to_sim_config_[self.dep_security_id_].use_baseprice_tgt_sim_market_maker_):
-                            self.UpdateQueueSizesBasePriceBasedTargetPrice ( new_size_ , prev_size_, p_sim_order_ )
+                            self.UpdateQueueSizesBasePriceBasedTargetPrice ( new_size_ , prev_size_, order_)
                         elif (self.sid_to_sim_config_[self.dep_security_id_].use_fgbm_sim_market_maker_):
-                            self.UpdateQueueSizesTradeBased(new_size_, prev_size_, p_sim_order_)
+                            self.UpdateQueueSizesTradeBased(new_size_, prev_size_, order_)
                         else:
                             self.UpdateQueueSizes(new_size_, prev_size_, order_)
-            else
+            else:
                 break
     
         for price_ in self.intpx_to_ask_order_vec_.keys():
@@ -564,28 +549,34 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         self.masked_from_market_data_bids_map_[order_.server_assigned_client_id()] += this_size_executed_
                         self.masked_bids_ = True
                         self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
-                        if (order_->size_remaining() == 0):
+                        if (order_.size_remaining() == 0):
                             order_vec_.remove(order_)
             elif (price_ < bestask_int_price_):
                 for order_ in order_vec_:
                     order_.Enqueue(0)
-            elif (price_ == bestask_int_price_): // at best nonself market ... To Enqueue
+            elif (price_ == bestask_int_price_): # at best nonself market ... To Enqueue
                 for order_ in order_vec_:
                     if (order_ is None):
                         continue
                     prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
-                    new_size_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.ask_size(0) : 
-                                self.dep_market_view_.market_update_info_.bestask_size_
-                    new_ordercount_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.ask_order(0) : 
-                                self.dep_market_view_.market_update_info_.bestask_ordercount_
+                    if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                        new_size_ = self.dep_market_view_.ask_size(0)
+                    else: 
+                        new_size_ = self.dep_market_view_.market_update_info_.bestask_size_
+                    if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                        new_ordercount_ = self.dep_market_view_.ask_order(0)
+                    else: 
+                        new_ordercount_ = self.dep_market_view_.market_update_info_.bestask_ordercount_
                     if (not self.dep_market_view_.trade_before_quote() and (not new_size_ == prev_size_ or order_.num_events_seen_ == 1)):
                         self.BackupQueueSizes(order_)
-                    if (order_.num_events_seen_ == 0): // first time ... before this do not fill
+                    if (order_.num_events_seen_ == 0): # first time ... before this do not fill
                         order_.queue_size_behind_ = 0
-                        order_.queue_size_ahead_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.ask_size(0) : 
-                                                    self.dep_market_view_.market_update_info_.bestask_size_
+                        if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                            order_.queue_size_ahead_ = self.dep_market_view_.ask_size(0)
+                        else: 
+                            order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestask_size_
                         order_.num_events_seen_ = 1
-                    else: // not the first time
+                    else: # not the first time
                         if (self.sid_to_sim_config_[self.dep_security_id_].use_tgt_sim_market_maker_):
                             self.UpdateQueueSizesTargetPrice(new_size_ , prev_size_, order_)
                         elif (self.sid_to_sim_config_[self.dep_security_id_].use_baseprice_tgt_sim_market_maker_):
@@ -599,20 +590,24 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     if (order_ is None):
                         continue
                     prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
-                    new_size_ = self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_ ? self.dep_market_view_.ask_size(0) : 
-                                self.dep_market_view_.market_update_info_.bestask_size_
+                    if (self.sid_to_sim_config_[self.dep_security_id_].using_only_full_mkt_for_sim_):
+                        new_size_ = self.dep_market_view_.ask_size(0)
+                    else: 
+                        new_size_ = self.dep_market_view_.market_update_info_.bestask_size_
                     if (not self.dep_market_view_.trade_before_quote() and (not new_size_ == prev_size_ or order_.num_events_seen_ == 1)):
                         self.BackupQueueSizes(order_)
-                    if (order_.num_events_seen_ == 0): // first time ... before this do not fill
-                        order_->queue_size_behind_ = 0
-                        order_->queue_size_ahead_ = self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_ ? self.dep_market_view_.ask_size(0) : 
-                                                    self.dep_market_view_.market_update_info_.bestask_size_
-                        order_->num_events_seen_ = 1
-                    else: // not the first time
+                    if (order_.num_events_seen_ == 0): # first time ... before this do not fill
+                        order_.queue_size_behind_ = 0
+                        if (self.sid_to_sim_config_[self.dep_security_id_ ].using_only_full_mkt_for_sim_):
+                            order_.queue_size_ahead_ = self.dep_market_view_.ask_size(0)
+                        else: 
+                            order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestask_size_
+                        order_.num_events_seen_ = 1
+                    else: # not the first time
                         if (self.sid_to_sim_config_[self.dep_security_id_].use_tgt_sim_market_maker_):
                             self.UpdateQueueSizesTargetPrice(new_size_ , prev_size_, order_)
                         elif (self.sid_to_sim_config_[self.dep_security_id_].use_baseprice_tgt_sim_market_maker_):
-                            self.UpdateQueueSizesBasePriceBasedTargetPrice ( new_size_ , prev_size_, p_sim_order_ )
+                            self.UpdateQueueSizesBasePriceBasedTargetPrice ( new_size_ , prev_size_, order_)
                         elif (self.sid_to_sim_config_[self.dep_security_id_].use_fgbm_sim_market_maker_):
                             self.UpdateQueueSizesTradeBased(new_size_, prev_size_, order_)
                         else:
@@ -624,7 +619,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         if (self.all_requests_):
             self.ProcessRequestQueue(True)
         t_trade_print_info_buysell_ = _trade_print_info_.buysell_
-        if (t_trade_print_info_buysell_ == kTradeTypeBuy):
+        if (t_trade_print_info_buysell_ == self.kTradeTypeBuy):
             askside_trade_size_ = _trade_print_info_.size_traded_
             if (self.masked_asks_):
                 self.masked_asks_ = False
@@ -632,9 +627,9 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     for i in range(0, len(self.masked_from_market_data_asks_map_)):
                         self.masked_from_market_data_asks_map_[i] = max(self.masked_from_market_data_asks_map_[i] - _trade_print_info_.size_traded_, 0)
                         if (self.masked_from_market_data_asks_map_[i] > 0):
-                            masked_asks_ = true
+                            masked_asks_ = True
                 else:
-                    FillInValue(self.masked_from_market_data_asks_map_, 0)
+                    self.FillInValue(self.masked_from_market_data_asks_map_, 0)
     
             for price_ in self.intpx_to_ask_order_vec_.keys():
                 if (price_ <= _trade_print_info_.int_trade_price_):
@@ -655,9 +650,10 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     if (order_vec_):
                         # there are orders at this price level
                         # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
-                        t_posttrade_asksize_at_trade_price_ = ((self.dep_market_view_.market_update_info_.bestask_int_price_ > _trade_print_info_.int_trade_price_) ? 0 : 
-                                                                self.dep_market_view_.market_update_info_.bestask_size_)
-                        BaseSimOrderPtrVec & t_this_sim_order_vec_ = i2aov_iter_->second;
+                        if (self.dep_market_view_.market_update_info_.bestask_int_price_ > _trade_print_info_.int_trade_price_):
+                            t_posttrade_asksize_at_trade_price_ = 0
+                        else: 
+                            t_posttrade_asksize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestask_size_
                         for i in range(0, len(self.saci_to_executed_size_)):
                             self.saci_to_executed_size_[i] = 0
                         for order_ in order_vec_[:]:
@@ -665,31 +661,31 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                             # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
                             trd_size_ = _trade_print_info_.size_traded_
                             if (not self.dep_market_view_.trade_before_quote()):
-                                trd_size_ = RestoreQueueSizes(p_sim_order_, t_posttrade_asksize_at_trade_price_, trd_size_)
-                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - saci_to_executed_size_[order_.server_assigned_client_id()]
+                                trd_size_ = self.RestoreQueueSizes(order_, t_posttrade_asksize_at_trade_price_, trd_size_)
+                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
                             if (trade_size_to_be_used_ <= 0):
                                 continue
                             t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, t_posttrade_asksize_at_trade_price_)
                             if (t_size_executed_ > 0):
                                 self.client_position_map_[order_.server_assigned_client_id()] -= t_size_executed_
                                 self.global_position_to_send_map_[order_.server_assigned_client_id()] -= t_size_executed_
-                                saci_to_executed_size_[order_.server_assigned_client_id()] += t_size_executed_
-                                BroadcastExecNotification (order_.server_assigned_client_id(), order_)
+                                self.saci_to_executed_size_[order_.server_assigned_client_id()] += t_size_executed_
+                                self.BroadcastExecNotification (order_.server_assigned_client_id(), order_)
                                 if (order_.size_remaining() <= 0):
                                     order_vec_.remove(order_)
     
-        if (t_trade_print_info_buysell_ == kTradeTypeSell):
+        if (t_trade_print_info_buysell_ == self.kTradeTypeSell):
             # trade was a HIT, i.e. removing liquidity on the bid side
             bidside_trade_size_ = _trade_print_info_.size_traded_
             if (self.masked_bids_):
                 self.masked_bids_ = False
                 if (self.bestbid_int_price_ == _trade_print_info_.int_trade_price_):
                     for i in range(0, self.masked_from_market_data_bids_map_):
-                        masked_from_market_data_bids_map_[i] = max(self.masked_from_market_data_bids_map_[i] - _trade_print_info_.size_traded_, 0)
-                        if ( masked_from_market_data_bids_map_[ i ] > 0 )
-                            masked_bids_ = True
+                        self.masked_from_market_data_bids_map_[i] = max(self.masked_from_market_data_bids_map_[i] - _trade_print_info_.size_traded_, 0)
+                        if (self.masked_from_market_data_bids_map_[ i ] > 0):
+                            self.masked_bids_ = True
                 else:
-                    VectorUtils::FillInValue ( masked_from_market_data_bids_map_, 0 )
+                    self.FillInValue(self.masked_from_market_data_bids_map_, 0)
     
             for price_ in self.intpx_to_bid_order_vec_.keys():
                 if (price_ < _trade_print_info_.int_trade_price_):
@@ -702,30 +698,32 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                             this_size_executed_ = order_.ExecuteRemaining()
                             self.client_position_map_[order_.server_assigned_client_id()] += this_size_executed_
                             self.global_position_to_send_map_[order_.server_assigned_client_id()] += this_size_executed_
-                            BroadcastExecNotification(order_.server_assigned_client_id(), order_)
+                            self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                         order_vec_ = []
                 else:
                     # ( i2bov_iter_->first == _trade_print_info_.int_trade_price_ ) ... trade at best-nonself-market. Check to see if executed, and Enqueue if not finished
                     if (order_vec_):
                         # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
-                        t_posttrade_bidsize_at_trade_price_ = ((self.dep_market_view_.market_update_info_.bestbid_int_price_ < _trade_print_info_.int_trade_price_) ? 0 : 
-                                                                self.dep_market_view_.market_update_info_.bestbid_size_)
+                        if (self.dep_market_view_.market_update_info_.bestbid_int_price_ < _trade_print_info_.int_trade_price_):
+                            t_posttrade_bidsize_at_trade_price_ = 0
+                        else: 
+                            t_posttrade_bidsize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestbid_size_
                         # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_    
-                        for i in range(0, len(saci_to_executed_size_)):
-                            saci_to_executed_size_[ i ] = 0
+                        for i in range(0, len(self.saci_to_executed_size_)):
+                            self.saci_to_executed_size_[ i ] = 0
                         for order_ in order_vec_[:]:
                             # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
                             # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
-                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - saci_to_executed_size_[order_.server_assigned_client_id()]
+                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
                             if (trade_size_to_be_used_ <= 0):
                                 continue
                             trd_size_ = _trade_print_info_.size_traded_
                             t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, t_posttrade_bidsize_at_trade_price_)
                             if (t_size_executed_ > 0):
-                                self.client_position_map_ [ p_sim_order_->server_assigned_client_id ( ) ] += t_size_executed_ ;
-                                self.global_position_to_send_map_ [ p_sim_order_->server_assigned_client_id ( ) ] += t_size_executed_ ;
-                                self.saci_to_executed_size_[ p_sim_order_->server_assigned_client_id ( ) ] += t_size_executed_;
-                                self.BroadcastExecNotification ( p_sim_order_->server_assigned_client_id ( ), p_sim_order_ ) ;
+                                self.client_position_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
+                                self.global_position_to_send_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
+                                self.saci_to_executed_size_[order_.server_assigned_client_id ( ) ] += t_size_executed_
+                                self.BroadcastExecNotification(order_.server_assigned_client_id ( ), order_)
                                 if (order_.size_remaining() <= 0):
                                     order_vec_.remove(order_)
     
