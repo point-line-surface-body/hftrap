@@ -333,7 +333,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                   _order_.int_price())
             
     def OnMarketUpdate(self, _security_id_, _market_update_info_):
-        
+        return
         # Saving old values (required only for CFE): for matching trades with market quotes
         old_bestbid_int_price_ = self.bestbid_int_price_
         old_bestbid_size_ = self.bestbid_size_
