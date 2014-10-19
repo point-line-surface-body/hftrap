@@ -235,4 +235,69 @@ class SecurityMarketView:
         res += " " + str(self.market_update_info_.bidlevels_[0].limit_ordercount_) + " " + str(self.market_update_info_.bidlevels_[0].limit_price_) +  " " + str(self.market_update_info_.bidlevels_[0].limit_int_price_)
         res += " X " + str(self.market_update_info_.asklevels_[0].limit_int_price_)+ " " + str(self.market_update_info_.asklevels_[0].limit_price_) + " " + str(self.market_update_info_.asklevels_[0].limit_ordercount_)
         res += " " +  str(self.market_update_info_.asklevels_[0].limit_size_)  + " " + self.market_update_info_.asklevels_[0].limit_int_price_level_
-        return res
+        return res 
+     
+    def SetBestLevelAskVariablesOnLift(self):
+        if self.prev_ask_was_quote_ :
+            for i in range (len(self.running_lift_size_vec_)):
+                self.running_lift_size_vec_[i] = 0
+                self.prev_ask_was_quote_ = False
+                self.top_ask_level_to_mask_trades_on_ = 0
+        if len(self.market_update_info_.asklevels_) ==0 :
+            return 
+        while self.trade_print_info_.int_trade_price_ > self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_ ].limit_int_price_ and self.top_ask_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.asklevels_) - 1 ) : 
+            self.top_ask_level_to_mask_trades_on_ += 1
+        if self.trade_print_info_.int_trade_price_ == self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_int_price_ :
+            self.running_lift_size_vec_[self.top_ask_level_to_mask_trades_on_] += self.trade_print_info_.size_traded_
+            t_trade_masked_best_ask_size_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_size_ - self.running_lift_size_vec_[self.top_ask_level_to_mask_trades_on_] 
+            if t_trade_masked_best_ask_size_ <= 0 :
+                if self.top_ask_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.asklevels_) - 1 ) :
+                    self.top_ask_level_to_mask_trades_on_ += 1
+                    self.market_update_info_.bestask_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_price_
+                    self.market_update_info_.bestask_size_ =self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_size_
+                    self.market_update_info_.bestask_int_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_int_price_
+                    self.market_update_info_.bestask_ordercount_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_ordercount_
+                else :
+                    self.market_update_info_.bestask_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_price_
+                    self.market_update_info_.bestask_size_ = 1
+                    self.market_update_info_.bestask_int_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_int_price_
+                    self.market_update_info_.bestask_ordercount_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_ordercount_
+            else :
+                self.market_update_info_.bestask_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_price_
+                self.market_update_info_.bestask_size_ = t_trade_masked_best_ask_size_
+                self.market_update_info_.bestask_int_price_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_int_price_
+                self.market_update_info_.bestask_ordercount_ = self.market_update_info_.asklevels_[self.top_ask_level_to_mask_trades_on_].limit_ordercount_
+
+    def SetBestLevelBidVariablesOnHit(self):
+        if self.prev_bid_was_quote_ :
+            for i in range (len(self.running_hit_size_vec_)):
+                self.running_hit_size_vec_[i] = 0
+                self.prev_bid_was_quote_ = False
+                self.top_bid_level_to_mask_trades_on_ = 0
+        if len(self.market_update_info_.bidlevels_) ==0 :
+            return
+        while self.trade_print_info_.int_trade_price_ < self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_ ].limit_int_price_ and self.top_bid_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.bidlevels_) - 1 ) :
+            self.top_bid_level_to_mask_trades_on_ += 1
+        if self.trade_print_info_.int_trade_price_ == self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_ :
+            self.running_hit_size_vec_[self.top_bid_level_to_mask_trades_on_] += self.trade_print_info_.size_traded_
+            t_trade_masked_best_bid_size_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_size_ - self.running_hit_size_vec_[self.top_bid_level_to_mask_trades_on_] 
+            if t_trade_masked_best_bid_size_ <= 0 :
+                if self.top_bid_level_to_mask_trades_on_ < min( DEF_MARKET_DEPTH - 1, len(self.market_update_info_.bidlevels_) - 1 ) :
+                    self.top_bid_level_to_mask_trades_on_ += 1
+                    self.market_update_info_.bestbid_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_price_
+                    self.market_update_info_.bestbid_size_ =self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_size_
+                    self.market_update_info_.bestbid_int_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_
+                    self.market_update_info_.bestbid_ordercount_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_ordercount_
+                else :
+                    self.market_update_info_.bestbid_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_price_
+                    self.market_update_info_.bestbid_size_ = 1
+                    self.market_update_info_.bestbid_int_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_
+                    self.market_update_info_.bestbid_ordercount_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_ordercount_
+            else :
+                self.market_update_info_.bestbid_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_price_
+                self.market_update_info_.bestbid_size_ = t_trade_masked_best_bid_size_
+                self.market_update_info_.bestbid_int_price_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_int_price_
+                self.market_update_info_.bestbid_ordercount_ = self.market_update_info_.bidlevels_[self.top_bid_level_to_mask_trades_on_].limit_ordercount_
+  
+    
+    
