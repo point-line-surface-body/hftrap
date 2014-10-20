@@ -1,3 +1,4 @@
+'''
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 from ExternalData.external_time_listener import TimePeriodListener
 
@@ -12,7 +13,7 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
         self.trading_date_ = _trading_date_
         self.check_updates_ = False
         self.last_check_msecs_from_midnight_ = 0
-        '''might not need following variables'''
+        #might not need following variables
         self.min_msec_market_update_ = 60000 # we can change this, or we can put different for different security
         self.security_id_to_last_msec_market_update_ = [0] * len(_sid_to_smv_ptr_map_)
     
@@ -37,7 +38,7 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
     def StartListening(self):
         for smv in self.security_id_to_smv_ :
             smv.SubscribeL1Only(self)
-        '''not sure if we need this '''
+        #not sure if we need this 
         self.watch_.SubscribeBigTimePeriod(self)
     
     def start(self):
@@ -47,7 +48,7 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
     def stop(self):
         self.check_updates_ = False
     
-    '''overriding function of TimePeriodListener'''
+    #overriding function of TimePeriodListener
     def OnTimePeriodUpdate (self, num_pages_to_add_):
         if not self.check_updates_ :
             return
@@ -55,4 +56,4 @@ class MarketUpdateManager(TimePeriodListener, SecurityMarketViewChangeListener):
         if msecs_from_midnight_ > self.last_check_msecs_from_midnight_ + MIN_MSEC_DURATION :
             self.last_check_msecs_from_midnight_ = msecs_from_midnight_
             
-
+'''

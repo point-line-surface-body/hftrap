@@ -27,7 +27,7 @@ class OrderLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListe
             OrderLevelSimMarketMaker.shcToSMMmap[short_code] = OrderLevelSimMarketMaker(watch_, smv)
         return OrderLevelSimMarketMaker.shcToSMMmap[short_code]
     
-    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+    def OnMarketUpdate(self, _market_update_info_):
         old_bestbid_int_price_ = self.bestbid_int_price_
         old_bestbid_size_ = self.bestbid_size_
         old_bestask_int_price_ = self.bestask_int_price_
@@ -51,7 +51,7 @@ class OrderLevelSimMarketMaker(BaseSimMarketMaker, SecurityMarketViewChangeListe
                 self.bid_side_priority_order_exists_ = False
                 self.bid_side_priority_order_size_ = 0
         
-    def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
+    def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         return
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):
