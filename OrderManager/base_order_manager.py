@@ -115,7 +115,6 @@ class BaseOrderManager:
         print 'cxl_order_count_:\t\t'+str(self.cxl_order_count_)
         print 'caos_:\t\t\t\t'+str(self.client_assigned_order_sequence_)
         print '-----------------------------------'
-        exit()
     
     def GetBidIndex(self, _int_price_):
         if (not self.initial_adjustment_set_):
@@ -157,7 +156,7 @@ class BaseOrderManager:
             for t_order_ in self.ask_order_vec_[t_index_]:
                 self.Cancel(t_order_)
             t_index_ -= 1
-    #TODO: Fix A Bug
+
     def CancelBidsEqAboveIntPrice(self, _intpx_):
         t_retval_ = 0
         t_retval_ += self.CancelBidsAtIntPrice(_intpx_)

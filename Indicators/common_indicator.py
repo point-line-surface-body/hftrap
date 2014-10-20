@@ -7,7 +7,7 @@ Example is given in simple_trend.py which makes a SimpleTrend class.
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 from CommonTradeUtils.watch import Watch
 import core_shortcodes
-from indicator_listener import IndicatorListenerPair, UnweightedIndicatorListenerPair
+from indicator_listener import IndicatorListenerPair
 #from CommonTradeUtils.market_update_manager import MarketUpdateManager
 
 class CommonIndicator(SecurityMarketViewChangeListener):
@@ -43,7 +43,7 @@ class CommonIndicator(SecurityMarketViewChangeListener):
     def IsDataInterrupted(self):
         return self.data_interupted_
     
-    def IndicatorValue (self, is_ready):
+    def IndicatorValue(self, is_ready):
         if is_ready :
             return self.indicator_value_
         else :
@@ -60,52 +60,52 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         else:
             return False
     
-    def SubscribeDataInterrupts(self,market_update_manager_ ):
-        return
+#     def SubscribeDataInterrupts(self, _market_update_manager_):
+#         return
     
-    def OnIndicatorUpdate ( self, indicator_index_ ,  _new_values_):
-        return
+#     def OnIndicatorUpdate(self, _indicator_index_ , _new_value_):
+#         return
  
     def AddIndicatorListener(self, _indicator_index_, _indicator_listener_,  _node_value_):   
         if _indicator_listener_ is not None and not self.IsWeightedListenerPresent(_indicator_listener_):
             _new_indicator_listener_pair_ = IndicatorListenerPair(_indicator_index_, _indicator_listener_, _node_value_)
             self.indicator_listener_pairs_.append(_new_indicator_listener_pair_)
     
-    def UpdateIndicatorListenerWeight(self, _indicator_listener__, _node_value_):
-        for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
-                self.indicator_listener_pairs_[x].node_value_ = _node_value_ ;
+#     def UpdateIndicatorListenerWeight(self, _indicator_listener_, _node_value_):
+#         for x in range(len(self.indicator_listener_pairs_)):
+#             if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener_:
+#                 self.indicator_listener_pairs_[x].node_value_ = _node_value_
     
-    def MultiplyIndicatorListenerWeight (self, _indicator_listener__,_node_value_mult_factor_ ):
-        for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
-                self.indicator_listener_pairs_[x].node_value_ *= _node_value_mult_factor_ ;
+#     def MultiplyIndicatorListenerWeight (self, _indicator_listener_, _node_value_mult_factor_ ):
+#         for x in range(len(self.indicator_listener_pairs_)):
+#             if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener_:
+#                 self.indicator_listener_pairs_[x].node_value_ *= _node_value_mult_factor_
   
-    def GetIndicatorListenerWeight (self, _indicator_listener__):
-        for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
-                return self.indicator_listener_pairs_[x].node_value_
-        return -100000000
+#     def GetIndicatorListenerWeight (self, _indicator_listener_):
+#         for x in range(len(self.indicator_listener_pairs_)):
+#             if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener_:
+#                 return self.indicator_listener_pairs_[x].node_value_
+#         return -100000000
     
-    def IsWeightedListenerPresent (self,_indicator_listener__ ):
+    def IsWeightedListenerPresent(self, _indicator_listener_):
         for x in range(len(self.indicator_listener_pairs_)):
-            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener__ :
+            if self.indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener_:
                 return True
         return False
     
-    def AddUnweightedIndicatorListener(self,_indicator_index_, _indicator_listener__ ):
-        if _indicator_listener__ is not None and self.IsUnweightedListenerPresent ( _indicator_listener__ ) == False :
-            _new_unweighted_indicator_listener_pair_ = UnweightedIndicatorListenerPair( _indicator_index_, _indicator_listener__ )
-            self.unweighted_indicator_listener_pairs_.append(_new_unweighted_indicator_listener_pair_) 
+#     def AddUnweightedIndicatorListener(self,_indicator_index_, _indicator_listener__ ):
+#         if _indicator_listener__ is not None and self.IsUnweightedListenerPresent ( _indicator_listener__ ) == False :
+#             _new_unweighted_indicator_listener_pair_ = UnweightedIndicatorListenerPair( _indicator_index_, _indicator_listener__ )
+#             self.unweighted_indicator_listener_pairs_.append(_new_unweighted_indicator_listener_pair_) 
           
-    def IsUnweightedListenerPresent(self, _indicator_listener__):
-        for x in range(len(self.unweighted_indicator_listener_pairs_)):
-            if self.unweighted_indicator_listener_pairs_[x].indicator_listener == _indicator_listener__ :
-                return True
-        return False
+#     def IsUnweightedListenerPresent(self, _indicator_listener_):
+#         for x in range(len(self.unweighted_indicator_listener_pairs_)):
+#             if self.unweighted_indicator_listener_pairs_[x].indicator_listener_ == _indicator_listener_:
+#                 return True
+#         return False
     
     def NotifyIndicatorListeners(self, _indicator_value_):
         for x in range(len(self.indicator_listener_pairs_)):
-            self.indicator_listener_pairs_[x].OnIndicatorUpdate ( _indicator_value_ ) 
-        for x in range(len(self.unweighted_indicator_listener_pairs_)):
-            self.unweighted_indicator_listener_pairs_[x].OnIndicatorUpdate ( _indicator_value_ )
+            self.indicator_listener_pairs_[x].OnIndicatorUpdate(_indicator_value_) 
+#         for x in range(len(self.unweighted_indicator_listener_pairs_)):
+#             self.unweighted_indicator_listener_pairs_[x].OnIndicatorUpdate(_indicator_value_)
