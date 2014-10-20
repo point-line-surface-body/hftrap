@@ -8,10 +8,10 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 	def __init__(self, _watch_, _dep_market_view_, _order_manager_, _paramfilename_, _trading_start_time_, 
                  _trading_end_time_, _runtime_id_, _model_source_shortcode_vec_):
 		self.watch_ = _watch_
+		self.dep_market_view_ = _dep_market_view_
 		self.param_set_ = ParamSet(_paramfilename_)
 		self.current_tradevarset_ = TradeVars()
 		self.InitializeTradeVarSet()
-		self.dep_market_view_ = _dep_market_view_
 		self.order_manager_ = _order_manager_
 		self.trading_start_time_ = _trading_start_time_
 		self.trading_end_time_ = _trading_end_time_
@@ -33,7 +33,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.best_nonself_ask_size_ = 0
 		
 		self.target_price_ = 0
-		self.target_bias_numbers_ = 0
+		self.targetbias_numbers_ = 0
 		self.model_stdevs_ = 0
 		
 		self.top_bid_place_ = False
@@ -57,6 +57,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.last_agg_sell_msecs_ = 0
 		
 		self.dep_market_view_.SubscribeL1Only(self)
+		self.count_ = 0
 		return
 	
 	def TradingLogic(self):
@@ -80,6 +81,8 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.best_nonself_ask_size_ = self.dep_market_view_.bestask_size()
 		
 	def OnMarketUpdate(self, _market_update_info_):
+		self.count_ += 1
+		print 'BT.OnMarketUpdate: '+str(self.count_)
 		self.NonSelfMarketUpdate()
 		
 	def OnTradePrint(self, _trade_print_info_, _market_update_info_):
@@ -87,7 +90,6 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
 		print('UpdateTarget Called')
-		print(self.is_ready_)
 		if (not self.is_ready_):
 			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
 			print(str(_new_target_))
@@ -130,20 +132,16 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.my_position_ += self.position_offset_
 			
 	def InitializeTradeVarSet(self):
-		self.current_tradevarset_.l1bid_aggressive = self.param_set_.bid_aggress_threshold_
-		self.current_tradevarset_.l1bid_improve_ = self.param_set_.bid_improve_threshold_
-		self.current_tradevarset_.l1bid_improve_keep_ = self.param_set_.bid_improve_keep_threshold_
-		self.current_tradevarset_.l1bid_keep_ = self.param_set_.bid_keep_threshold_
-		self.current_tradevarset_.l1bid_place_ = self.param_set_.bid_place_threshold_
+		self.current_tradevarset_.l1bid_aggressive = self.param_set_.bid_aggress_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1bid_improve_ = self.param_set_.bid_improve_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1bid_improve_keep_ = self.param_set_.bid_improve_keep_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1bid_keep_ = self.param_set_.bid_keep_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1bid_place_ = self.param_set_.bid_place_threshold_ * self.dep_market_view_.MinPriceIncrement()
 		self.current_tradevarset_.l1bid_trade_size_ = self.param_set_.unit_trade_size_
 		
-		self.current_tradevarset_.l1ask_aggressive = self.param_set_.ask_aggress_threshold_
-		self.current_tradevarset_.l1ask_improve_ = self.param_set_.ask_improve_threshold_
-		self.current_tradevarset_.l1ask_improve_keep_ = self.param_set_.ask_improve_keep_threshold_
-		self.current_tradevarset_.l1ask_keep_ = self.param_set_.ask_keep_threshold_
-		self.current_tradevarset_.l1ask_place_ = self.param_set_.ask_place_threshold_
+		self.current_tradevarset_.l1ask_aggressive = self.param_set_.ask_aggress_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1ask_improve_ = self.param_set_.ask_improve_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1ask_improve_keep_ = self.param_set_.ask_improve_keep_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1ask_keep_ = self.param_set_.ask_keep_threshold_ * self.dep_market_view_.MinPriceIncrement()
+		self.current_tradevarset_.l1ask_place_ = self.param_set_.ask_place_threshold_ * self.dep_market_view_.MinPriceIncrement()
 		self.current_tradevarset_.l1ask_trade_size_ = self.param_set_.unit_trade_size_
-		
-	@staticmethod
-	def CollectORSShortCodes(*args): # how many arguments to keep
-		return

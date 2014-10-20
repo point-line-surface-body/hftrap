@@ -30,7 +30,7 @@ class LinearModelAggregator(BaseModelMath):
             
     def OnIndicatorUpdate(self, _indicator_index_, _new_value_):
         self.count_ += 1
-        print('LMA.OnIndicatorUpdate: '+str(self.count_)+' '+str(_indicator_index_)+' '+str(_new_value_))
+        print('LMA.OnIndicatorUpdate: '+str(self.count_)+' _new_value_: '+str(_new_value_))
         #print(len(self.prev_value_vec_))
         if (not self.is_ready_):
             self.is_ready_vec_[_indicator_index_] = True
@@ -54,15 +54,15 @@ class LinearModelAggregator(BaseModelMath):
             #print(str(_new_value_)+' '+str(self.prev_value_vec_[_indicator_index_]))
             if (abs(_new_value_-self.prev_value_vec_[_indicator_index_]) > 10*self.dep_market_view_.MinPriceIncrement()):
                 print 'HUGE value in sum_vars'
-            self.sum_vars_ += (_new_value_-self.prev_value_vec_[_indicator_index_])
+            self.sum_vars_ += (_new_value_ - self.prev_value_vec_[_indicator_index_])
             self.prev_value_vec_[_indicator_index_] = _new_value_
     
     # What?
-    def MultiplyIndicatorNodeValuesBy(self, _mult_factor_):
-        for i in range(0, len(self.indicator_vec_)):
-            self.indicator_vec_[i].MultiplyIndicatorListenerWeight(self, _mult_factor_)
-        self.sum_vars_ += (_mult_factor_-1)*self.model_intercept_
-        self.model_intercept_ *= _mult_factor_
+#     def MultiplyIndicatorNodeValuesBy(self, _mult_factor_):
+#         for i in range(0, len(self.indicator_vec_)):
+#             self.indicator_vec_[i].MultiplyIndicatorListenerWeight(self, _mult_factor_)
+#         self.sum_vars_ += (_mult_factor_-1)*self.model_intercept_
+#         self.model_intercept_ *= _mult_factor_
         
     def ShowIndicatorValues(self):
         for i in range(0, len(self.indicator_vec_)):
@@ -75,13 +75,16 @@ class LinearModelAggregator(BaseModelMath):
         #print('*******************************'+str(self.is_ready_)+'*******************************')
         if (self.is_ready_):
             print 'LMA.CalcAndPropagate: '+str(self.count_)
-            t_new_target_bias = self.sum_vars_
-            t_new_target_price = self.dep_market_view_.GetPriceFromType(self.dep_baseprice_type_) + t_new_target_bias
+            t_new_target_bias_ = self.sum_vars_
+            t_new_target_price_ = self.dep_market_view_.GetPriceFromType(self.dep_baseprice_type_) + t_new_target_bias_
             
             kMinTicksMoved = 0.015
-            if ((t_new_target_price - self.last_propagated_target_price_) > kMinTicksMoved*self.dep_market_view_.MinPriceIncrement()):
-                self.PropagateNewTargetPrice(t_new_target_price, t_new_target_bias)
-                self.last_propagated_target_price_ = t_new_target_price
+            print 't_new_target_price_:\t\t'+str(t_new_target_price_)
+            print 'last_propagated_target_price_: '+str(self.last_propagated_target_price_)
+            print 'ticks_moved_:\t\t\t'+str((abs(t_new_target_price_ - self.last_propagated_target_price_) / self.dep_market_view_.MinPriceIncrement()))
+            if (abs(t_new_target_price_ - self.last_propagated_target_price_) > kMinTicksMoved*self.dep_market_view_.MinPriceIncrement()):
+                self.PropagateNewTargetPrice(t_new_target_price_, t_new_target_bias_)
+                self.last_propagated_target_price_ = t_new_target_price_
         else:
             if (self.last_is_ready_):
                 self.PropagateNotReady();

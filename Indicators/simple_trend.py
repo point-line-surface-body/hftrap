@@ -41,8 +41,8 @@ class SimpleTrend(CommonIndicator):
             r_watch_ = argv[0]
             r_tokens_ = argv[1]
             #_basepx_pxtype_ = argv[2]
-            _indep_market_view_ = ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView ( r_tokens_[3] )
-            _fractional_seconds_ = (float)(r_tokens_[4])
+            _indep_market_view_ = ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(r_tokens_[3])
+            _fractional_seconds_ = float(r_tokens_[4])
             _price_type_ = r_tokens_[5]            
         else :
             r_watch_ = argv[0]
@@ -66,22 +66,22 @@ class SimpleTrend(CommonIndicator):
             self.is_ready_ = True
             self.NotifyIndicatorListeners(self.indicator_value_)
         elif not self.data_interupted_:
-            if self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_ < self.page_width_msecs_ :
+            if self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_ < self.page_width_msecs_:
                 self.moving_avg_price_ += self.inv_decay_sum_ * (self.current_indep_price_ - self.last_price_recorded_)
-            else :
-                num_pages_to_add_ = (int) (math.floor ( ( self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_ ) / self.page_width_msecs_ ))
-                if num_pages_to_add_ >= len(self.decay_vector_) :
+            else:
+                num_pages_to_add_ = int((math.floor((self.watch_.GetMsecsFromMidnight() - self.last_new_page_msecs_) / self.page_width_msecs_)))
+                if num_pages_to_add_ >= len(self.decay_vector_):
                     self.InitializeValues()
-                else :
-                    if num_pages_to_add_ ==1 :
-                        self.moving_avg_price_ = self.current_indep_price_ * self.inv_decay_sum_ + self.moving_avg_price_ * self.decay_vector_ [ 1 ]
+                else:
+                    if num_pages_to_add_ == 1:
+                        self.moving_avg_price_ = self.current_indep_price_ * self.inv_decay_sum_ + self.moving_avg_price_ * self.decay_vector_ [1]
                     else:
-                        self.moving_avg_price_ = self.current_indep_price_ * self.inv_decay_sum_ + self.last_price_recorded_ * self.inv_decay_sum_ * self.decay_vector_sums_[ ( num_pages_to_add_ - 1 ) ] + self.moving_avg_price_*self.  decay_vector_ [ num_pages_to_add_ ]         
-                    
-                    self.last_new_page_msecs_ += ( num_pages_to_add_ * self.page_width_msecs_ ) ;
+                        self.moving_avg_price_ = self.current_indep_price_ * self.inv_decay_sum_ + self.last_price_recorded_ * self.inv_decay_sum_ * self.decay_vector_sums_[(num_pages_to_add_ - 1)] + self.moving_avg_price_ * self.decay_vector_[num_pages_to_add_]         
+                    self.last_new_page_msecs_ += (num_pages_to_add_ * self.page_width_msecs_)
      
-            self.last_price_recorded_ = self.current_indep_price_;    
-            self.indicator_value_ = ( self.current_indep_price_ - self.moving_avg_price_ ) ;
+            self.last_price_recorded_ = self.current_indep_price_ 
+            self.indicator_value_ = (self.current_indep_price_ - self.moving_avg_price_)
+            print 'SimpleTrend.indicator_value_: '+str(self.indicator_value_)
             self.NotifyIndicatorListeners(self.indicator_value_)
     
     def SetTimeDecayWeights(self):
