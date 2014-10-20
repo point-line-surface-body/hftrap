@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
+sys.path.append('/home/aashay/hftrap')
 from DebugUtils.print_vector import print_vector
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
@@ -57,7 +57,7 @@ def __main__():
     base_trader_ = BaseTrader(sim_market_maker_)
     
     strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
-    strategy_desc_.strategy_vec_[0].base_trader_ = sim_market_maker_
+    strategy_desc_.strategy_vec_[0].base_trader_ = base_trader_
     
     order_manager_ = BaseOrderManager(watch_, base_trader_, source_shortcode_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
         
