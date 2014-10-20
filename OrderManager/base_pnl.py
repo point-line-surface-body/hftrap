@@ -20,6 +20,7 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         self.opentrade_unrealized_pnl_ = 0
         self.realized_pnl_ = 0
         self.commish_dollars_per_unit_ = 0
+        self.dep_market_view_.SubscribeL1Only(self)
         
         
     def OnMarketUpdate(self, _security_id_, _market_update_info_):
