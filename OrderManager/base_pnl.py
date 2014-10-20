@@ -23,18 +23,18 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         self.dep_market_view_.SubscribeL1Only(self)
         
         
-    def OnMarketUpdate(self, _security_id_, _market_update_info_):
+    def OnMarketUpdate(self, _market_update_info_):
         self.current_price_ = _market_update_info_.mkt_size_weighted_price_
         self.last_bid_price_ =  _market_update_info_.bestbid_price_
         self.last_ask_price_ = _market_update_info_.bestask_price_
-        self.numbers_to_dollars_ = SecurityDefinitions.contract_specification_map_[_market_update_info_.shortcode_].num_to_dollars_
+        #self.numbers_to_dollars_ = SecurityDefinitions.contract_specification_map_[_market_update_info_.shortcode_].num_to_dollars_
         self.total_pnl_ = self.pnl_ + (self.position_ * self.current_price_ * self.numbers_to_dollars_)
         if self.total_pnl_ < self.min_pnl_till_now_ :
             self.min_pnl_till_now_ = self.total_pnl_
         self.opentrade_unrealized_pnl_ = self.total_pnl_ - self.realized_pnl_
         
     
-    def OnTradePrint(self, _security_id_, _trade_print_info_, _market_update_info_):
+    def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         return
         
     def OnExec(self, new_position_, _exec_quantity_, _buysell_, _price_, _int_price_):

@@ -32,6 +32,40 @@ class BaseOrder:
         self.canceled_ = False
         self.replayed_ = False
         
+    def dump(self):
+        print '------------------------------------'
+        print 'security_name_:\t\t'+self.security_name_
+        print 'buysell_:\t\t'+self.buysell_
+        print 'price_:\t\t\t'+str(self.price_)
+        
+        print 'size_remaining_:\t'+str(self.size_remaining_)
+        print 'size_executed_:\t\t'+str(self.size_executed_)
+        print 'size_requested_:\t'+str(self.size_requested_)
+        print 'int_price_:\t\t'+str(self.int_price_)
+        print 'order_status_:\t\t'+str(self.order_status_)
+        
+        print 'queue_size_ahead_:\t'+str(self.queue_size_ahead_)
+        print 'queue_size_behind_:\t'+str(self.queue_size_behind_)
+        #self.queue_orders_ahead_ = 0
+        #self.queue_orders_behind_ = 0
+        print 'num_events_seen_:\t'+str(self.num_events_seen_)
+        #self.order_id_ = 0
+        print 'caos_:\t\t\t'+str(self.client_assigned_order_sequence_)
+        print 'saoa_:\t\t\t'+str(self.server_assigned_order_sequence_)
+        print 'saci_:\t\t\t'+str(self.server_assigned_client_id_)
+        print '------------------------------------'
+
+        #self.min_order_size_ = 1
+
+        #self.order_sequenced_time_ = 0
+        #self.order_confirmation_time_ = 0
+        #self.order_entry_time_ = 0
+        #self.correct_update_time_ = False
+        #self.priority_order_ = False
+        
+        #self.canceled_ = False
+        #self.replayed_ = False
+        
     def security_name(self):
         return self.security_name_
     

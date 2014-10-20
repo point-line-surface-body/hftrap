@@ -275,7 +275,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         order_.size_remaining_ = _size_requested_
         order_.int_price_ = _int_price_
         order_.order_status_ = 0 # Not Needed
-        
+        order_.size_requested_ = _size_requested_ # Check
         order_.queue_size_ahead_ = 0
         order_.queue_size_behind_ = 0
         
@@ -297,6 +297,8 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.server_assigned_order_sequence_ += 1
         # Broadcast sequenced
         self.BroadcastSequenced(_server_assigned_client_id_, order_)
+        
+        order_.dump()
         
         # Create a request class
         new_request_ = Request()

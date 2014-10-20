@@ -14,6 +14,7 @@ class BaseTrader():
         print _order_.int_price()
         print _order_.client_assigned_order_sequence()
         
+        _order_.dump()
         self.base_sim_market_maker_.SendOrderExch(self.client_id_, _order_.security_name(), _order_.buysell(), _order_.price(), _order_.size_requested(), _order_.int_price(), _order_.client_assigned_order_sequence())
         
     def Cancel(self, _order_):

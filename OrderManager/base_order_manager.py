@@ -1,34 +1,15 @@
 from OrderManager.base_order import BaseOrder
-'''    
-    watch_
-    dep_shortcode_
-    base_trader_
-    bid_int_price_adjustment_
-    ask_int_price_adjustment_
-    
-    bid_order_vec_
-    order_vec_top_bid_index_
-    order_vec_bottom_bid_index_
-    
-    sum_bid_confirmed_
-    confirmed_top_bid_index_
-    confirmed_bottom_bid_index_
-    
-    sum_bid_confirmed_
-    unconfirmed_top_bid_index_
-    uncomfirmed_bottom_bid_index_
-'''
 
 class BaseOrderManager:
 
-    
-    INT_PRICE_RANGE = 2048
+    INT_PRICE_RANGE = 20 #2048
     
     def __init__(self, _watch_, _base_trader_, _dep_shortcode_, _min_price_increment_):
         self.watch_ = _watch_
         self.base_trader_ = _base_trader_
         self.shortcode_ = _dep_shortcode_
-        
+        self.sum_ask_confirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
+        self.sum_bid_confirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE        
         self.sum_ask_unconfirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
         self.sum_bid_unconfirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
         self.initial_adjustment_set_ = False
@@ -79,22 +60,62 @@ class BaseOrderManager:
         self.total_size_placed_ = 0
         self.send_order_count_ = 0
         self.cxl_order_count_ = 0
+        self.base_pnl_ = None
         #self.security_id_to_last_position_( sec_name_indexer_.NumSecurityId ( ) , kInvalidPosition ) , security_position_ ( 0 ) ,// To maintain positions for all contracts of this security.
         self.p_ticks_to_keep_bid_int_price_ = None
         self.p_ticks_to_keep_ask_int_price_ = None
         self.throttle_manager_ = None
         self.client_assigned_order_sequence_ = 0
-        
-        #bid_order_vec_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, std::vector < BaseOrder * > ( ) );
-        #sum_bid_confirmed_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, 0 );
-        
-        #sum_bid_unconfirmed_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, 0 );
-
-
-        #ask_order_vec_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, std::vector < BaseOrder * > ( ) );
-        #sum_ask_confirmed_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, 0 );
-        #sum_ask_unconfirmed_.resize ( ORDER_MANAGER_INT_PRICE_RANGE, 0 );
+        self.bid_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
+        self.ask_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
         return
+    
+    def Dump(self):
+        print '-----------------------------------'
+        print 'shortcode_:\t\t\t'+self.shortcode_
+
+        print 'sum_bid_confirmed_:\t\t'+str(self.sum_bid_confirmed_)
+        print 'sum_ask_confirmed_:\t\t'+str(self.sum_ask_confirmed_)
+        
+        print 'sum_bid_unconfirmed_:\t\t'+str(self.sum_bid_unconfirmed_)
+        print 'sum_ask_unconfirmed_:\t\t'+str(self.sum_ask_unconfirmed_)
+        
+        print 'bid_order_vec_:\t\t\t'+str(self.bid_order_vec_)
+        print 'ask_order_vec_:\t\t\t'+str(self.ask_order_vec_)
+        
+        print 'initial_adjustment_set_:\t'+str(self.initial_adjustment_set_)
+        print 'bid_int_price_adjustment:\t'+str(self.bid_int_price_adjustment_)
+        print 'ask_int_price_adjustment:\t'+str(self.ask_int_price_adjustment_)
+
+        print 'order_vec_top_bid_index_:\t'+str(self.order_vec_top_bid_index_)
+        print 'order_vec_bottom_bid_index_:\t'+str(self.order_vec_bottom_bid_index_)
+        print 'confirmed_top_bid_index_:\t'+str(self.confirmed_top_bid_index_)
+        print 'confirmed_bottom_bid_index_:\t'+str(self.confirmed_bottom_bid_index_)
+        print 'unconfirmed_top_bid_index_:\t'+str(self.unconfirmed_top_bid_index_)
+        print 'unconfirmed_bottom_bid_index_:\t'+str(self.unconfirmed_bottom_bid_index_)
+        
+        print 'order_vec_top_ask_index_:\t'+str(self.order_vec_top_ask_index_)
+        print 'order_vec_bottom_ask_index_:\t'+str(self.order_vec_bottom_ask_index_)
+        print 'confirmed_top_ask_index_:\t'+str(self.confirmed_top_ask_index_)
+        print 'confirmed_bottom_ask_index_:\t'+str(self.confirmed_bottom_ask_index_)
+        print 'unconfirmed_top_ask_index_:\t'+str(self.unconfirmed_top_ask_index_)
+        print 'unconfirmed_bottom_ask_index_:\t'+str(self.unconfirmed_bottom_ask_index_)        
+
+        print 'unsequenced_bids_:\t\t', self.unsequenced_bids_
+        print 'unsequenced_asks_:\t\t', self.unsequenced_asks_
+        print 'num_unconfimed_orders_:\t\t'+str(self.num_unconfirmed_orders_)
+        print 'client_position_:\t\t'+str(self.client_position_)
+        print 'global_position_:\t\t'+str(self.global_position_)
+        print 'sum_bid_sizes_:\t\t\t'+str(self.sum_bid_sizes_)
+        print 'sum_ask_sizes_:\t\t\t'+str(self.sum_ask_sizes_)
+        print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
+        print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
+        print 'total_size_placed_:\t\t'+str(self.total_size_placed_)
+        print 'send_order_count_:\t\t'+str(self.send_order_count_)
+        print 'cxl_order_count_:\t\t'+str(self.cxl_order_count_)
+        print 'caos_:\t\t\t\t'+str(self.client_assigned_order_sequence_)
+        print '-----------------------------------'
+        exit()
     
     def GetBidIndex(self, _int_price_):
         if (not self.initial_adjustment_set_):
@@ -112,16 +133,6 @@ class BaseOrderManager:
         self.initial_adjustment_set_ = True
         '''Assumption: No re-adjustment is needed'''
     
-#     def GetBidIndexAndAdjustIntPrice(self, _int_price_):
-#         t_bid_index_ = self.GetBidIndex(_int_price_)
-#         # Do some adjustment
-#         return t_bid_index_
-#     
-#     def GetAskIndexAndAdjustIntPrice(self, _int_price_):
-#         t_ask_index_ = self.GetAskIndex(_int_price_)
-#         # Do some adjustment
-#         return t_ask_index_
-
     def SetBasePNL(self, _base_pnl_):
         self.base_pnl_ = _base_pnl_
     
@@ -169,8 +180,9 @@ class BaseOrderManager:
         if (self.order_vec_top_bid_index_ == -1):
             return 0
         t_retval_ = 0
+        t_bid_index_ = self.GetBidIndex(_intpx_)
         t_index_ = self.order_vec_top_bid_index_
-        while (t_index_ > max(t_index_, self.order_vec_bottom_bid_index_ - 1)):
+        while (t_index_ > max(t_bid_index_, self.order_vec_bottom_bid_index_ - 1)):
             t_retval_ += self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
             t_index_ -= 1
         return t_retval_
@@ -179,8 +191,9 @@ class BaseOrderManager:
         if (self.order_vec_top_bid_index_ == -1):
             return 0
         t_retval_ = 0
+        t_bid_index_ = self.GetBidIndex(_intpx_)
         t_index_ = self.order_vec_bottom_bid_index_
-        while (t_index_ < min(t_index_, self.order_vec_bottom_bid_index_ + 1)):
+        while (t_index_ < min(t_bid_index_, self.order_vec_bottom_bid_index_ + 1)):
             t_retval_ += self.CancelOrdersInVec(self.bid_order_vec_[t_index_])
             t_index_ += 1
         return t_retval_
@@ -219,8 +232,9 @@ class BaseOrderManager:
         if (self.order_vec_top_ask_index_ == -1):
             return 0
         t_retval_ = 0
+        t_ask_index_ = self.GetAskIndex(_intpx_)
         t_index_ = self.order_vec_top_ask_index_
-        while (t_index_ > max(t_index_, self.order_vec_bottom_ask_index_ - 1)):
+        while (t_index_ > max(t_ask_index_, self.order_vec_bottom_ask_index_ - 1)):
             t_retval_ += self.CancelOrdersInVec(self.ask_order_vec_[t_index_])
             t_index_ -= 1
         return t_retval_
@@ -229,8 +243,9 @@ class BaseOrderManager:
         if (self.order_vec_top_ask_index_ == -1):
             return 0
         t_retval_ = 0
+        t_ask_index_ = self.GetAskIndex(_intpx_)
         t_index_ = self.order_vec_bottom_ask_index_
-        while (t_index_ < min(t_index_, self.order_vec_bottom_ask_index_ + 1)):
+        while (t_index_ < min(t_ask_index_, self.order_vec_bottom_ask_index_ + 1)):
             t_retval_ += self.CancelOrdersInVec(self.ask_order_vec_[t_index_])
             t_index_ += 1
         return t_retval_
@@ -350,7 +365,6 @@ class BaseOrderManager:
                 t_retval_ += self.sum_ask_confirmed_[t_index_]
                 t_index_ -= 1
 
-        
     def Cancel(self, _order_):
         if (_order_.CanBeCanceled()):
             _order_.canceled_ = True
@@ -361,8 +375,9 @@ class BaseOrderManager:
             return False
                 
     def SendTrade(self, _price_, _int_price_, _size_requested_, _buysell_):
-        print('SendTrade')
-        
+        print('SendTrade Called')
+        #print _price_, _int_price_, _size_requested_, _buysell_
+        #exit()
         if (_size_requested_ <= 0):
             print 'SendTrade: _size_requested_ <= 0'
             return
@@ -397,6 +412,8 @@ class BaseOrderManager:
         
         self.total_size_placed_ += _size_requested_
         self.send_order_count_ += 1
+        
+        self.Dump()
         
     '''Adjust Function''' 
     def AdjustTopBottomUnconfirmedBidIndexes(self, _bid_index_):
