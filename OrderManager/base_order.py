@@ -13,24 +13,24 @@ class BaseOrder:
         
         self.queue_size_ahead_ = 0
         self.queue_size_behind_ = 0
-        self.queue_orders_ahead_ = 0
-        self.queue_orders_behind_ = 0
+        #self.queue_orders_ahead_ = 0
+        #self.queue_orders_behind_ = 0
         self.num_events_seen_ = 0
-        self.order_id_ = 0
+        #self.order_id_ = 0
         self.client_assigned_order_sequence_ = 0
         self.server_assigned_order_sequence_ = 0
         self.server_assigned_client_id_ = 0
         
-        self.min_order_size_ = 1
+        #self.min_order_size_ = 1
 
-        self.order_sequenced_time_ = 0
-        self.order_confirmation_time_ = 0
-        self.order_entry_time_ = 0
-        self.correct_update_time_ = False
-        self.priority_order_ = False
+        #self.order_sequenced_time_ = 0
+        #self.order_confirmation_time_ = 0
+        #self.order_entry_time_ = 0
+        #self.correct_update_time_ = False
+        #self.priority_order_ = False
         
-        self.canceled_ = False
-        self.replayed_ = False
+        #self.canceled_ = False
+        #self.replayed_ = False
         
     def dump(self):
         print '------------------------------------'
