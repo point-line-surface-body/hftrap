@@ -1,8 +1,6 @@
 from OrderManager.base_order import BaseOrder
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
-from ExternalData.external_time_listener import TimePeriodListener
-from OrderManager.request import Request
-        
+from ExternalData.external_time_listener import TimePeriodListener        
 
 class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
     
@@ -69,7 +67,14 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.masked_from_market_data_asks_map_.append(0)
         return t_server_assigned_client_id_
     
-    '''If an order exists in order_book, returns it otherwise returns None '''
+    def UpdateQueueSizes(self, _new_size_, _prev_size_, _order_):
+        if (_new_size_ == _prev_size_):
+            return
+        if (_new_size_ < _prev_size_):
+            _order_.queue_size_ahead_ -= int(_order_.queue_size_ahead_ * float((_new_size_ - _prev_size_)) / _prev_size_)
+        _order_.queue_size_behind_ = _new_size_ - _order_.queue_size_ahead_
+        _order_.num_events_seen_ += 1
+            
     def FetchOrder(self, _buysell_, _int_price_, _server_assigned_order_sequence_):
         if (_buysell_ == 1):
             if (_int_price_ in self.int_price_to_bid_order_vec.keys()):
@@ -157,104 +162,88 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 self.BroadcastCancelNotification(_server_assigned_client_id_, order_)
         
     def OnMarketUpdate(self, _market_update_info_):
-
-
-    # Check if any orders have become aggressive if so fill them
-    # Call Enqueue on orders at or above best market
-    for price_ in self.intpx_to_bid_order_vec_.keys():
-        if (price_ < self.bestbid_int_price_):
-            continue
-        order_vec_ = self.intpx_to_bid_order_vec_[price_]
-        if (price_ >= self.bestask_int_price_):
-            # Possibly aggressive order ( currently not checking masks .. simply filling ! )
-            if (order_vec_):
-                # non zero orders at this price level
+        for price_ in self.intpx_to_bid_order_vec_.keys():
+            if (price_ < self.dep_market_view_.bestbid_int_price()):
+                continue
+            order_vec_ = self.intpx_to_bid_order_vec_[price_]
+            if (not order_vec_):
+                continue
+            if (price_ >= self.dep_market_view_.bestask_int_price()):
                 for order_ in order_vec_[:]:
                     available_size_for_exec_ = 999999 # Very high value
                     this_size_executed_ = 0
-                    if (price_ == self.bestask_int_price_):
-                        available_size_for_exec_ = max(self.bestask_size_ - self.masked_from_market_data_asks_map_[order_.server_assigned_client_id()], 0)
+                    if (price_ == self.dep_market_view_.bestask_int_price()):
+                        available_size_for_exec_ = self.dep_baseprice_type_.bestask_size()
                     if (available_size_for_exec_ >= order_.size_remaining()):
                         this_size_executed_ = order_.ExecuteRemaining()
                     else:
                         this_size_executed_ = order_.MatchPartial(available_size_for_exec_)
                     self.client_position_map_[order_.server_assigned_client_id()] += this_size_executed_
                     self.global_position_to_send_map_[order_.server_assigned_client_id()] += this_size_executed_
-                    self.masked_from_market_data_asks_map_[order_.server_assigned_client_id()] += this_size_executed_
-                    self.masked_asks_ = True
                     self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                     if (order_.size_remaining() == 0):
                         order_vec_.remove(order_)
-        elif (price_ > self.bestbid_int_price_): # above best nonself market ... Enqueue ( 0 )
-            for order_ in order_vec_:
-                order_.Enqueue(0)
-        else: # (price_ == bestbid_int_price_): # at best nonself market ... To Enqueue
-            for order_ in order_vec_[:]:
-                prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
-                new_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
-                if (order_.num_events_seen_ == 0): # first time ... before this do not fill
-                    order_.queue_size_behind_ = 0
-                    order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestbid_size_
-                    order_.num_events_seen_ = 1
-                else: # not the first time
-                    self.UpdateQueueSizes(new_size_, prev_size_, order_)
-
-    for price_ in self.intpx_to_ask_order_vec_.keys():
-        if (price_ > self.bestask_int_price_):
-            continue
-        order_vec_ = self.intpx_to_ask_order_vec_[price_]
-        if (price_ <= self.bestbid_int_price_):
-            # Possibly aggressive order ( currently not checking masks .. simply filling ! )
-            if (order_vec_):
-                # non zero orders at this price level
+            elif (price_ > self.bestbid_int_price_):
                 for order_ in order_vec_:
-                    available_size_for_exec_ = 999999; # Very high value
+                    order_.Enqueue(0)
+            else:
+                for order_ in order_vec_[:]:
+                    prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
+                    new_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
+                    if (order_.num_events_seen_ == 0): # first time
+                        order_.queue_size_behind_ = 0
+                        order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestbid_size_
+                        order_.num_events_seen_ = 1
+                    else: # not the first time
+                        self.UpdateQueueSizes(new_size_, prev_size_, order_)
+    
+        for price_ in self.intpx_to_ask_order_vec_.keys():
+            if (price_ > self.dep_market_view_.bestask_int_price()):
+                continue
+            order_vec_ = self.intpx_to_ask_order_vec_[price_]
+            if (not order_vec_):
+                continue
+            if (price_ <= self.dep_market_view_.bestbid_int_price()):
+                for order_ in order_vec_:
+                    available_size_for_exec_ = 999999 # Very high value
                     this_size_executed_ = 0
-                    if (price_ == self.bestbid_int_price_):
-                        available_size_for_exec_ = max(self.bestbid_size_ - self.masked_from_market_data_bids_map_[order_.server_assigned_client_id()], 0)
+                    if (price_ == self.dep_market_view_.bestbid_int_price()):
+                        available_size_for_exec_ = self.dep_baseprice_type_.bestbid_size()
                     if (available_size_for_exec_ >= order_.size_remaining()):
                         this_size_executed_ = order_.ExecuteRemaining()
                     else:
                         this_size_executed_ = order_.MatchPartial(available_size_for_exec_)
                     self.client_position_map_[order_.server_assigned_client_id()] -= this_size_executed_
                     self.global_position_to_send_map_[order_.server_assigned_client_id()] -= this_size_executed_
-                    self.masked_from_market_data_bids_map_[order_.server_assigned_client_id()] += this_size_executed_
-                    self.masked_bids_ = True
                     self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                     if (order_.size_remaining() == 0):
                         order_vec_.remove(order_)
-        elif (price_ < self.bestask_int_price_):
-            for order_ in order_vec_:
-                order_.Enqueue(0)
-        elif (price_ == self.bestask_int_price_): # at best nonself market ... To Enqueue
-            for order_ in order_vec_:
-                prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
-                new_size_ = self.dep_market_view_.market_update_info_.bestask_size_
-                if (order_.num_events_seen_ == 0): # first time ... before this do not fill
-                    order_.queue_size_behind_ = 0
-                    order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestask_size_
-                    order_.num_events_seen_ = 1
-                else: # not the first time
-                    self.UpdateQueueSizes(new_size_, prev_size_, order_)
-        else:
-            break
+            elif (price_ < self.bestask_int_price_):
+                for order_ in order_vec_:
+                    order_.Enqueue(0)
+            elif (price_ == self.bestask_int_price_):
+                for order_ in order_vec_:
+                    prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
+                    new_size_ = self.dep_market_view_.market_update_info_.bestask_size_
+                    if (order_.num_events_seen_ == 0): # first time
+                        order_.queue_size_behind_ = 0
+                        order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestask_size_
+                        order_.num_events_seen_ = 1
+                    else: # not the first time
+                        self.UpdateQueueSizes(new_size_, prev_size_, order_)
                 
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
-        return
-        if (self.all_requests_):
-            self.ProcessRequestQueue(True)
-        t_trade_print_info_buysell_ = _trade_print_info_.buysell_
-        if (t_trade_print_info_buysell_ == 'B'):
+        if (_trade_print_info_.buysell_ == 'B'):
             askside_trade_size_ = _trade_print_info_.size_traded_
-            if (self.masked_asks_):
-                self.masked_asks_ = False
-                if (self.bestask_int_price_ == _trade_print_info_.int_trade_price_):
-                    for i in range(0, len(self.masked_from_market_data_asks_map_)):
-                        self.masked_from_market_data_asks_map_[i] = max(self.masked_from_market_data_asks_map_[i] - _trade_print_info_.size_traded_, 0)
-                        if (self.masked_from_market_data_asks_map_[i] > 0):
-                            masked_asks_ = True
-                else:
-                    self.FillInValue(self.masked_from_market_data_asks_map_, 0)
+#             if (self.masked_asks_):
+#                 self.masked_asks_ = False
+#                 if (self.bestask_int_price_ == _trade_print_info_.int_trade_price_):
+#                     for i in range(0, len(self.masked_from_market_data_asks_map_)):
+#                         self.masked_from_market_data_asks_map_[i] = max(self.masked_from_market_data_asks_map_[i] - _trade_print_info_.size_traded_, 0)
+#                         if (self.masked_from_market_data_asks_map_[i] > 0):
+#                             masked_asks_ = True
+#                 else:
+#                     self.FillInValue(self.masked_from_market_data_asks_map_, 0)
     
             for price_ in self.intpx_to_ask_order_vec_.keys():
                 if (price_ <= _trade_print_info_.int_trade_price_):
@@ -285,8 +274,8 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                             # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
                             # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
                             trd_size_ = _trade_print_info_.size_traded_
-                            if (not self.dep_market_view_.trade_before_quote()):
-                                trd_size_ = self.RestoreQueueSizes(order_, t_posttrade_asksize_at_trade_price_, trd_size_)
+                            #if (not self.dep_market_view_.trade_before_quote()):
+                            #    trd_size_ = self.RestoreQueueSizes(order_, t_posttrade_asksize_at_trade_price_, trd_size_)
                             trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
                             if (trade_size_to_be_used_ <= 0):
                                 continue
@@ -299,7 +288,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                 if (order_.size_remaining() <= 0):
                                     order_vec_.remove(order_)
     
-        if (t_trade_print_info_buysell_ == 'S'):
+        else:
             # trade was a HIT, i.e. removing liquidity on the bid side
             bidside_trade_size_ = _trade_print_info_.size_traded_
             if (self.masked_bids_):
@@ -353,10 +342,9 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                     order_vec_.remove(order_)
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):
-        if len(self.all_requests) > 0 :
-            self.ProcessRequestQueue(False) 
+        return
             
-            '''False is needed ao that cancel req will not be removed '''
+'''False is needed ao that cancel req will not be removed '''
 '''         
     def BroadcastConfirm(self):
         
