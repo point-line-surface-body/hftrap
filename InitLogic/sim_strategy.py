@@ -31,7 +31,7 @@ def __main__():
     strategy_desc_.Dump()
     
     dependant_shortcode_ = strategy_desc_.strategy_vec_[0].dep_shortcode_
-    print(dependant_shortcode_)
+    print('dependant_shortcode_: '+dependant_shortcode_)
 
     source_shortcode_vec_ = [] # vector of all sources which we need data for or are trading
     shortcode_to_sid_map_ = {}
@@ -78,8 +78,9 @@ def __main__():
     base_pnl_ = BasePnl(watch_, order_manager_, smv_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
     order_manager_.SetBasePNL(base_pnl_)
 
-# '''
-#     if (sim_market_maker_ is not None and order_manager_ is not None):
+
+    if (sim_market_maker_ is not None and order_manager_ is not None):
+        sim_market_maker_.AddOrderExecutedListener(order_manager_)
 #         sim_market_maker_.AddOrderNotFoundListener(order_manager_)
 #         sim_market_maker_.AddOrderSequencedListener(order_manager_)
 #         sim_market_maker_.AddOrderConfirmedListener(order_manager_)
@@ -97,10 +98,10 @@ def __main__():
 
     '''Run Historical Dispatcher'''
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
-    print('data_seek_time: '+str(data_seek_time_))
+    print('data_seek_time_: '+str(data_seek_time_))
     historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
     historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() # add 1 hour
-    print('historical_dispatcher_end_time: '+str(historical_dispatcher_end_time_))
+    print('historical_dispatcher_end_time_: '+str(historical_dispatcher_end_time_))
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
 
     '''Print Results'''

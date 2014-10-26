@@ -34,6 +34,7 @@ class BaseOrder:
         
     def dump(self):
         print '------------------------------------'
+        print 'Dumping Order:'
         print 'security_name_:\t\t'+self.security_name_
         print 'buysell_:\t\t'+self.buysell_
         print 'price_:\t\t\t'+str(self.price_)
@@ -100,10 +101,10 @@ class BaseOrder:
         return self.client_assigned_order_sequence_
     
     def server_assigned_order_sequence(self):
-        self.server_assigned_order_sequence_
+        return self.server_assigned_order_sequence_
         
     def server_assigned_client_id(self):
-        self.server_assigned_client_id_
+        return self.server_assigned_client_id_
     
     def ExecuteRemaining(self):
         t_size_remaining_ = self.size_remaining_

@@ -45,6 +45,7 @@ class StrategyDesc():
                 
     def Dump(self):
         print('----------------------------------')
+        print('Dumping StrategyDesc:')
         print(self.strategy_vec_[0].dep_shortcode_)
         print(self.strategy_vec_[0].strategy_name_)
         print(self.strategy_vec_[0].model_filename_)

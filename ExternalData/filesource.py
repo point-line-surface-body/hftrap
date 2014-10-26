@@ -16,16 +16,12 @@ class FileSource(ExternalDataListener):
         return
         
     def ProcessThisEvent(self):
-        #self.next_event_.Dump()
         self.watch_.OnTimeReceived(self.next_event_.sec_, self.next_event_.usec_)
         if (self.next_event_.type_ == 'T'):
-            #print('OnTrade called')
-            #self.next_event_.Dump()
             self.smv_.OnTradePrint(self.next_event_.trade_price_, self.next_event_.trade_size_, self.next_event_.buysell_, 
                               self.next_event_.bid_price_, self.next_event_.bid_size_, self.next_event_.bid_orders_, 
                               self.next_event_.ask_price_, self.next_event_.ask_size_, self.next_event_.ask_orders_)
         else:
-            #print('OnMarketUpdate called')
             self.smv_.OnMarketUpdate(self.next_event_.bid_price_, self.next_event_.bid_size_, self.next_event_.bid_orders_, 
                                      self.next_event_.ask_price_, self.next_event_.ask_size_, self.next_event_.ask_orders_)
     
