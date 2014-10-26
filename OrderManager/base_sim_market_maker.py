@@ -45,12 +45,18 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         #self.order_rejection_listener_vec_ = []
         #self.order_sequenced_listener_vec_ = []
         self.order_executed_listener_vec_ = []
+        self.order_canceled_listener_vec_ = []
+
         #self.saci_to_executed_size_ = []
         
         self.count_ = 0
     
     def AddOrderExecutedListener(self, _listener_):
         if (_listener_ not in self.order_executed_listener_vec_):
+            self.order_executed_listener_vec_.append(_listener_)
+            
+    def AddOrderCanceledListener(self, _listener_):
+        if (_listener_ not in self.order_canceled_listener_vec_):
             self.order_executed_listener_vec_.append(_listener_)
     
     @staticmethod
