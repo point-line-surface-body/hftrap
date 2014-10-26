@@ -4,9 +4,18 @@ class TradePrintInfo():
     
     def __init__(self):
         self.buysell_ = "NOTRADETYPE" # B S
-        self.trade_price_ =0.0
+        self.trade_price_ = 0.0
         self.size_traded_ = 0
         self.int_trade_price_ = 0.0
+        
+    def Dump(self):
+        print('----------------------------')
+        print('Dumping TradePrintInfo:')
+        print('buysell_:\t\t'+self.buysell_)
+        print('trade_size_:\t'+str(self.trade_price_))
+        print('size_traded_:\t'+str(self.size_traded_))
+        print('int_trade_price_:\t'+str(self.int_trade_price_))
+        print('----------------------------')
 #         self.computing_trade_impact_ = False
 #         self.trade_impact_ = 0.0
 #         self.computing_int_trade_type_ = False
@@ -211,7 +220,21 @@ class MarketUpdateInfo():
         self.bestask_ordercount_ = 0
         self.spread_increments_ = 1
         self.mkt_size_weighted_price_ = kInvalidPrice
-        
+    
+    def Dump(self):
+        print('-----------------------')
+        print('Dumping MartetUpdateInfo:')
+        print('bestbid_price_:\t'+str(self.bestbid_price_))
+        print('bestbid_size_:\t'+str(self.bestbid_size_))
+        print('bestbid_int_price_:\t'+str(self.bestbid_int_price_))
+        print('bestbid_ordercount_:\t'+str(self.bestbid_ordercount_))
+        print('bestask_price_:\t'+str(self.bestask_price_))
+        print('bestask_size_:\t'+str(self.bestask_size_))
+        print('bestask_int_price_:\t'+str(self.bestask_int_price_))
+        print('bestask_ordercount_:\t'+str(self.bestask_ordercount_))
+        print('spread_increments_:\t'+str(self.spread_increments_))
+        print('mkt_size_weighted_price_:\t'+str(self.mkt_size_weighted_price_))
+        print('-----------------------')
 #         i=0
 #         while i < MAX_LEVELS :
 #             self.bidlevels_.append(MarketUpdateInfoLevelStruct ( ))

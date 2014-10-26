@@ -89,8 +89,9 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.NonSelfMarketUpdate()
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
-		print('UpdateTarget Called')
+		print('BT.UpdateTarget')
 		if (not self.is_ready_):
+			print('BT is not ready for the first time')
 			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
 			print(str(_new_target_))
 			#print(self.dep_market_view_)
@@ -101,6 +102,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 				(_new_target_ >= self.dep_market_view_.bestbid_price()) and
 				(_new_target_ <= self.dep_market_view_.bestask_price())):
 				self.is_ready_ = True
+				print('BT is now ready')
 		else:
 			self.target_price_ = _new_target_
 			self.targetbias_numbers_ = _new_sum_vars_

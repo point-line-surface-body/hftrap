@@ -3,6 +3,7 @@ class BaseTrader():
     def __init__(self, _base_sim_market_maker_):
         self.base_sim_market_maker_ = _base_sim_market_maker_
         self.client_id_ = self.base_sim_market_maker_.Connect()
+        print('Yay! Got client_id_: '+str(self.client_id_))
         
     def SendTrade(self, _order_):
         print 'BaseTrader.SendTrade'        

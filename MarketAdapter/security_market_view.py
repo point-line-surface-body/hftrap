@@ -218,7 +218,7 @@ class SecurityMarketView:
         self.trade_print_info_.trade_price_ = _trade_price_
         self.trade_print_info_.size_traded_ = _trade_size_
         self.trade_print_info_.int_trade_price_ = float(_trade_price_) * self.MinPriceIncrement()
-
+        self.trade_print_info_.Dump()
         ask_price = float(ask_int_price_) * self.MinPriceIncrement()
         bid_price_ = float(bid_int_price_) * self.MinPriceIncrement()
         self.market_update_info_.bestask_price_ = ask_price
@@ -228,14 +228,20 @@ class SecurityMarketView:
         self.market_update_info_.bestbid_price_ = bid_price_
         self.market_update_info_.bestbid_size_ = bid_size_
         self.market_update_info_.bestbid_int_price_ = bid_int_price_
-        self.market_update_info_.bestask_ordercount_ = bid_order_count_
-        
+        self.market_update_info_.bestbid_ordercount_ = bid_order_count_
+        self.market_update_info_.spread_increments_ = ask_int_price_ - bid_int_price_
+
         self.count_ += 1
         self.UpdateL1Prices()
+        print('---------------------------------------------------------------------------------------')
+        print 'SMV.OnTradePrint: '+str(self.count_)
+        self.trade_print_info_.Dump()
+        self.market_update_info_.Dump()
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyTradeListeners()
         self.NotifyOnReadyListeners()
+        print('---------------------------------------------------------------------------------------')
         #if (self.count_ == 10):
         #    exit()
         #print('trade_before_quote:'),
@@ -311,18 +317,27 @@ class SecurityMarketView:
         self.market_update_info_.bestbid_price_ = bid_price_
         self.market_update_info_.bestbid_size_ = bid_size_
         self.market_update_info_.bestbid_int_price_ = bid_int_price_
-        self.market_update_info_.bestask_ordercount_ = bid_order_count_
-        #print 'Listeners of SMV:'
-        #print self.l1_price_listeners_
-        #print self.onready_listeners_
+        self.market_update_info_.bestbid_ordercount_ = bid_order_count_
+        self.market_update_info_.spread_increments_ = ask_int_price_ - bid_int_price_
+        self.UpdateL1Prices()
+
+        if (self.count_ == 0):
+            print 'Listeners of SMV:'
+            print self.l1_price_listeners_
+            print self.onready_listeners_
+            
+        print('---------------------------------------------------------------------------------------')
+
+        self.market_update_info_.Dump()
         #self.OnL1PriceUpdate()
         
         self.count_ += 1
         print 'SMV.OnMarketUpdate: '+str(self.count_)
-        self.UpdateL1Prices()
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyOnReadyListeners()
+        print('---------------------------------------------------------------------------------------')
+
         #if (self.count_ == 10):
         #    exit()
         

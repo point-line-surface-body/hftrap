@@ -37,10 +37,10 @@ class BaseModelMath(IndicatorListener, SecurityMarketViewOnReadyListener):
 		self.model_math_listener_vec_.append(_model_math_listener_)
 		
 	def PropagateNewTargetPrice(self, _new_target_, _new_sum_vars_):
+		print('NewTargetPrice is getting propagated')
 		#print('BaseModelMath.PropagateNewTargetPrice')
 		#print(self.model_math_listener_vec_)
 		for i in range(0, len(self.model_math_listener_vec_)):
-			print('Inside for loop')
 			self.model_math_listener_vec_[i].UpdateTarget(_new_target_, _new_sum_vars_)
 			
 	def PropagateNotReady(self):

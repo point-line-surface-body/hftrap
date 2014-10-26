@@ -14,7 +14,7 @@ class DirectionalAggressiveTrading(BaseTrading):
         return 'DirectionalAggressiveTrading'
     
     def TradingLogic(self):
-
+        print('DAT.TradingLogic')
         self.top_bid_place_ = False
         self.top_bid_keep_ = False
         self.top_bid_improve_ = False

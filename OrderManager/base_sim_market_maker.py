@@ -43,10 +43,16 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         
         self.order_rejection_listener_vec_ = []
         self.order_sequenced_listener_vec_ = []
-        
+        self.order_executed_listener_vec_ = []
         self.saci_to_executed_size_ = []
         
+        self.count_ = 0
+        
         return
+    
+    def AddOrderExecutedListener(self, _listener_):
+        if (_listener_ not in self.order_executed_listener_vec_):
+            self.order_executed_listener_vec_.append(_listener_)
     
     @staticmethod
     def GetUniqueInstance(watch_, smv):
@@ -71,7 +77,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         if (_new_size_ == _prev_size_):
             return
         if (_new_size_ < _prev_size_):
-            _order_.queue_size_ahead_ -= int(_order_.queue_size_ahead_ * float((_new_size_ - _prev_size_)) / _prev_size_)
+            _order_.queue_size_ahead_ -= int(_order_.queue_size_ahead_ * float((_prev_size_ - _new_size_)) / _prev_size_)
         _order_.queue_size_behind_ = _new_size_ - _order_.queue_size_ahead_
         _order_.num_events_seen_ += 1
             
@@ -129,6 +135,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     self.BroadcastExecNotification(_server_assigned_client_id_, order_)
                     self.intpx_to_bid_order_vec_[order_.int_price_].append(order_)
             else:
+                print 'Adding Buy Liquidity order'
                 if (not order_.int_price_ in self.intpx_to_bid_order_vec_):
                     self.intpx_to_bid_order_vec_[order_.int_price_] = []
                 self.intpx_to_bid_order_vec_[order_.int_price_].append(order_)
@@ -150,9 +157,11 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     self.BroadcastExecNotification(_server_assigned_client_id_, order_)
                     self.intpx_to_ask_order_vec_[order_.int_price_].append(order_)
             else:
+                print 'Adding Sell Liquidity order'
                 if (not order_.int_price_ in self.intpx_to_ask_order_vec_.keys()):
                     self.intpx_to_ask_order_vec_[order_.int_price_] = []
                 self.intpx_to_ask_order_vec_[order_.int_price_].append(order_)
+        order_.dump()
     
     def CancelOrderExch(self, _server_assigned_client_id_, _server_assigned_order_sequence_, _buysell_, _int_price_):
         order_ = self.FetchOrder(_buysell_, _int_price_, _server_assigned_order_sequence_)        
@@ -162,12 +171,23 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 self.BroadcastCancelNotification(_server_assigned_client_id_, order_)
         
     def OnMarketUpdate(self, _market_update_info_):
+        self.count_ += 1
+        print('SMM.OnMartetUpdate: '+str(self.count_))
+        print('SMM.keys: '), 
+        print self.intpx_to_bid_order_vec_.keys()
         for price_ in self.intpx_to_bid_order_vec_.keys():
+            print('SMM.price_: '+str(price_))
+            print('SMM.bestbid_int_price_: '+str(self.dep_market_view_.bestbid_int_price()))
+            print('SMM.bestask_int_price_: '+str(self.dep_market_view_.bestask_int_price()))
+
             if (price_ < self.dep_market_view_.bestbid_int_price()):
                 continue
             order_vec_ = self.intpx_to_bid_order_vec_[price_]
+            print('order_vec_: '),
+            print(order_vec_)
             if (not order_vec_):
                 continue
+            print('here')
             if (price_ >= self.dep_market_view_.bestask_int_price()):
                 for order_ in order_vec_[:]:
                     available_size_for_exec_ = 999999 # Very high value
@@ -183,19 +203,23 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                     if (order_.size_remaining() == 0):
                         order_vec_.remove(order_)
-            elif (price_ > self.bestbid_int_price_):
+            elif (price_ > self.dep_market_view_.bestask_int_price()):
                 for order_ in order_vec_:
                     order_.Enqueue(0)
             else:
+                print('wtf')
                 for order_ in order_vec_[:]:
+                    print('must be reached')
                     prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
                     new_size_ = self.dep_market_view_.market_update_info_.bestbid_size_
                     if (order_.num_events_seen_ == 0): # first time
                         order_.queue_size_behind_ = 0
                         order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestbid_size_
                         order_.num_events_seen_ = 1
+                        order_.dump()
                     else: # not the first time
                         self.UpdateQueueSizes(new_size_, prev_size_, order_)
+                        order_.dump()
     
         for price_ in self.intpx_to_ask_order_vec_.keys():
             if (price_ > self.dep_market_view_.bestask_int_price()):
@@ -218,10 +242,10 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                     if (order_.size_remaining() == 0):
                         order_vec_.remove(order_)
-            elif (price_ < self.bestask_int_price_):
+            elif (price_ < self.dep_market_view_.bestask_int_price()):
                 for order_ in order_vec_:
                     order_.Enqueue(0)
-            elif (price_ == self.bestask_int_price_):
+            else:
                 for order_ in order_vec_:
                     prev_size_ = order_.queue_size_behind_ + order_.queue_size_ahead_
                     new_size_ = self.dep_market_view_.market_update_info_.bestask_size_
@@ -229,12 +253,14 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         order_.queue_size_behind_ = 0
                         order_.queue_size_ahead_ = self.dep_market_view_.market_update_info_.bestask_size_
                         order_.num_events_seen_ = 1
+                        order_.dump()
                     else: # not the first time
                         self.UpdateQueueSizes(new_size_, prev_size_, order_)
+                        order_.dump()
                 
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         if (_trade_print_info_.buysell_ == 'B'):
-            askside_trade_size_ = _trade_print_info_.size_traded_
+            #askside_trade_size_ = _trade_print_info_.size_traded_
 #             if (self.masked_asks_):
 #                 self.masked_asks_ = False
 #                 if (self.bestask_int_price_ == _trade_print_info_.int_trade_price_):
@@ -246,7 +272,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
 #                     self.FillInValue(self.masked_from_market_data_asks_map_, 0)
     
             for price_ in self.intpx_to_ask_order_vec_.keys():
-                if (price_ <= _trade_print_info_.int_trade_price_):
+                if (price_ > _trade_print_info_.int_trade_price_):
                     continue
                 order_vec_ = self.intpx_to_ask_order_vec_[price_]
                 if (price_ < _trade_print_info_.int_trade_price_):
@@ -261,45 +287,47 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         order_vec_ = []
                 else:
                     # Limit Ask Order at a same level/price than Lift trade in market (Check to see if executed, and Enqueue if not finished)
-                    if (order_vec_):
-                        # there are orders at this price level
-                        # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
-                        if (self.dep_market_view_.market_update_info_.bestask_int_price_ > _trade_print_info_.int_trade_price_):
-                            t_posttrade_asksize_at_trade_price_ = 0
-                        else: 
-                            t_posttrade_asksize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestask_size_
-                        for i in range(0, len(self.saci_to_executed_size_)):
-                            self.saci_to_executed_size_[i] = 0
-                        for order_ in order_vec_[:]:
-                            # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
-                            # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
-                            trd_size_ = _trade_print_info_.size_traded_
-                            #if (not self.dep_market_view_.trade_before_quote()):
-                            #    trd_size_ = self.RestoreQueueSizes(order_, t_posttrade_asksize_at_trade_price_, trd_size_)
-                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
-                            if (trade_size_to_be_used_ <= 0):
-                                continue
-                            t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, t_posttrade_asksize_at_trade_price_)
-                            if (t_size_executed_ > 0):
-                                self.client_position_map_[order_.server_assigned_client_id()] -= t_size_executed_
-                                self.global_position_to_send_map_[order_.server_assigned_client_id()] -= t_size_executed_
-                                self.saci_to_executed_size_[order_.server_assigned_client_id()] += t_size_executed_
-                                self.BroadcastExecNotification (order_.server_assigned_client_id(), order_)
-                                if (order_.size_remaining() <= 0):
-                                    order_vec_.remove(order_)
+                    if (not order_vec_):
+                        continue
+                # there are orders at this price level
+                # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
+                if (self.dep_market_view_.market_update_info_.bestask_int_price_ > _trade_print_info_.int_trade_price_):
+                    posttrade_asksize_at_trade_price_ = 0
+                else: 
+                    posttrade_asksize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestask_size_
+                #for i in range(0, len(self.saci_to_executed_size_)):
+                #    self.saci_to_executed_size_[i] = 0
+                for order_ in order_vec_[:]:
+                    # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
+                    # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
+                    #trd_size_ = _trade_print_info_.size_traded_
+                    trade_size_to_be_used_ = _trade_print_info_.size_traded_
+                    #if (not self.dep_market_view_.trade_before_quote()):
+                    #    trd_size_ = self.RestoreQueueSizes(order_, t_posttrade_asksize_at_trade_price_, trd_size_)
+                    #trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
+                    #if (trade_size_to_be_used_ <= 0):
+                    #    continue
+                    t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, posttrade_asksize_at_trade_price_)
+                    if (t_size_executed_ > 0):
+                        self.client_position_map_[order_.server_assigned_client_id()] -= t_size_executed_
+                        self.global_position_to_send_map_[order_.server_assigned_client_id()] -= t_size_executed_
+                        #self.saci_to_executed_size_[order_.server_assigned_client_id()] += t_size_executed_
+                        self.BroadcastExecNotification (order_.server_assigned_client_id(), order_)
+                        if (order_.size_remaining() <= 0):
+                            order_vec_.remove(order_)
     
         else:
             # trade was a HIT, i.e. removing liquidity on the bid side
-            bidside_trade_size_ = _trade_print_info_.size_traded_
-            if (self.masked_bids_):
-                self.masked_bids_ = False
-                if (self.bestbid_int_price_ == _trade_print_info_.int_trade_price_):
-                    for i in range(0, self.masked_from_market_data_bids_map_):
-                        self.masked_from_market_data_bids_map_[i] = max(self.masked_from_market_data_bids_map_[i] - _trade_print_info_.size_traded_, 0)
-                        if (self.masked_from_market_data_bids_map_[ i ] > 0):
-                            self.masked_bids_ = True
-                else:
-                    self.FillInValue(self.masked_from_market_data_bids_map_, 0)
+            #bidside_trade_size_ = _trade_print_info_.size_traded_
+#             if (self.masked_bids_):
+#                 self.masked_bids_ = False
+#                 if (self.bestbid_int_price_ == _trade_print_info_.int_trade_price_):
+#                     for i in range(0, self.masked_from_market_data_bids_map_):
+#                         self.masked_from_market_data_bids_map_[i] = max(self.masked_from_market_data_bids_map_[i] - _trade_print_info_.size_traded_, 0)
+#                         if (self.masked_from_market_data_bids_map_[ i ] > 0):
+#                             self.masked_bids_ = True
+#                 else:
+#                     self.FillInValue(self.masked_from_market_data_bids_map_, 0)
     
             for price_ in self.intpx_to_bid_order_vec_.keys():
                 if (price_ < _trade_print_info_.int_trade_price_):
@@ -316,33 +344,43 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         order_vec_ = []
                 else:
                     # ( i2bov_iter_->first == _trade_print_info_.int_trade_price_ ) ... trade at best-nonself-market. Check to see if executed, and Enqueue if not finished
-                    if (order_vec_):
-                        # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
-                        if (self.dep_market_view_.market_update_info_.bestbid_int_price_ < _trade_print_info_.int_trade_price_):
-                            t_posttrade_bidsize_at_trade_price_ = 0
-                        else: 
-                            t_posttrade_bidsize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestbid_size_
-                        # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_    
-                        for i in range(0, len(self.saci_to_executed_size_)):
-                            self.saci_to_executed_size_[ i ] = 0
-                        for order_ in order_vec_[:]:
-                            # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
-                            # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
-                            trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
-                            if (trade_size_to_be_used_ <= 0):
-                                continue
-                            trd_size_ = _trade_print_info_.size_traded_
-                            t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, t_posttrade_bidsize_at_trade_price_)
-                            if (t_size_executed_ > 0):
-                                self.client_position_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
-                                self.global_position_to_send_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
-                                self.saci_to_executed_size_[order_.server_assigned_client_id ( ) ] += t_size_executed_
-                                self.BroadcastExecNotification(order_.server_assigned_client_id ( ), order_)
-                                if (order_.size_remaining() <= 0):
-                                    order_vec_.remove(order_)
+                    if (not order_vec_):
+                        continue
+                    # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_
+                    if (self.dep_market_view_.market_update_info_.bestbid_int_price_ < _trade_print_info_.int_trade_price_):
+                        posttrade_bidsize_at_trade_price_ = 0
+                    else: 
+                        posttrade_bidsize_at_trade_price_ = self.dep_market_view_.market_update_info_.bestbid_size_
+                    # an estimate of the total_market_non_self_size at this level after this trade, we can use it to adjust queue_size_ahead_ and queue_size_behind_    
+                    #for i in range(0, len(self.saci_to_executed_size_)):
+                    #    self.saci_to_executed_size_[ i ] = 0
+                    for order_ in order_vec_[:]:
+                        # check which orders are executed, send message and deallocate order, nullify the pointer, erase from vector.
+                        # Note the iterator does not need to be incremented since we either break out of loop or erase the iterator and hence increment it.
+                        #trade_size_to_be_used_ = _trade_print_info_.size_traded_ - self.saci_to_executed_size_[order_.server_assigned_client_id()]
+                        #if (trade_size_to_be_used_ <= 0):
+                        #    continue
+                        #trd_size_ = _trade_print_info_.size_traded_
+                        trade_size_to_be_used_ = _trade_print_info_.size_traded_
+                        t_size_executed_ = order_.HandleCrossingTrade(trade_size_to_be_used_, posttrade_bidsize_at_trade_price_)
+                        if (t_size_executed_ > 0):
+                            self.client_position_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
+                            self.global_position_to_send_map_ [order_.server_assigned_client_id ( ) ] += t_size_executed_
+                            #self.saci_to_executed_size_[order_.server_assigned_client_id ( ) ] += t_size_executed_
+                            self.BroadcastExecNotification(order_.server_assigned_client_id ( ), order_)
+                            if (order_.size_remaining() <= 0):
+                                order_vec_.remove(order_)
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):
         return
+    
+    def BroadcastExecNotification(self, _server_assigned_client_id_, _order_):
+        for listener_ in self.order_executed_listener_vec_:
+            listener_.OrderExecuted(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
+                                    _order_.server_assigned_order_sequence(), 'ZN_0', 
+                                    _order_.price_, _order_.buysell(), _order_.size_remaining(), _order_.size_executed(),
+                                    self.client_position_map_[_server_assigned_client_id_],
+                                    self.global_position_to_send_map_[_server_assigned_client_id_], _order_.int_price_)
             
 '''False is needed ao that cancel req will not be removed '''
 '''         
