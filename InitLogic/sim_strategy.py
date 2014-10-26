@@ -1,11 +1,9 @@
 import sys
 sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
-from DebugUtils.print_vector import print_vector
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
 from InitCommon.strategy_desc import StrategyDesc
 from ExternalData.historical_dispatcher import HistoricalDispatcher
-from MarketAdapter.security_market_view import SecurityMarketView
 from ExternalData.filesource import FileSource
 from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
 from OrderManager.base_trader import BaseTrader

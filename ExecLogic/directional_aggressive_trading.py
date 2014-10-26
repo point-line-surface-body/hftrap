@@ -174,6 +174,7 @@ class DirectionalAggressiveTrading(BaseTrading):
                     self.last_buy_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
                 if (not self.top_bid_keep_):
+                    print('Here')
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if (canceled_size_ > 0):
@@ -225,7 +226,8 @@ class DirectionalAggressiveTrading(BaseTrading):
                     placed_asks_this_round_ = True
                     self.last_sell_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
-                if (not self.top_ask_keep_ ):
+                if (not self.top_ask_keep_):
+                    print('Here')
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
         
         if (canceled_size_ > 0):

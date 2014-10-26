@@ -97,7 +97,7 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
                 if self.total_pnl_ < self.min_pnl_till_now_ :
                     self.min_pnl_till_now_ = self.total_pnl_
                 self.opentrade_unrealized_pnl_ = self.total_pnl_ - self.realized_pnl_
-                self.average_open_price_ = (self.average_open_price_ * self.position_ + _price_* (new_position_ - self.position_))/new_position_
+                #self.average_open_price_ = (self.average_open_price_ * self.position_ + _price_* (new_position_ - self.position_))/new_position_
         self.position_ = new_position_                
     
     def LogTrade(self):

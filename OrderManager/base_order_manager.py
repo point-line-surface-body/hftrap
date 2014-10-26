@@ -2,7 +2,7 @@ from OrderManager.base_order import BaseOrder
 
 class BaseOrderManager:
 
-    INT_PRICE_RANGE = 20 #2048
+    INT_PRICE_RANGE = 50 #2048
     
     def __init__(self, _watch_, _base_trader_, _smv_, _dep_shortcode_, _min_price_increment_):
         self.watch_ = _watch_
@@ -62,6 +62,7 @@ class BaseOrderManager:
         self.send_order_count_ = 0
         self.cancel_order_count_ = 0
         self.base_pnl_ = None
+        self.trade_volume_ = 0
         #self.security_id_to_last_position_( sec_name_indexer_.NumSecurityId ( ) , kInvalidPosition ) , security_position_ ( 0 ) ,// To maintain positions for all contracts of this security.
         #self.p_ticks_to_keep_bid_int_price_ = None
         #self.p_ticks_to_keep_ask_int_price_ = None
@@ -568,10 +569,10 @@ class BaseOrderManager:
                 self.confirmed_top_bid_index_ = -1
                 self.confirmed_bottom_bid_index_ = -1
             elif (_bid_index_ == self.confirmed_top_bid_index_):
-                while (self.sum_bid_confirmed[self.confirmed_top_bid_index_] == 0):
+                while (self.sum_bid_confirmed_[self.confirmed_top_bid_index_] == 0):
                     self.confirmed_top_bid_index_ -= 1
             elif (_bid_index_ == self.confirmed_bottom_bid_index_):
-                while (self.sum_bid_confirmed[self.confirmed_bottom_bid_index_] == 0):
+                while (self.sum_bid_confirmed_[self.confirmed_bottom_bid_index_] == 0):
                     self.confirmed_bottom_bid_index_ += 1
             else:
                 pass
@@ -620,10 +621,10 @@ class BaseOrderManager:
                 self.confirmed_top_ask_index_ = -1
                 self.confirmed_bottom_ask_index_ = -1
             elif (_ask_index_ == self.confirmed_top_ask_index_):
-                while (self.sum_ask_confirmed[self.confirmed_top_ask_index_] == 0):
+                while (self.sum_ask_confirmed_[self.confirmed_top_ask_index_] == 0):
                     self.confirmed_top_ask_index_ -= 1
             elif (_ask_index_ == self.confirmed_bottom_ask_index_):
-                while (self.sum_ask_confirmed[self.confirmed_bottom_ask_index_] == 0):
+                while (self.sum_ask_confirmed_[self.confirmed_bottom_ask_index_] == 0):
                     self.confirmed_bottom_ask_index_ += 1
             else:
                 pass

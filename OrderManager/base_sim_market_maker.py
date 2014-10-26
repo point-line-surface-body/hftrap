@@ -36,7 +36,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         #self.ask_side_priority_order_size_ = 0
         #self.bid_side_priority_order_exists_ = False
         #self.bid_side_priority_order_size_ = 0
-        self.dep_market_view_.SubscribePriceType(self, "MktSizeWPrice")
+        self.dep_market_view_.SubscribePriceType(self, 'MktSizeWPrice')
         self.watch_.SubscribeBigTimePeriod(self) # may make small Time period also in watch
         
         self.server_assigned_order_sequence_ = 0
@@ -98,7 +98,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         return order_
         else:
             if (_int_price_ in self.intpx_to_ask_order_vec_.keys()):
-                for order_ in self.intpx_to_bid_order_vec_[_int_price_]:
+                for order_ in self.intpx_to_ask_order_vec_[_int_price_]:
                     if (order_.server_assigned_order_sequence_ == _server_assigned_order_sequence_):
                         return order_
             for key_ in self.intpx_to_ask_order_vec_.keys():
@@ -401,60 +401,3 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                     _order_.price_, _order_.buysell(), _order_.size_remaining(), _order_.size_executed(),
                                     self.client_position_map_[_server_assigned_client_id_],
                                     self.client_position_map_[_server_assigned_client_id_], _order_.int_price_)
-            
-'''False is needed ao that cancel req will not be removed '''
-'''         
-    def BroadcastConfirm(self):
-        
-    def BroadcastCancelNotification(self):
-        
-    def BroadcastExecNotification(self):
-        
-    def BroadcastOrderNone(self):
-        
-        
-    def CxlOrdersAboveBestLevel(self):
-        
-    def UpdateQueueSizes(self):
-        
-    def UpdateQueueSizesTradeBased(self):
-        
-    def UpdateQueueSizesTargetPrice(self):
-        
-    def UpdateQueueSizesBasePriceBasedTargetPrice(self):
-        
-    def MatchTradeAndQuote(self):
-        
-        
-    def SubscribeL2Events(self):
-        
-    def OnTimePeriodUpdade(self):
-        
-    def OnMarketUpdate(self):
-        
-    def OnTradePrint(self):
-        
-    def OrderNotFound(self):
-        
-    def OrderSequenced(self):
-        
-    def OrderSequencedAtTime(self):
-        
-    def OrderConfirmed(self):
-        
-    def OrderConfirmedAtTime(self):
-        
-    def OrderORSConfirmed(self):
-        
-    def OrderConfCxlReplaced(self):
-
-    def OrderCanceled(self):
-
-    def OrderCanceledAtTime(self):
-
-    def OrderCxlSequencedAtTime(self):
-        
-    def OrderCancelRejected(self):
-        
-    def OrderExecuted(self):
-        '''
