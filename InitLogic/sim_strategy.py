@@ -58,7 +58,7 @@ def __main__():
     strategy_desc_.strategy_vec_[0].dep_market_view_ = smv_vec_[0]
     strategy_desc_.strategy_vec_[0].base_trader_ = base_trader_
     
-    order_manager_ = BaseOrderManager(watch_, base_trader_, source_shortcode_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
+    order_manager_ = BaseOrderManager(watch_, base_trader_, smv_vec_[0], source_shortcode_vec_[0], strategy_desc_.strategy_vec_[0].runtime_id_)
         
     if (strategy_desc_.strategy_vec_[0].strategy_name_ == 'DirectionalAggressiveTrading'):
         strategy_desc_.strategy_vec_[0].exec_ = DirectionalAggressiveTrading(watch_, smv_vec_[0], order_manager_, 
