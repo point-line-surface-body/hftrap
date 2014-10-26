@@ -4,10 +4,11 @@ class BaseOrderManager:
 
     INT_PRICE_RANGE = 20 #2048
     
-    def __init__(self, _watch_, _base_trader_, _dep_shortcode_, _min_price_increment_):
+    def __init__(self, _watch_, _base_trader_, _smv_, _dep_shortcode_, _min_price_increment_):
         self.watch_ = _watch_
         self.base_trader_ = _base_trader_
         self.shortcode_ = _dep_shortcode_
+        self.smv_ = _smv_
         self.sum_ask_confirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
         self.sum_bid_confirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE        
         #self.sum_ask_unconfirmed_ = [0]*BaseOrderManager.INT_PRICE_RANGE
@@ -107,8 +108,8 @@ class BaseOrderManager:
         #print 'global_position_:\t\t'+str(self.global_position_)
         print 'sum_bid_sizes_:\t\t\t'+str(self.sum_bid_sizes_)
         print 'sum_ask_sizes_:\t\t\t'+str(self.sum_ask_sizes_)
-        print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
-        print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
+        #print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
+        #print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
         print 'total_size_placed_:\t\t'+str(self.total_size_placed_)
         print 'send_order_count_:\t\t'+str(self.send_order_count_)
         print 'cancel_order_count_:\t\t'+str(self.cancel_order_count_)
@@ -172,6 +173,40 @@ class BaseOrderManager:
                         break
             self.AdjustPosition(t_client_position_, _price_, r_int_price_) # instead of GetMidPrice() use _price_ sent
             
+            
+    def OrderCanceled(self, t_server_assigned_client_id_, _client_assigned_order_sequence_, t_server_assigned_order_sequence_, 
+                      _security_id_, _price_, t_buysell_, _size_remaining_, _size_executed_, t_client_position_, 
+                      t_global_position_, r_int_price_):
+        self.global_position_ = t_global_position_
+        if (t_server_assigned_client_id_ == self.server_assigned_client_id_):
+            if (t_buysell_ == 'B'):
+                bid_index_ = self.GetBidIndex(r_int_price_)
+                _this_base_order_vec_ = self.bid_order_vec_[bid_index_]
+                if (_this_base_order_vec_):
+                    for order_ in _this_base_order_vec_[:]:
+                        if (not order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                            continue
+                        if (order_.order_status() == 'Conf'):
+                            self.sum_bid_confirmed_[bid_index_] = max(0, self.sum_bid_confirmed_[bid_index_] - order_.size_remaining())
+                            self.AdjustTopBottomConfirmedBidIndexes(bid_index_)
+                            self.sum_bid_sizes_ -= order_.size_remaining()
+                        _this_base_order_vec_.remove(order_) # remove order from vec
+                        self.AdjustTopBottomOrderVecBidIndexes(bid_index_)
+            else:
+                ask_index_ = self.GetAskIndex(r_int_price_)
+                _this_base_order_vec_ = self.ask_order_vec_[ask_index_]
+                if (_this_base_order_vec_):
+                    for order_ in _this_base_order_vec_[:]:
+                        if (not order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                            continue
+                        if (order_.order_status() == 'Conf'):
+                            self.sum_ask_confirmed_[ask_index_] = max(0, self.sum_ask_confirmed_[ask_index_] - order_.size_remaining())
+                            self.AdjustTopBottomConfirmedAskIndexes(ask_index_)
+                            self.sum_ask_sizes_ -= order_.size_remaining()
+                        _this_base_order_vec_.remove(order_) # remove order from vec
+                        self.AdjustTopBottomOrderVecAskIndexes(ask_index_)
+            if (self.client_position_ != t_client_position_):
+                self.AdjustPosition(t_client_position_, self.smv_.GetMidPrice(), self.smv_.GetMidIntPrice())
             
     def AdjustPosition(self, t_client_position_, _trade_price_, r_int_price_):
         # this can be called any number of times ... ti will only do sth if client_position_ != t_client_position_

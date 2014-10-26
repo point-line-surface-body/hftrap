@@ -84,7 +84,7 @@ def __main__():
 #         sim_market_maker_.AddOrderNotFoundListener(order_manager_)
 #         sim_market_maker_.AddOrderSequencedListener(order_manager_)
 #         sim_market_maker_.AddOrderConfirmedListener(order_manager_)
-#         sim_market_maker_.AddOrderCanceledListener(order_manager_)
+        sim_market_maker_.AddOrderCanceledListener(order_manager_)
 #         sim_market_maker_.AddOrderSequencedListener(order_manager_)
 #         sim_market_maker_.AddOrderRejectedListener(order_manager_)'''
     
