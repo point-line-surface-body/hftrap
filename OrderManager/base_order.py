@@ -118,9 +118,25 @@ class BaseOrder:
         self.size_remaining_ -= t_size_possible_
         return t_size_possible_
     
+    def HandleCrossingTrade(self, _trade_size_, _posttrade_size_at_price_):
+        if (self.num_events_seen_ < 1):
+            return 0
+        if (_trade_size_ > self.queue_size_ahead_): 
+            _further_match_ = _trade_size_ - self.queue_size_ahead_
+            t_size_executed_ = self.MatchPartial(_further_match_)
+            return t_size_executed_
+        else:
+            self.queue_size_ahead_ -= _trade_size_
+            self.Enqueue(_posttrade_size_at_price_) # since we have an estimate of the total_market_non_self_size at this level after this trade, we use it to adjust queue_size_ahead_ and queue_size_behind_
+            return 0
+    
     def Confirm(self):
         self.order_status_ = 'Conf'
         self.num_events_seen_ = 0
+        
+    def ConfirmNewSize(self, _new_size_):
+        self.size_executed_ = self.size_requested_ - _new_size_
+        self.size_remaining_ = _new_size_
         
     def CanBeCanceled(self):
         return not self.canceled_ and self.size_remaining_ > 0
