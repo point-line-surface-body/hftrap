@@ -29,7 +29,7 @@ class BaseOrder:
         #self.correct_update_time_ = False
         #self.priority_order_ = False
         
-        #self.canceled_ = False
+        self.canceled_ = False
         #self.replayed_ = False
         
     def dump(self):
@@ -113,11 +113,17 @@ class BaseOrder:
         return t_size_remaining_
     
     def MatchPartial(self, _further_match_):
-        '''Implement it'''
+        t_size_possible_ = min(_further_match_, self.size_remaining_)
+        self.size_executed_ += t_size_possible_
+        self.size_remaining_ -= t_size_possible_
+        return t_size_possible_
     
     def Confirm(self):
         self.order_status_ = 'Conf'
         self.num_events_seen_ = 0
+        
+    def CanBeCanceled(self):
+        return not self.canceled_ and self.size_remaining_ > 0
         
     def IsConfirm(self):
         return self.order_status_ == 'Conf'

@@ -42,7 +42,7 @@ class BaseOrderManager:
         #self.s_p_reject_funds_listener_ = []
         #self.reject_due_to_funds_listener_vec_ = []
         self.client_position_ = 0
-        self.global_position_ = 0
+        #self.global_position_ = 0
         #self.map_clean_counter_ = 0
         self.sum_bid_sizes_ = 0
         self.sum_ask_sizes_ = 0
@@ -51,24 +51,23 @@ class BaseOrderManager:
         #self.last_maps_cleaned_msecs_ = 0
         #self.last_top_replay_msecs_ = 0
         #self.queue_sizes_needed_ = False
-        self.best_bid_int_price_ = 0
-        self.best_ask_int_price_ = 0
+        #self.best_bid_int_price_ = 0
+        #self.best_ask_int_price_ = 0
         #self.supporting_order_filled_= 0
         #self.best_level_order_filled_ = 0
         #self.aggressive_order_filled_ = 0
         #self.improve_order_filled_ = 0
         self.total_size_placed_ = 0
         self.send_order_count_ = 0
-        self.cxl_order_count_ = 0
+        self.cancel_order_count_ = 0
         self.base_pnl_ = None
         #self.security_id_to_last_position_( sec_name_indexer_.NumSecurityId ( ) , kInvalidPosition ) , security_position_ ( 0 ) ,// To maintain positions for all contracts of this security.
-        self.p_ticks_to_keep_bid_int_price_ = None
-        self.p_ticks_to_keep_ask_int_price_ = None
-        self.throttle_manager_ = None
+        #self.p_ticks_to_keep_bid_int_price_ = None
+        #self.p_ticks_to_keep_ask_int_price_ = None
+        #self.throttle_manager_ = None
         self.client_assigned_order_sequence_ = 0
         self.bid_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
         self.ask_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
-        return
     
     def Dump(self):
         print '-----------------------------------'
@@ -77,8 +76,8 @@ class BaseOrderManager:
         print 'sum_bid_confirmed_:\t\t'+str(self.sum_bid_confirmed_)
         print 'sum_ask_confirmed_:\t\t'+str(self.sum_ask_confirmed_)
         
-        print 'sum_bid_unconfirmed_:\t\t'+str(self.sum_bid_unconfirmed_)
-        print 'sum_ask_unconfirmed_:\t\t'+str(self.sum_ask_unconfirmed_)
+        #print 'sum_bid_unconfirmed_:\t\t'+str(self.sum_bid_unconfirmed_)
+        #print 'sum_ask_unconfirmed_:\t\t'+str(self.sum_ask_unconfirmed_)
         
         print 'bid_order_vec_:\t\t\t'+str(self.bid_order_vec_)
         print 'ask_order_vec_:\t\t\t'+str(self.ask_order_vec_)
@@ -91,28 +90,28 @@ class BaseOrderManager:
         print 'order_vec_bottom_bid_index_:\t'+str(self.order_vec_bottom_bid_index_)
         print 'confirmed_top_bid_index_:\t'+str(self.confirmed_top_bid_index_)
         print 'confirmed_bottom_bid_index_:\t'+str(self.confirmed_bottom_bid_index_)
-        print 'unconfirmed_top_bid_index_:\t'+str(self.unconfirmed_top_bid_index_)
-        print 'unconfirmed_bottom_bid_index_:\t'+str(self.unconfirmed_bottom_bid_index_)
+        #print 'unconfirmed_top_bid_index_:\t'+str(self.unconfirmed_top_bid_index_)
+        #print 'unconfirmed_bottom_bid_index_:\t'+str(self.unconfirmed_bottom_bid_index_)
         
         print 'order_vec_top_ask_index_:\t'+str(self.order_vec_top_ask_index_)
         print 'order_vec_bottom_ask_index_:\t'+str(self.order_vec_bottom_ask_index_)
         print 'confirmed_top_ask_index_:\t'+str(self.confirmed_top_ask_index_)
         print 'confirmed_bottom_ask_index_:\t'+str(self.confirmed_bottom_ask_index_)
-        print 'unconfirmed_top_ask_index_:\t'+str(self.unconfirmed_top_ask_index_)
-        print 'unconfirmed_bottom_ask_index_:\t'+str(self.unconfirmed_bottom_ask_index_)        
+        #print 'unconfirmed_top_ask_index_:\t'+str(self.unconfirmed_top_ask_index_)
+        #print 'unconfirmed_bottom_ask_index_:\t'+str(self.unconfirmed_bottom_ask_index_)        
 
-        print 'unsequenced_bids_:\t\t', self.unsequenced_bids_
-        print 'unsequenced_asks_:\t\t', self.unsequenced_asks_
-        print 'num_unconfimed_orders_:\t\t'+str(self.num_unconfirmed_orders_)
+        #print 'unsequenced_bids_:\t\t', self.unsequenced_bids_
+        #print 'unsequenced_asks_:\t\t', self.unsequenced_asks_
+        #print 'num_unconfimed_orders_:\t\t'+str(self.num_unconfirmed_orders_)
         print 'client_position_:\t\t'+str(self.client_position_)
-        print 'global_position_:\t\t'+str(self.global_position_)
+        #print 'global_position_:\t\t'+str(self.global_position_)
         print 'sum_bid_sizes_:\t\t\t'+str(self.sum_bid_sizes_)
         print 'sum_ask_sizes_:\t\t\t'+str(self.sum_ask_sizes_)
         print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
         print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
         print 'total_size_placed_:\t\t'+str(self.total_size_placed_)
         print 'send_order_count_:\t\t'+str(self.send_order_count_)
-        print 'cxl_order_count_:\t\t'+str(self.cxl_order_count_)
+        print 'cancel_order_count_:\t\t'+str(self.cancel_order_count_)
         print 'caos_:\t\t\t\t'+str(self.client_assigned_order_sequence_)
         print '-----------------------------------'
         
@@ -120,8 +119,8 @@ class BaseOrderManager:
                       _security_id_, _price_, t_buysell_, _size_remaining_, _size_executed_, t_client_position_, 
                       t_global_position_, r_int_price_):
         self.global_position_ = t_global_position_
-        if (t_server_assigned_client_id_ == self.server_assigned_client_id_):
-            self.num_self_trades_ += 1
+        if (t_server_assigned_client_id_ == t_server_assigned_client_id_):
+            #self.num_self_trades_ += 1
             if (t_buysell_ == 'B'):
                 bid_index_ = self.GetBidIndex(r_int_price_)
                 # search in sequenced orders at the price sent by ORS
@@ -129,24 +128,12 @@ class BaseOrderManager:
                 this_base_order_vec_ = self.bid_order_vec_[bid_index_]
                 if (this_base_order_vec_):
                     for order_ in this_base_order_vec_[:]:
-                        if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                        if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_): ##
+                        #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
                             # Found the order
-                            if (order_.order_status() == 'Seqd'):
-                                # depending on the last status that we had seen of this order, the maps or data structures from which we need 
-                                # to remove / modify this order changes
-                                # either missed the confirm or the exec came from the exchange before the confirm
-                                self.num_unconfirmed_orders_ -= 1
-                                self.sum_bid_unconfirmed_[bid_index_] = max(0, self.sum_bid_unconfirmed_[bid_index_] - order_.size_requested())
-                                self.AdjustTopBottomUnconfirmedBidIndexes(bid_index_)
-                                if (_size_remaining_ > 0):
-                                    # order is stil live so confirm it
-                                    order_.ConfirmAtTime(self.watch_.msecs_from_midnight())
-                                    order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-                                    self.sum_bid_confirmed_[bid_index_] += _size_remaining_
-                                    self.AdjustTopBottomConfirmedBidIndexes(bid_index_)
-                            elif(order_.order_status() == 'Conf'):
+                            if (order_.order_status() == 'Conf'):
                                 self.sum_bid_confirmed_[bid_index_] = max(0, self.sum_bid_confirmed_[bid_index_] + _size_remaining_ - order_.size_remaining())
-                                self.AdjustTopBottomConfirmedBidIndexes ( bid_index_ );
+                                self.AdjustTopBottomConfirmedBidIndexes (bid_index_)
                                 if (_size_remaining_ > 0):
                                     # order is stil live so set size appropriately
                                     order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
@@ -157,30 +144,6 @@ class BaseOrderManager:
                                 this_base_order_vec_.remove(order_) # remove order from vec
                                 self.AdjustTopBottomOrderVecBidIndexes(bid_index_)
                             break
-    
-                if (order_ is None):
-                    # If not found among sequenced orders at given price level ...
-                    # search for order in unsequenced_bids_
-                    for order_ in self.unsequenced_bids_[:]:
-                        if (order_.client_assigned_order_sequence() == _client_assigned_order_sequence_):
-                            # found order
-                            order_.SequenceAtTime(self.watch_.msecs_from_midnight())
-                            order_.server_assigned_order_sequence_ = t_server_assigned_order_sequence_
-                            self.num_unconfirmed_orders_ -= 1 # decrement number of unconfirmed orders
-                            self.sum_bid_unconfirmed_[bid_index_] = max(0, self.sum_bid_unconfirmed_[bid_index_] - order_.size_requested())
-                            self.AdjustTopBottomUnconfirmedBidIndexes(bid_index_)
-                            if (_size_remaining_ > 0):
-                                # order is still live so confirm it
-                                order_.ConfirmAtTime(self.watch_.msecs_from_midnight())
-                                order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-                                bid_index_ = self.GetBidIndexAndAdjustIntPrice(r_int_price_)
-                                self.sum_bid_confirmed_[bid_index_] += _size_remaining_
-                                self.AdjustTopBottomConfirmedBidIndexes(bid_index_)
-                                self.bid_order_vec_[bid_index_].push_back(order_)
-                                self.AdjustTopBottomOrderVecBidIndexes(bid_index_)
-                            self.unsequenced_bids_.remove(order_)
-                            self.sum_bid_sizes_ -= _size_executed_
-                            break
             else:
                 ask_index_ = self.GetAskIndex(r_int_price_)
                 # search in sequenced orders at the price sent by ORS
@@ -188,25 +151,12 @@ class BaseOrderManager:
                 this_base_order_vec_ = self.ask_order_vec_[ask_index_]
                 if (this_base_order_vec_):
                     for order_ in this_base_order_vec_[:]:
-                        if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                        if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                        #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
                             # Found the order
-                            if (order_.order_status() == 'Seqd'):
-                                # depending on the last status that we had seen of this order, the maps or data structures from which we need 
-                                # to remove / modify this order changes
-                                # either missed the confirm or the exec came from the exchange before the confirm
-                                self.num_unconfirmed_orders_ -= 1
-                                self.sum_ask_unconfirmed_[ask_index_] = max(0, self.sum_ask_unconfirmed_[ask_index_] - order_.size_requested())
-                                self.AdjustTopBottomUnconfirmedAskIndexes(ask_index_)
-                                if (_size_remaining_ > 0):
-                                    # order is stil live so confirm it
-                                    order_.ConfirmAtTime(self.watch_.msecs_from_midnight())
-                                    order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-                                    self.sum_ask_confirmed_[ask_index_] += _size_remaining_
-                                    self.AdjustTopBottomConfirmedAskIndexes(ask_index_)
-                      
-                            elif (order_.order_status() == 'Conf'):
+                            if (order_.order_status() == 'Conf'):
                                 self.sum_ask_confirmed_[ask_index_] = max(0, self.sum_ask_confirmed_[ask_index_] + _size_remaining_ - order_.size_remaining())
-                                self.AdjustTopBottomConfirmedAskIndexes ( ask_index_ );
+                                self.AdjustTopBottomConfirmedAskIndexes (ask_index_)
                                 if (_size_remaining_ > 0):
                                     # order is stil live so set size appropriately
                                     order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
@@ -217,30 +167,7 @@ class BaseOrderManager:
                                 this_base_order_vec_.remove(order_) # remove order from vec
                                 self.AdjustTopBottomOrderVecAskIndexes(ask_index_)
                             break
-                if (order_ is None):
-                    # If not found among sequenced orders at given price level ...
-                    # search for order in unsequenced_asks_
-                    for order_ in self.unsequenced_asks_[:]:
-                        if (order_.client_assigned_order_sequence() == _client_assigned_order_sequence_):
-                            # found order
-                            order_.SequenceAtTime(self.watch_.msecs_from_midnight())
-                            order_.server_assigned_order_sequence_ = t_server_assigned_order_sequence_
-                            self.num_unconfirmed_orders_ -= 1 # decrement number of unconfirmed orders
-                            self.sum_ask_unconfirmed_[ask_index_] = max(0, self.sum_ask_unconfirmed_[ask_index_] - order_.size_requested())
-                            self.AdjustTopBottomUnconfirmedAskIndexes(ask_index_)
-                            if (_size_remaining_ > 0):
-                                # order is still live so confirm it
-                                order_.ConfirmAtTime(self.watch_.msecs_from_midnight())
-                                order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-                                ask_index_ = self.GetAskIndexAndAdjustIntPrice(r_int_price_)
-                                self.sum_ask_confirmed_[ask_index_] += _size_remaining_
-                                self.AdjustTopBottomConfirmedAskIndexes(ask_index_)
-                                self.ask_order_vec_[ask_index_].push_back(order_)
-                                self.AdjustTopBottomOrderVecAskIndexes(ask_index_)
-                            self.unsequenced_asks_.remove(order_)
-                            self.sum_ask_sizes_ -= _size_executed_
-                            break
-            self.AdjustPosition(t_client_position_, _price_, r_int_price_) # instead of GetMidPrice() use _price_ sent
+            #self.AdjustPosition(t_client_position_, _price_, r_int_price_) # instead of GetMidPrice() use _price_ sent
     
     def GetBidIndex(self, _int_price_):
         if (not self.initial_adjustment_set_):
@@ -396,7 +323,7 @@ class BaseOrderManager:
 
     '''Aggregator functions'''
     
-    '''Bid version'''    
+    '''Bid version'''    '''
     def SumBidSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
         if (self.unconfirmed_top_bid_index_ == -1):
             return 0
@@ -406,7 +333,7 @@ class BaseOrderManager:
         while (t_index_ >= max(t_bid_index_, self.unconfirmed_bottom_bid_index_)):
             t_retval_ += self.sum_bid_unconfirmed_[t_index_]
             t_index_ -= 1
-        return t_retval_
+        return t_retval_'''
     
     def SumBidSizeConfirmedEqAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_bid_index_ == -1):
@@ -432,11 +359,12 @@ class BaseOrderManager:
     
     def SumBidSizes(self):
         t_retval_ = 0
+        '''
         if (self.unconfirmed_top_bid_index_ != -1):
             t_index_ = self.unconfirmed_top_bid_index_
             while (t_index_ >= self.unconfirmed_bottom_bid_index_):
                 t_retval_ += self.sum_bid_unconfirmed_[t_index_]
-                t_index_ -= 1
+                t_index_ -= 1'''
         if (self.confirmed_top_bid_index_ != -1):
             t_index_ = self.confirmed_top_bid_index_
             while (t_index_ >= self.confirmed_bottom_bid_index_):
@@ -444,6 +372,7 @@ class BaseOrderManager:
                 t_index_ -= 1
 
     '''Ask version'''
+    '''
     def SumAskSizeUnconfirmedEqAboveIntPrice(self, _intpx_):
         if (self.unconfirmed_top_ask_index_ == -1):
             return 0
@@ -453,7 +382,7 @@ class BaseOrderManager:
         while (t_index_ >= max(t_ask_index_, self.unconfirmed_bottom_ask_index_)):
             t_retval_ += self.sum_ask_unconfirmed_[t_index_]
             t_index_ -= 1
-        return t_retval_
+        return t_retval_'''
     
     def SumAskSizeConfirmedEqAboveIntPrice(self, _intpx_):
         if (self.confirmed_top_ask_index_ == -1):
@@ -479,11 +408,12 @@ class BaseOrderManager:
     
     def SumAskSizes(self):
         t_retval_ = 0
+        '''
         if (self.unconfirmed_top_ask_index_ != -1):
             t_index_ = self.unconfirmed_top_ask_index_
             while (t_index_ >= self.unconfirmed_bottom_ask_index_):
                 t_retval_ += self.sum_ask_unconfirmed_[t_index_]
-                t_index_ -= 1
+                t_index_ -= 1'''
         if (self.confirmed_top_ask_index_ != -1):
             t_index_ = self.confirmed_top_ask_index_
             while (t_index_ >= self.confirmed_bottom_ask_index_):
@@ -494,7 +424,7 @@ class BaseOrderManager:
         if (_order_.CanBeCanceled()):
             _order_.canceled_ = True
             self.base_trader_.Cancel(_order_)
-            self.cxl_order_count_ += 1
+            self.cancel_order_count_ += 1
             return True
         else:
             return False
@@ -512,24 +442,36 @@ class BaseOrderManager:
         order_.price_ = _price_
         order_.int_price_ = _int_price_
         order_.size_requested_ = _size_requested_
-        order_.size_remaining_ = 0
-        order_.order_status_ = None
+        order_.size_remaining_ = _size_requested_
+        order_.order_status_ = 'Conf' # In original order_manager_, this would have been 'None' -> 'Seqd' -> 'Conf', 
+        #we assume that once an order is sent to the exchange, it will always get confirmed, also we assume delay to be zero!!
         order_.client_assigned_order_sequence_ = self.client_assigned_order_sequence_
         self.client_assigned_order_sequence_ += 1
+        # since we will have only one client, so caos and saos will be same (so we don't need the sequenced thingy!)
         
         if (_buysell_ == 'B'): # Buy
             t_bid_index_ = self.GetBidIndex(_int_price_)
-            self.sum_bid_unconfirmed_[t_bid_index_] += _size_requested_
-            self.AdjustTopBottomUnconfirmedBidIndexes(t_bid_index_)
-            self.unsequenced_bids_.append(order_)
-            self.num_unconfirmed_orders_ += 1
+            #self.sum_bid_unconfirmed_[t_bid_index_] += _size_requested_
+            #self.AdjustTopBottomUnconfirmedBidIndexes(t_bid_index_)
+            #self.unsequenced_bids_.append(order_)
+            #self.num_unconfirmed_orders_ += 1
+            self.bid_order_vec_[t_bid_index_].append(order_)
+            order_.server_assigned_order_sequence_ = order_.client_assigned_order_sequence_ # hack
+            self.AdjustTopBottomOrderVecBidIndexes(t_bid_index_)
+            self.sum_bid_confirmed_[t_bid_index_] += order_.size_requested_
+            self.AdjustTopBottomConfirmedBidIndexes(t_bid_index_)
             self.sum_bid_sizes_ += _size_requested_
         else:
             t_ask_index_ = self.GetAskIndex(_int_price_)
-            self.sum_ask_unconfirmed_[t_ask_index_] += _size_requested_
-            self.AdjustTopBottomUnconfirmedAskIndexes(t_ask_index_)
-            self.unsequenced_bids_.append(order_)
-            self.num_unconfirmed_orders_ += 1
+#             self.sum_ask_unconfirmed_[t_ask_index_] += _size_requested_
+#             self.AdjustTopBottomUnconfirmedAskIndexes(t_ask_index_)
+#             self.unsequenced_bids_.append(order_)
+#             self.num_unconfirmed_orders_ += 1
+            self.ask_order_vec_[t_ask_index_].append(order_)
+            order_.server_assigned_order_sequence_ = order_.client_assigned_order_sequence_ # hack
+            self.AdjustTopBottomOrderVecAskIndexes(t_ask_index_)
+            self.sum_ask_confirmed_[t_ask_index_] += order_.size_requested_
+            self.AdjustTopBottomConfirmedAskIndexes(t_ask_index_)
             self.sum_ask_sizes_ += _size_requested_
         
         self.base_trader_.SendTrade(order_)
@@ -540,6 +482,7 @@ class BaseOrderManager:
         self.Dump()
         
     '''Adjust Function''' 
+    '''
     def AdjustTopBottomUnconfirmedBidIndexes(self, _bid_index_):
         if (self.sum_bid_unconfirmed_[_bid_index_] == 0):
             if (_bid_index_ == self.unconfirmed_top_bid_index_ and _bid_index_ == self.unconfirmed_bottom_bid_index_):
@@ -564,7 +507,7 @@ class BaseOrderManager:
                 self.unconfirmed_bottom_bid_index_ = _bid_index_
             else:
                 pass
-        assert self.unconfirmed_bottom_bid_index_ <= self.unconfirmed_top_bid_index_
+        assert self.unconfirmed_bottom_bid_index_ <= self.unconfirmed_top_bid_index_'''
         
     def AdjustTopBottomConfirmedBidIndexes(self, _bid_index_):
         if (self.sum_bid_confirmed_[_bid_index_] == 0):
@@ -591,7 +534,7 @@ class BaseOrderManager:
             else:
                 pass
         assert self.confirmed_bottom_bid_index_ <= self.confirmed_top_bid_index_
-    
+    '''
     def AdjustTopBottomUnconfirmedAskIndexes(self, _ask_index_):
         if (self.sum_ask_unconfirmed_[_ask_index_] == 0):
             if (_ask_index_ == self.unconfirmed_top_ask_index_ and _ask_index_ == self.unconfirmed_bottom_ask_index_):
@@ -616,7 +559,7 @@ class BaseOrderManager:
                 self.unconfirmed_bottom_ask_index_ = _ask_index_
             else:
                 pass
-        assert self.unconfirmed_bottom_ask_index_ <= self.unconfirmed_top_ask_index_
+        assert self.unconfirmed_bottom_ask_index_ <= self.unconfirmed_top_ask_index_'''
         
     def AdjustTopBottomConfirmedAskIndexes(self, _ask_index_):
         if (self.sum_ask_confirmed_[_ask_index_] == 0):

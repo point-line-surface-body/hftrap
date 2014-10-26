@@ -130,8 +130,8 @@ class DirectionalAggressiveTrading(BaseTrading):
         canceled_size_ = 0
         
         if (self.top_ask_lift_):
-            if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_+1) == 0) and 
-                (self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
+            #if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_+1) == 0) and 
+            if ((self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
                 if (not self.top_bid_keep_):
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
                 
@@ -149,8 +149,8 @@ class DirectionalAggressiveTrading(BaseTrading):
                 canceled_size_ += self.order_manager_.CancelBidsAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if ((not placed_bids_this_round_) and (self.top_bid_improve_)):
-            if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_ + 1) == 0) and 
-                (self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
+            #if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_ + 1) == 0) and 
+            if ((self.order_manager_.SumBidSizeConfirmedAboveIntPrice(self.best_nonself_bid_int_price_) == 0)):
 
                 if (self.my_position_ + self.order_manager_.SumBidSizes() + self.current_tradevarset_.l1bid_trade_size_ >= self.param_set_.worst_case_position_ ):
                     canceled_size_ += self.order_manager_.CancelBidsFromFar(self.current_tradevarset_.l1bid_trade_size_)
@@ -165,9 +165,9 @@ class DirectionalAggressiveTrading(BaseTrading):
     
         if (not placed_bids_this_round_):
             if (self.top_bid_place_):
-                print 'UnconfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
-                if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
-                    (self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
+                #print 'UnconfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
+                #if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
+                if ((self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
@@ -185,8 +185,8 @@ class DirectionalAggressiveTrading(BaseTrading):
 
         if (self.top_bid_hit_):
 
-            if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
-                (self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
+            #if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
+            if ((self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
                 if (not self.top_ask_keep_):
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
                 allowance_for_aggressive_sell_ = - self.my_position_ + self.order_manager_.SumAskSizes() + self.current_tradevarset_.l1ask_trade_size_ - self.param_set_.worst_case_position_
@@ -203,8 +203,8 @@ class DirectionalAggressiveTrading(BaseTrading):
     
         if ((not placed_asks_this_round_) and (self.top_ask_improve_)):
 
-            if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
-                (self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
+            #if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_ - 1) == 0) and 
+            if ((self.order_manager_.SumAskSizeConfirmedAboveIntPrice(self.best_nonself_ask_int_price_) == 0)):
                 if (- self.my_position_ + self.order_manager_.SumAskSizes() + self.current_tradevarset_.l1ask_trade_size_ >= self.param_set_.worst_case_position_):
                     canceled_size_ += self.order_manager_.CancelAsksFromFar(self.current_tradevarset_.l1ask_trade_size_)
                 else:
@@ -218,8 +218,8 @@ class DirectionalAggressiveTrading(BaseTrading):
     
         if (not placed_asks_this_round_):
             if (self.top_ask_place_):
-                if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
-                    (self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
+                #if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
+                if ((self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, self.current_tradevarset_.l1ask_trade_size_, 'S')
                     placed_asks_this_round_ = True
