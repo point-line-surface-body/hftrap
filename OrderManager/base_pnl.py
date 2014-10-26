@@ -1,6 +1,5 @@
 from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
 from OrderManager.order_manager_listeners import ExecutionListener
-from CDef.security_definitions import SecurityDefinitions
 class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
     
     def __init__(self, _watch_, _order_manager_, _dep_market_view_, _runtime_id_):
@@ -22,7 +21,6 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         self.commish_dollars_per_unit_ = 0
         self.dep_market_view_.SubscribeL1Only(self)
         
-        
     def OnMarketUpdate(self, _market_update_info_):
         self.current_price_ = _market_update_info_.mkt_size_weighted_price_
         self.last_bid_price_ =  _market_update_info_.bestbid_price_
@@ -33,7 +31,6 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
             self.min_pnl_till_now_ = self.total_pnl_
         self.opentrade_unrealized_pnl_ = self.total_pnl_ - self.realized_pnl_
         
-    
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         return
         

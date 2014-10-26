@@ -126,48 +126,66 @@ class BaseOrderManager:
                 # search in sequenced orders at the price sent by ORS
                 # fetch order in intpx_2_bid_order_vec_[r_int_price_]
                 this_base_order_vec_ = self.bid_order_vec_[bid_index_]
-                if (this_base_order_vec_):
-                    for order_ in this_base_order_vec_[:]:
-                        if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_): ##
-                        #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
-                            # Found the order
-                            if (order_.order_status() == 'Conf'):
-                                self.sum_bid_confirmed_[bid_index_] = max(0, self.sum_bid_confirmed_[bid_index_] + _size_remaining_ - order_.size_remaining())
-                                self.AdjustTopBottomConfirmedBidIndexes (bid_index_)
-                                if (_size_remaining_ > 0):
-                                    # order is stil live so set size appropriately
-                                    order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-    
-                            # Update active bid
-                            self.sum_bid_sizes_ -= _size_executed_
-                            if (_size_remaining_ <= 0):
-                                this_base_order_vec_.remove(order_) # remove order from vec
-                                self.AdjustTopBottomOrderVecBidIndexes(bid_index_)
-                            break
+                if (not this_base_order_vec_):
+                    print('Not possible')
+                for order_ in this_base_order_vec_[:]:
+                    if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_): ##
+                        continue
+                    #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                    # Found the order
+                    if (order_.order_status() == 'Conf'):
+                        self.sum_bid_confirmed_[bid_index_] = max(0, self.sum_bid_confirmed_[bid_index_] + _size_remaining_ - order_.size_remaining())
+                        self.AdjustTopBottomConfirmedBidIndexes (bid_index_)
+                        if (_size_remaining_ > 0):
+                            # order is stil live so set size appropriately
+                            order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
+
+                    # Update active bid
+                    self.sum_bid_sizes_ -= _size_executed_
+                    if (_size_remaining_ <= 0):
+                        this_base_order_vec_.remove(order_) # remove order from vec
+                        self.AdjustTopBottomOrderVecBidIndexes(bid_index_)
+                    break
             else:
                 ask_index_ = self.GetAskIndex(r_int_price_)
                 # search in sequenced orders at the price sent by ORS
                 # fetch order in intpx_2_ask_order_vec_[r_int_price_]
                 this_base_order_vec_ = self.ask_order_vec_[ask_index_]
-                if (this_base_order_vec_):
-                    for order_ in this_base_order_vec_[:]:
-                        if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_):
-                        #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
-                            # Found the order
-                            if (order_.order_status() == 'Conf'):
-                                self.sum_ask_confirmed_[ask_index_] = max(0, self.sum_ask_confirmed_[ask_index_] + _size_remaining_ - order_.size_remaining())
-                                self.AdjustTopBottomConfirmedAskIndexes (ask_index_)
-                                if (_size_remaining_ > 0):
-                                    # order is stil live so set size appropriately
-                                    order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
-                            
-                            # Update active ask
-                            self.sum_ask_sizes_ -= _size_executed_
-                            if (_size_remaining_ <= 0):
-                                this_base_order_vec_.remove(order_) # remove order from vec
-                                self.AdjustTopBottomOrderVecAskIndexes(ask_index_)
-                            break
-            #self.AdjustPosition(t_client_position_, _price_, r_int_price_) # instead of GetMidPrice() use _price_ sent
+                if (not this_base_order_vec_):
+                    print('Not possible')
+                for order_ in this_base_order_vec_[:]:
+                    if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                    #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
+                        # Found the order
+                        if (order_.order_status() == 'Conf'):
+                            self.sum_ask_confirmed_[ask_index_] = max(0, self.sum_ask_confirmed_[ask_index_] + _size_remaining_ - order_.size_remaining())
+                            self.AdjustTopBottomConfirmedAskIndexes(ask_index_)
+                            if (_size_remaining_ > 0):
+                                # order is stil live so set size appropriately
+                                order_.ConfirmNewSize(_size_remaining_) # set both size_requested_ and size_remaining_ to this value
+                        
+                        # Update active ask
+                        self.sum_ask_sizes_ -= _size_executed_
+                        if (_size_remaining_ <= 0):
+                            this_base_order_vec_.remove(order_) # remove order from vec
+                            self.AdjustTopBottomOrderVecAskIndexes(ask_index_)
+                        break
+            self.AdjustPosition(t_client_position_, _price_, r_int_price_) # instead of GetMidPrice() use _price_ sent
+            
+            
+    def AdjustPosition(self, t_client_position_, _trade_price_, r_int_price_):
+        # this can be called any number of times ... ti will only do sth if client_position_ != t_client_position_
+        if (self.client_position_ != t_client_position_):
+            if (t_client_position_ > self.client_position_):
+                _implied_buysell_ = 'B'
+            else:
+                _implied_buysell_ = 'S'
+            position_diff_ = abs(t_client_position_ - self.client_position_)
+            self.trade_volume_ += position_diff_
+            # updating position here since this gives control to strategy
+            self.client_position_ = t_client_position_
+            # NotifyExecutionListeners
+            self.base_pnl_.OnExec(t_client_position_, position_diff_, _implied_buysell_, _trade_price_, r_int_price_)
     
     def GetBidIndex(self, _int_price_):
         if (not self.initial_adjustment_set_):
