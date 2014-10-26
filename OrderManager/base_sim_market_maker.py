@@ -387,6 +387,15 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                                     self.client_position_map_[_server_assigned_client_id_],
                                     self.client_position_map_[_server_assigned_client_id_], _order_.int_price_)
             
+    def BroadcastCancelNotification(self, _server_assigned_client_id_, _order_):
+        print('BroadcastCancelNotification')
+        for listener_ in self.order_canceled_listener_vec_:
+            listener_.OrderCanceled(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
+                                    _order_.server_assigned_order_sequence(), 'ZN_0', 
+                                    _order_.price_, _order_.buysell(), _order_.size_remaining(), _order_.size_executed(),
+                                    self.client_position_map_[_server_assigned_client_id_],
+                                    self.client_position_map_[_server_assigned_client_id_], _order_.int_price_)
+            
 '''False is needed ao that cancel req will not be removed '''
 '''         
     def BroadcastConfirm(self):

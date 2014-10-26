@@ -186,6 +186,12 @@ class SecurityMarketView:
         for x in self.l1_price_listeners_:
             x.OnTradePrint(self.trade_print_info_, self.market_update_info_)
         return
+    
+    def GetMidPrice(self):
+        return (self.bestask_price() + self.bestbid_price()) * 0.5
+    
+    def GetMidIntPrice(self):
+        return (self.bestask_int_price() + self.bestbid_int_price()) * 0.5
             
 #     def StorePreTrade(self):
 #         if self.market_update_info_.storing_pretrade_state_:
