@@ -70,6 +70,13 @@ class BaseOrderManager:
         self.client_assigned_order_sequence_ = 0
         self.bid_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
         self.ask_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
+        
+    def PrintStatistics(self):
+        print('Total Size Placed:\t'+str(self.total_size_placed_))
+        print('Send Order Count:\t'+str(self.send_order_count_))
+        print('Cancel Order Count:\t'+str(self.cancel_order_count_))
+        print('Traded Volume:\t'+str(self.trade_volume_))
+        print('Client Position:\t'+str(self.client_position_))
     
     def Dump(self):
         print '-----------------------------------'

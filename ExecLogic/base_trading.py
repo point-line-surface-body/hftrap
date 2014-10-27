@@ -82,7 +82,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		
 	def OnMarketUpdate(self, _market_update_info_):
 		self.count_ += 1
-		print 'BT.OnMarketUpdate: '+str(self.count_)
+		#print 'BT.OnMarketUpdate: '+str(self.count_)
 		self.NonSelfMarketUpdate()
 		
 	def OnTradePrint(self, _trade_print_info_, _market_update_info_):
