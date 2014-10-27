@@ -184,13 +184,13 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         
     def OnMarketUpdate(self, _market_update_info_):
         self.count_ += 1
-        print('SMM.OnMartetUpdate: '+str(self.count_))
-        print('SMM.keys: '), 
+        #print('SMM.OnMartetUpdate: '+str(self.count_))
+        #print('SMM.keys: '), 
         print self.intpx_to_bid_order_vec_.keys()
         for price_ in self.intpx_to_bid_order_vec_.keys():
-            print('SMM.price_: '+str(price_))
-            print('SMM.bestbid_int_price_: '+str(self.dep_market_view_.bestbid_int_price()))
-            print('SMM.bestask_int_price_: '+str(self.dep_market_view_.bestask_int_price()))
+            #print('SMM.price_: '+str(price_))
+            #print('SMM.bestbid_int_price_: '+str(self.dep_market_view_.bestbid_int_price()))
+            #print('SMM.bestask_int_price_: '+str(self.dep_market_view_.bestask_int_price()))
 
             if (price_ < self.dep_market_view_.bestbid_int_price()):
                 continue

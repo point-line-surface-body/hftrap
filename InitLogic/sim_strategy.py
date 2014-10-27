@@ -104,6 +104,7 @@ def __main__():
 
     '''Print Results'''
     #strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)
+    order_manager_.PrintStatistics()
     print('Total PNL: '+str(base_pnl_.total_pnl_))
     
 if __name__ == "__main__":

@@ -59,7 +59,7 @@ class SimpleTrend(CommonIndicator):
     '''
     def OnMarketUpdate(self, _market_update_info_):
         self.count_ += 1
-        print('SimpleTrend.OnMarketUpdate: '+str(self.count_))   
+        #print('SimpleTrend.OnMarketUpdate: '+str(self.count_))   
         self.current_indep_price_ = self.indep_market_view_.GetPriceFromType(self.price_type_)
         if not self.is_ready_:
             self.InitializeValues()
@@ -81,7 +81,7 @@ class SimpleTrend(CommonIndicator):
      
             self.last_price_recorded_ = self.current_indep_price_ 
             self.indicator_value_ = (self.current_indep_price_ - self.moving_avg_price_)
-            print 'SimpleTrend.indicator_value_: '+str(self.indicator_value_)
+            #print 'SimpleTrend.indicator_value_: '+str(self.indicator_value_)
             self.NotifyIndicatorListeners(self.indicator_value_)
     
     def SetTimeDecayWeights(self):

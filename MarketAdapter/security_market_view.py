@@ -221,9 +221,9 @@ class SecurityMarketView:
         #    self.market_update_info_.trade_update_implied_quote_ = True
         #self.StorePreTrade()
         self.trade_print_info_.buysell_ = _trade_type_
-        self.trade_print_info_.trade_price_ = _trade_price_
+        self.trade_print_info_.trade_price_ = float(_trade_price_) * self.MinPriceIncrement()
         self.trade_print_info_.size_traded_ = _trade_size_
-        self.trade_print_info_.int_trade_price_ = float(_trade_price_) * self.MinPriceIncrement()
+        self.trade_print_info_.int_trade_price_ = _trade_price_
         self.trade_print_info_.Dump()
         ask_price = float(ask_int_price_) * self.MinPriceIncrement()
         bid_price_ = float(bid_int_price_) * self.MinPriceIncrement()
@@ -240,14 +240,14 @@ class SecurityMarketView:
         self.count_ += 1
         self.UpdateL1Prices()
         print('---------------------------------------------------------------------------------------')
-        print 'SMV.OnTradePrint: '+str(self.count_)
+        #print 'SMV.OnTradePrint: '+str(self.count_)
         self.trade_print_info_.Dump()
         self.market_update_info_.Dump()
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyTradeListeners()
         self.NotifyOnReadyListeners()
-        print('---------------------------------------------------------------------------------------')
+        #print('---------------------------------------------------------------------------------------')
         #if (self.count_ == 10):
         #    exit()
         #print('trade_before_quote:'),
@@ -338,11 +338,11 @@ class SecurityMarketView:
         #self.OnL1PriceUpdate()
         
         self.count_ += 1
-        print 'SMV.OnMarketUpdate: '+str(self.count_)
+        #print 'SMV.OnMarketUpdate: '+str(self.count_)
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
         self.NotifyOnReadyListeners()
-        print('---------------------------------------------------------------------------------------')
+        #print('---------------------------------------------------------------------------------------')
 
         #if (self.count_ == 10):
         #    exit()

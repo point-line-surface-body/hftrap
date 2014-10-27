@@ -30,8 +30,9 @@ class LinearModelAggregator(BaseModelMath):
             
     def OnIndicatorUpdate(self, _indicator_index_, _new_value_):
         self.count_ += 1
-        print('LMA.OnIndicatorUpdate: '+str(self.count_)+' _new_value_: '+str(_new_value_))
+        #print('LMA.OnIndicatorUpdate: '+str(self.count_)+' _new_value_: '+str(_new_value_))
         #print(len(self.prev_value_vec_))
+        print('LMA.OnIndicatorUpdate: '+str(_new_value_))
         if (not self.is_ready_):
             self.is_ready_vec_[_indicator_index_] = True
             self.is_ready_ = self.AreAllReady()
@@ -74,17 +75,19 @@ class LinearModelAggregator(BaseModelMath):
     def CalcAndPropagate(self):
         #print('*******************************'+str(self.is_ready_)+'*******************************')
         if (self.is_ready_):
-            print 'LMA.CalcAndPropagate: '+str(self.count_)
+            #print 'LMA.CalcAndPropagate: '+str(self.count_)
             t_new_target_bias_ = self.sum_vars_
             t_new_target_price_ = self.dep_market_view_.GetPriceFromType(self.dep_baseprice_type_) + t_new_target_bias_
             
             kMinTicksMoved = 0.015
-            print 't_new_target_price_:\t\t'+str(t_new_target_price_)
-            print 'last_propagated_target_price_: '+str(self.last_propagated_target_price_)
-            print 'ticks_moved_:\t\t\t'+str((abs(t_new_target_price_ - self.last_propagated_target_price_) / self.dep_market_view_.MinPriceIncrement()))
+            #print 't_new_target_price_:\t\t'+str(t_new_target_price_)
+            #print 'last_propagated_target_price_: '+str(self.last_propagated_target_price_)
+            #print 'ticks_moved_:\t\t\t'+str((abs(t_new_target_price_ - self.last_propagated_target_price_) / self.dep_market_view_.MinPriceIncrement()))
             if (abs(t_new_target_price_ - self.last_propagated_target_price_) > kMinTicksMoved*self.dep_market_view_.MinPriceIncrement()):
                 self.PropagateNewTargetPrice(t_new_target_price_, t_new_target_bias_)
                 self.last_propagated_target_price_ = t_new_target_price_
+            else:
+                print('Not propagating')
         else:
             if (self.last_is_ready_):
                 self.PropagateNotReady();

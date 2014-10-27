@@ -3,19 +3,18 @@ from CDef.defines import MAX_LEVELS, kInvalidIntPrice, kInvalidPrice
 class TradePrintInfo():
     
     def __init__(self):
-        self.buysell_ = "NOTRADETYPE" # B S
+        self.buysell_ = 'B' # B S
         self.trade_price_ = 0.0
         self.size_traded_ = 0
-        self.int_trade_price_ = 0.0
+        self.int_trade_price_ = 0
         
     def Dump(self):
-        print('----------------------------')
-        print('Dumping TradePrintInfo:')
-        print('buysell_:\t\t'+self.buysell_)
-        print('trade_size_:\t'+str(self.trade_price_))
-        print('size_traded_:\t'+str(self.size_traded_))
-        print('int_trade_price_:\t'+str(self.int_trade_price_))
-        print('----------------------------')
+        print('['+self.buysell_+' '+str(self.size_traded_)+' '+str(self.int_trade_price_)+']')
+#         print('Dumping TradePrintInfo:')
+#         print('buysell_:\t\t'+self.buysell_)
+#         print('trade_price_:\t'+str(self.trade_price_))
+#         print('size_traded_:\t'+str(self.size_traded_))
+#         print('int_trade_price_:\t'+str(self.int_trade_price_))
 #         self.computing_trade_impact_ = False
 #         self.trade_impact_ = 0.0
 #         self.computing_int_trade_type_ = False
@@ -209,7 +208,7 @@ class MarketUpdateInfo():
             self.shortcode_ = argv[0]
             self.security_id_ = (int)(argv[1])
 #            self.exch_source_ = argv[2]
-        print('MUI.__init__')
+        #print('MUI.__init__')
         self.bestbid_price_ = kInvalidPrice
         self.bestbid_size_ = 0
         self.bestbid_int_price_ = kInvalidIntPrice
@@ -222,19 +221,21 @@ class MarketUpdateInfo():
         self.mkt_size_weighted_price_ = kInvalidPrice
     
     def Dump(self):
-        print('-----------------------')
-        print('Dumping MartetUpdateInfo:')
-        print('bestbid_price_:\t'+str(self.bestbid_price_))
-        print('bestbid_size_:\t'+str(self.bestbid_size_))
-        print('bestbid_int_price_:\t'+str(self.bestbid_int_price_))
-        print('bestbid_ordercount_:\t'+str(self.bestbid_ordercount_))
-        print('bestask_price_:\t'+str(self.bestask_price_))
-        print('bestask_size_:\t'+str(self.bestask_size_))
-        print('bestask_int_price_:\t'+str(self.bestask_int_price_))
-        print('bestask_ordercount_:\t'+str(self.bestask_ordercount_))
-        print('spread_increments_:\t'+str(self.spread_increments_))
-        print('mkt_size_weighted_price_:\t'+str(self.mkt_size_weighted_price_))
-        print('-----------------------')
+        print('['+str(self.bestbid_size_)+' '+str(self.bestbid_int_price_)+' | '+str(self.bestask_int_price_)+' '
+              +str(self.bestask_size_)+']')
+#         print('-----------------------')
+#         print('Dumping MartetUpdateInfo:')
+#         print('bestbid_price_:\t'+str(self.bestbid_price_))
+#         print('bestbid_size_:\t'+str(self.bestbid_size_))
+#         print('bestbid_int_price_:\t'+str(self.bestbid_int_price_))
+#         print('bestbid_ordercount_:\t'+str(self.bestbid_ordercount_))
+#         print('bestask_price_:\t'+str(self.bestask_price_))
+#         print('bestask_size_:\t'+str(self.bestask_size_))
+#         print('bestask_int_price_:\t'+str(self.bestask_int_price_))
+#         print('bestask_ordercount_:\t'+str(self.bestask_ordercount_))
+#         print('spread_increments_:\t'+str(self.spread_increments_))
+#         print('mkt_size_weighted_price_:\t'+str(self.mkt_size_weighted_price_))
+#         print('-----------------------')
 #         i=0
 #         while i < MAX_LEVELS :
 #             self.bidlevels_.append(MarketUpdateInfoLevelStruct ( ))
