@@ -85,7 +85,7 @@ def __main__():
         sim_market_maker_.AddOrderCanceledListener(order_manager_)
 #         sim_market_maker_.AddOrderSequencedListener(order_manager_)
 #         sim_market_maker_.AddOrderRejectedListener(order_manager_)'''
-    
+    smv_vec_[0].SetSimMarketMaker(sim_market_maker_)
     base_model_math_.AddListener(strategy_desc_.strategy_vec_[0].exec_)
     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
     for smv_ in smv_vec_:

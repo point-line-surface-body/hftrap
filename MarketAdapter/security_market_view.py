@@ -37,6 +37,7 @@ class SecurityMarketView:
         self.onready_listeners_ = []
         self.price_type_subscribed_ = {}
         self.count_ = 0
+        self.sim_market_maker_ = None
 #         self.use_order_level_book_ = False
 #         #following variables may not be needed
 #         self.conf_to_market_update_msecs_ = SecurityDefinitions.GetConfToMarketUpdateMsecs(_shortcode_, self.watch_.TradingDate())
@@ -83,6 +84,9 @@ class SecurityMarketView:
 #             self.running_hit_size_vec_.append(0)
 #             self.running_lift_size_vec_.append(0)
 #             i = i+1
+
+    def SetSimMarketMaker(self, _sim_market_maker_):
+        self.sim_market_maker_ = _sim_market_maker_
       
     def __eq__(self, _obj_):
         return self.shortcode() == _obj_.shortcode()
@@ -245,7 +249,9 @@ class SecurityMarketView:
         self.market_update_info_.Dump()
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
-        self.NotifyTradeListeners()
+        #self.NotifyTradeListeners()
+        if (self.sim_market_maker_ is not None):
+            self.sim_market_maker_.OnTradePrint(self.trade_print_info_, self.market_update_info_)
         self.NotifyOnReadyListeners()
         #print('---------------------------------------------------------------------------------------')
         #if (self.count_ == 10):
@@ -341,6 +347,8 @@ class SecurityMarketView:
         #print 'SMV.OnMarketUpdate: '+str(self.count_)
         self.is_ready_ = True
         self.NotifyL1PriceListeners()
+        if (self.sim_market_maker_ is not None):
+            self.sim_market_maker_.OnMarketUpdate(self.market_update_info_)
         self.NotifyOnReadyListeners()
         #print('---------------------------------------------------------------------------------------')
 
