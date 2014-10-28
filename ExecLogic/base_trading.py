@@ -98,7 +98,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.NonSelfMarketUpdate()
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
-		print('BT.UpdateTarget'),
+		#print('BT.UpdateTarget'),
 		if (not self.is_ready_):
 			print('BT is not ready for the first time')
 			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
@@ -113,7 +113,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 				self.is_ready_ = True
 				#print('BT is now ready')
 		else:
-			print('BT is ready')
+			#print('BT is ready')
 			self.target_price_ = _new_target_
 			self.targetbias_numbers_ = _new_sum_vars_
 			self.ShouldBeGettingFlat()
@@ -126,7 +126,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		return
 	
 	def ShouldBeGettingFlat(self):
-		print self.watch_.GetMsecsFromMidnight(), self.trading_end_time_
+		#print self.watch_.GetMsecsFromMidnight(), self.trading_end_time_
 		if (self.watch_.GetMsecsFromMidnight() > self.trading_end_time_):
 			self.get_flat_due_to_close_ = True
 		self.should_be_getting_flat_ = self.get_flat_due_to_close_ or self.get_flat_due_to_max_loss_ or self.get_flat_due_to_max_opentrade_loss_ or self.get_flat_due_to_max_pnl_ or self.get_flat_due_to_max_position_
