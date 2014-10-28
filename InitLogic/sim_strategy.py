@@ -100,7 +100,7 @@ def __main__():
     data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
     print('data_seek_time_: '+str(data_seek_time_))
     historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
-    historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() # add 1 hour
+    historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() + 300000
     print('historical_dispatcher_end_time_: '+str(historical_dispatcher_end_time_))
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
 

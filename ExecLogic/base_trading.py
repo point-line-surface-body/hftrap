@@ -126,19 +126,26 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		return
 	
 	def ShouldBeGettingFlat(self):
-		return self.get_flat_due_to_close_ or self.get_flat_due_to_max_loss_ or self.get_flat_due_to_max_opentrade_loss_ or self.get_flat_due_to_max_pnl_ or self.get_flat_due_to_max_position_
+		print self.watch_.GetMsecsFromMidnight(), self.trading_end_time_
+		if (self.watch_.GetMsecsFromMidnight() > self.trading_end_time_):
+			self.get_flat_due_to_close_ = True
+		self.should_be_getting_flat_ = self.get_flat_due_to_close_ or self.get_flat_due_to_max_loss_ or self.get_flat_due_to_max_opentrade_loss_ or self.get_flat_due_to_max_pnl_ or self.get_flat_due_to_max_position_
 	
 	def GetFlatTradingLogic(self):
-		t_position = self.my_position_
-		if (t_position == 0):
+		print'GetFlat'
+		t_position_ = self.my_position_
+		if (t_position_ == 0):
 			self.order_manager_.CancelAllOrders()
-		elif (t_position > 0):
-			self.order_manager_.CancelAllBidOrders()
-			self.order_manager_.CancelAsksBelowIntPrice(self.best_nonself_ask_int_price_)
-			
+		elif (t_position_ > 0):
+			#self.order_manager_.CancelAllBidOrders()
+			self.order_manager_.CancelAllOrders()
+			#self.order_manager_.CancelAsksBelowIntPrice(self.best_nonself_ask_int_price_)
+			self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, t_position_, 'S')
 		else:
-			self.order_manager_.CancelAllAskOrders()
-			self.order_manager_.CancelBidsBelowIntPrice(self.best_nonself_bid_int_price_)
+			#self.order_manager_.CancelAllAskOrders()
+			#self.order_manager_.CancelBidsBelowIntPrice(self.best_nonself_bid_int_price_)
+			self.order_manager_.CancelAllOrders()
+			self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, - t_position_, 'B')
 			
 	def UpdatePosition(self):
 		self.my_position_ += self.position_offset_
