@@ -2,7 +2,7 @@ import sys
 from Indicators.simple_trend import SimpleTrend
 
 from TradingPlatform.data_file_constants import *
-from get_data_file_name import get_data_file_name
+from get_data_file_name import GetFileSourceName
 #from get_time_from_timestamp import get_time_from_timestamp
 
 usage = 'USAGE: EXEC SHORTCODE TRADING_DATE START_TIME END_TIME INDICATOR_LIST OUTPUT_FILE'
@@ -18,7 +18,7 @@ end_time = sys.argv[4]
 indicator_list = sys.argv[5]
 output_file = sys.argv[6]
 
-data_file_name = get_data_file_name(shortcode, trading_date)
+data_file_name = GetFileSourceName(shortcode, trading_date)
 
 ilist = open(indicator_list, 'r')
 indicators_strings = ilist.readlines()

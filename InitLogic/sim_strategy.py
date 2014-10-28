@@ -97,7 +97,7 @@ def __main__():
     #market_update_manager_.start()
 
     '''Run Historical Dispatcher'''
-    data_seek_time_ = strategy_desc_.GetMinStartTime() # subtract some preparation time
+    data_seek_time_ = strategy_desc_.GetMinStartTime() - 300000
     print('data_seek_time_: '+str(data_seek_time_))
     historical_dispatcher_.SeekHistFileSourcesTo(data_seek_time_)
     historical_dispatcher_end_time_ = strategy_desc_.GetMaxEndTime() + 300000
@@ -105,9 +105,8 @@ def __main__():
     historical_dispatcher_.RunHist(historical_dispatcher_end_time_)
 
     '''Print Results'''
-    #strategy_desc_.strategy_vec_[0].exec_.ReportResults(trades_writer_)
     order_manager_.PrintStatistics()
-    print('Total PNL: '+str(base_pnl_.total_pnl_))
+    print('EOD PNL:\t\t'+str(base_pnl_.total_pnl_))
     
 if __name__ == "__main__":
     __main__()

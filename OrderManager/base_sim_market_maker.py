@@ -203,7 +203,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         
     def OnMarketUpdate(self, _market_update_info_):
         self.count_ += 1
-        #print('SMM.OnMartetUpdate: '+str(self.count_))
+        print('SMM.OnMarketUpdate'),
         #print('SMM.keys: '), 
         #print self.intpx_to_bid_order_vec_.keys()
         for price_ in self.intpx_to_bid_order_vec_.keys():
@@ -291,6 +291,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.dump()
                 
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
+        print('SMM.OnTradePrint'),
         if (_trade_print_info_.buysell_ == 'B'):
             #askside_trade_size_ = _trade_print_info_.size_traded_
 #             if (self.masked_asks_):
@@ -400,6 +401,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                             self.BroadcastExecNotification(order_.server_assigned_client_id(), order_)
                             if (order_.size_remaining() <= 0):
                                 order_vec_.remove(order_)
+        self.dump()
     
     def OnTimePeriodUpdate(self, num_pages_to_add_):
         return
@@ -408,7 +410,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         print('BroadcastExecNotification '+str(self.client_position_map_[_server_assigned_client_id_]))
         for listener_ in self.order_executed_listener_vec_:
             listener_.OrderExecuted(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
-                                    _order_.server_assigned_order_sequence(), 'ZN_0', 
+                                    _order_.server_assigned_order_sequence(), self.dep_market_view_.shortcode_, 
                                     _order_.price_, _order_.buysell(), _order_.size_remaining(), _order_.size_executed(),
                                     self.client_position_map_[_server_assigned_client_id_],
                                     self.client_position_map_[_server_assigned_client_id_], _order_.int_price_)
@@ -418,7 +420,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         print self.order_canceled_listener_vec_
         for listener_ in self.order_canceled_listener_vec_:
             listener_.OrderCanceled(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
-                                    _order_.server_assigned_order_sequence(), 'ZN_0', 
+                                    _order_.server_assigned_order_sequence(), self.dep_market_view_.shortcode_, 
                                     _order_.price_, _order_.buysell(), _order_.size_remaining(), _order_.size_executed(),
                                     self.client_position_map_[_server_assigned_client_id_],
                                     self.client_position_map_[_server_assigned_client_id_], _order_.int_price_)

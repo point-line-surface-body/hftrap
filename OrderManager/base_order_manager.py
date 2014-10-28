@@ -84,7 +84,7 @@ class BaseOrderManager:
         print('Total Size Placed:\t'+str(self.total_size_placed_))
         print('Send Order Count:\t'+str(self.send_order_count_))
         print('Cancel Order Count:\t'+str(self.cancel_order_count_))
-        print('Traded Volume:\t'+str(self.trade_volume_))
+        print('Traded Volume:\t\t'+str(self.trade_volume_))
         print('Client Position:\t'+str(self.client_position_))
     
     def Dump(self):
@@ -212,9 +212,8 @@ class BaseOrderManager:
                       _security_id_, _price_, t_buysell_, _size_remaining_, _size_executed_, t_client_position_, 
                       t_global_position_, r_int_price_):
         self.global_position_ = t_global_position_
-        print 'fucker'
         if (t_server_assigned_client_id_ == t_server_assigned_client_id_): #hack
-            print 'hello'
+            #print 'hello'
             if (t_buysell_ == 'B'):
                 bid_index_ = self.GetBidIndex(r_int_price_)
                 _this_base_order_vec_ = self.bid_order_vec_[bid_index_]

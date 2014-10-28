@@ -14,7 +14,7 @@ class DirectionalAggressiveTrading(BaseTrading):
         return 'DirectionalAggressiveTrading'
     
     def TradingLogic(self):
-        print('DAT.TradingLogic')
+        #print('DAT.TradingLogic')
         self.top_bid_place_ = False
         self.top_bid_keep_ = False
         self.top_bid_improve_ = False
@@ -22,17 +22,17 @@ class DirectionalAggressiveTrading(BaseTrading):
         self.bid_improve_keep_ = False
 
         if (self.current_tradevarset_.l1bid_trade_size_ > 0):
-            print 'last_buy_msecs_:\t'+str(self.last_buy_msecs_)
-            print 'current_time_:\t'+str(self.watch_.GetMsecsFromMidnight())
+            #print 'last_buy_msecs_:\t'+str(self.last_buy_msecs_)
+            #print 'current_time_:\t'+str(self.watch_.GetMsecsFromMidnight())
             #print 'cooloff_interval_:\t'+str(self.param_set_.cooloff_interval_)
             if ((self.last_buy_msecs_ > 0) and 
                 (self.watch_.GetMsecsFromMidnight() - self.last_buy_msecs_ < self.param_set_.cooloff_interval_)):
                 pass
             else:
-                print 'best_nonself_bid_size_:\t'+str(self.best_nonself_bid_size_)
-                print 'safe_distance_:\t'+str(self.param_set_.safe_distance_)
-                print 'targetbias_numbers_:\t'+str(self.targetbias_numbers_)
-                print 'l1bid_place_:\t'+str(self.current_tradevarset_.l1bid_place_)
+                #print 'best_nonself_bid_size_:\t'+str(self.best_nonself_bid_size_)
+                #print 'safe_distance_:\t'+str(self.param_set_.safe_distance_)
+                #print 'targetbias_numbers_:\t'+str(self.targetbias_numbers_)
+                #print 'l1bid_place_:\t'+str(self.current_tradevarset_.l1bid_place_)
                 if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance_) or 
                     (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
                     self.top_bid_place_ = True
@@ -164,7 +164,7 @@ class DirectionalAggressiveTrading(BaseTrading):
         if (not placed_bids_this_round_):
             if (self.top_bid_place_):
                 #self.order_manager_.Dump()
-                print 'ConfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
+                #print 'ConfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
                 #if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
                 if ((self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):

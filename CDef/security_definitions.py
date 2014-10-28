@@ -16,11 +16,15 @@ class SecurityDefinitions(object):
         self.trading_date_ = trading_date_
         if "ZN_0" not in SecurityDefinitions.contract_specification_map_.keys() :
             SecurityDefinitions.contract_specification_map_["ZN_0"] = ContractSpecification(0.015625, 1000, 1)
+        if "ZB_0" not in SecurityDefinitions.contract_specification_map_.keys() :
+            SecurityDefinitions.contract_specification_map_["ZB_0"] = ContractSpecification(0.031250, 1000, 1)
     
     @staticmethod
     def GetContractMinPriceIncrement(_shortcode_, *argv):
         if (_shortcode_ == 'ZN_0' or _shortcode_ == 'ZN_1'):
             return 0.015625
+        elif (_shortcode_ == 'ZB_0'):
+            return 0.031250
         else:
             return 0
     
