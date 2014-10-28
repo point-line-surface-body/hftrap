@@ -14,12 +14,17 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         self.last_bid_price_ = 0
         self.last_ask_price_ = 0
         self.total_pnl_ = 0
-        self.numbers_to_dollars_ = 1
+        self.numbers_to_dollars_ = 1000
         self.min_pnl_till_now_ = 0
         self.opentrade_unrealized_pnl_ = 0
         self.realized_pnl_ = 0
         self.commish_dollars_per_unit_ = 0
         self.dep_market_view_.SubscribeL1Only(self)
+        self.trades_file_ = 'trades.'+str(_runtime_id_)
+        self.trade_logger_ = open(self.trades_file_, 'w')
+        
+    def __del__(self):
+        self.trade_logger_.close()
         
     def OnMarketUpdate(self, _market_update_info_):
         self.current_price_ = _market_update_info_.mkt_size_weighted_price_
@@ -35,9 +40,10 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         return
         
     def OnExec(self, new_position_, _exec_quantity_, _buysell_, _price_, _int_price_):
+        self.trade_logger_.write(_buysell_+'\t'+str(_exec_quantity_)+'\t'+str(_int_price_)+'\n')
         abs_change_position_ = abs(new_position_ - self.position_)
         self.current_price_ = _price_
-        if _buysell_ == "BUY" :
+        if _buysell_ == 'B':
             if self.position_ < 0 and new_position_ >=0 :
                 # position and new_position are of different sign, So need to break trades into 2 parts.. Firstlt closing the position
                 trade1size = -1 * self.position_
@@ -67,8 +73,8 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
                 if self.total_pnl_ < self.min_pnl_till_now_ :
                     self.min_pnl_till_now_ = self.total_pnl_
                 self.opentrade_unrealized_pnl_ = self.total_pnl_ - self.realized_pnl_
-                self.average_open_price_ = (self.average_open_price_ * self.position_ + _price_* (new_position_ - self.position_))/new_position_
-        else :
+                #self.average_open_price_ = (self.average_open_price_ * self.position_ + _price_* (new_position_ - self.position_))/new_position_
+        else:
             if self.position_ > 0 and new_position_ <=0 :
                 trade1size = self.position_
                 self.pnl_ += trade1size * _price_ * self.numbers_to_dollars_
