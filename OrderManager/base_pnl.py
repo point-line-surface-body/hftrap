@@ -35,7 +35,7 @@ class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
         if self.total_pnl_ < self.min_pnl_till_now_ :
             self.min_pnl_till_now_ = self.total_pnl_
         self.opentrade_unrealized_pnl_ = self.total_pnl_ - self.realized_pnl_
-        
+
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         return
         
