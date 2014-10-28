@@ -60,6 +60,15 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.count_ = 0
 		return
 	
+	def OnPositionUpdate(self, _new_position_):
+		self.my_position_ = _new_position_
+		self.current_tradevarset_.l1bid_trade_size_ = self.param_set_.unit_trade_size_
+		self.current_tradevarset_.l1ask_trade_size_ = self.param_set_.unit_trade_size_
+		if (self.my_position_ + self.current_tradevarset_.l1bid_trade_size_ > self.param_set_.max_position_):
+			self.current_tradevarset_.l1bid_trade_size_ = 0
+		if (self.my_position_ - self.current_tradevarset_.l1ask_trade_size_ < - self.param_set_.max_position_):
+			self.current_tradevarset_.l1ask_trade_size_ = 0
+	
 	def TradingLogic(self):
 		return
 	
@@ -89,7 +98,7 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 		self.NonSelfMarketUpdate()
 	
 	def UpdateTarget(self, _new_target_, _new_sum_vars_):
-		print('BT.UpdateTarget')
+		print('BT.UpdateTarget'),
 		if (not self.is_ready_):
 			print('BT is not ready for the first time')
 			print(str(self.watch_.GetMsecsFromMidnight())+' '+str(self.trading_start_time_))
@@ -102,8 +111,9 @@ class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends
 				(_new_target_ >= self.dep_market_view_.bestbid_price()) and
 				(_new_target_ <= self.dep_market_view_.bestask_price())):
 				self.is_ready_ = True
-				print('BT is now ready')
+				#print('BT is now ready')
 		else:
+			print('BT is ready')
 			self.target_price_ = _new_target_
 			self.targetbias_numbers_ = _new_sum_vars_
 			self.ShouldBeGettingFlat()

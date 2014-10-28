@@ -68,8 +68,17 @@ class BaseOrderManager:
         #self.p_ticks_to_keep_ask_int_price_ = None
         #self.throttle_manager_ = None
         self.client_assigned_order_sequence_ = 0
-        self.bid_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
-        self.ask_order_vec_ = [[]]*BaseOrderManager.INT_PRICE_RANGE
+        self.bid_order_vec_ = []
+        self.ask_order_vec_ = []
+        self.position_update_listeners_ = []
+        for i in range(0, BaseOrderManager.INT_PRICE_RANGE):
+            self.bid_order_vec_.append([])
+            self.ask_order_vec_.append([])
+        
+        
+    def AddPositionUpdateListener(self, _listener_):
+        if (not _listener_ in self.position_update_listeners_):
+            self.position_update_listeners_.append(_listener_)
         
     def PrintStatistics(self):
         print('Total Size Placed:\t'+str(self.total_size_placed_))
@@ -79,56 +88,73 @@ class BaseOrderManager:
         print('Client Position:\t'+str(self.client_position_))
     
     def Dump(self):
-        print '-----------------------------------'
-        print 'shortcode_:\t\t\t'+self.shortcode_
-
-        print 'sum_bid_confirmed_:\t\t'+str(self.sum_bid_confirmed_)
-        print 'sum_ask_confirmed_:\t\t'+str(self.sum_ask_confirmed_)
-        
-        #print 'sum_bid_unconfirmed_:\t\t'+str(self.sum_bid_unconfirmed_)
-        #print 'sum_ask_unconfirmed_:\t\t'+str(self.sum_ask_unconfirmed_)
-        
-        print 'bid_order_vec_:\t\t\t'+str(self.bid_order_vec_)
-        print 'ask_order_vec_:\t\t\t'+str(self.ask_order_vec_)
-        
-        print 'initial_adjustment_set_:\t'+str(self.initial_adjustment_set_)
-        print 'bid_int_price_adjustment:\t'+str(self.bid_int_price_adjustment_)
-        print 'ask_int_price_adjustment:\t'+str(self.ask_int_price_adjustment_)
-
-        print 'order_vec_top_bid_index_:\t'+str(self.order_vec_top_bid_index_)
-        print 'order_vec_bottom_bid_index_:\t'+str(self.order_vec_bottom_bid_index_)
-        print 'confirmed_top_bid_index_:\t'+str(self.confirmed_top_bid_index_)
-        print 'confirmed_bottom_bid_index_:\t'+str(self.confirmed_bottom_bid_index_)
-        #print 'unconfirmed_top_bid_index_:\t'+str(self.unconfirmed_top_bid_index_)
-        #print 'unconfirmed_bottom_bid_index_:\t'+str(self.unconfirmed_bottom_bid_index_)
-        
-        print 'order_vec_top_ask_index_:\t'+str(self.order_vec_top_ask_index_)
-        print 'order_vec_bottom_ask_index_:\t'+str(self.order_vec_bottom_ask_index_)
-        print 'confirmed_top_ask_index_:\t'+str(self.confirmed_top_ask_index_)
-        print 'confirmed_bottom_ask_index_:\t'+str(self.confirmed_bottom_ask_index_)
-        #print 'unconfirmed_top_ask_index_:\t'+str(self.unconfirmed_top_ask_index_)
-        #print 'unconfirmed_bottom_ask_index_:\t'+str(self.unconfirmed_bottom_ask_index_)        
-
-        #print 'unsequenced_bids_:\t\t', self.unsequenced_bids_
-        #print 'unsequenced_asks_:\t\t', self.unsequenced_asks_
-        #print 'num_unconfimed_orders_:\t\t'+str(self.num_unconfirmed_orders_)
-        print 'client_position_:\t\t'+str(self.client_position_)
-        #print 'global_position_:\t\t'+str(self.global_position_)
-        print 'sum_bid_sizes_:\t\t\t'+str(self.sum_bid_sizes_)
-        print 'sum_ask_sizes_:\t\t\t'+str(self.sum_ask_sizes_)
-        #print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
-        #print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
-        print 'total_size_placed_:\t\t'+str(self.total_size_placed_)
-        print 'send_order_count_:\t\t'+str(self.send_order_count_)
-        print 'cancel_order_count_:\t\t'+str(self.cancel_order_count_)
-        print 'caos_:\t\t\t\t'+str(self.client_assigned_order_sequence_)
-        print '-----------------------------------'
+        for order_vec_ in self.bid_order_vec_:
+            if (not order_vec_):
+                continue
+            for order_ in order_vec_:
+                order_.dump()
+        for order_vec_ in self.ask_order_vec_:
+            if (not order_vec_):
+                continue
+            for order_ in order_vec_:
+                order_.dump()
+        print self.sum_bid_confirmed_,
+        for sum1 in self.sum_bid_confirmed_:
+            if (sum1 != 0):
+                print 'Sum:='+str(sum1),
+        for sum1 in self.sum_ask_confirmed_:
+            if (sum1 != 0):
+                print 'Sum:='+str(sum1),
+#         print '-----------------------------------'
+#         print 'shortcode_:\t\t\t'+self.shortcode_
+# 
+#         print 'sum_bid_confirmed_:\t\t'+str(self.sum_bid_confirmed_)
+#         print 'sum_ask_confirmed_:\t\t'+str(self.sum_ask_confirmed_)
+#         
+#         #print 'sum_bid_unconfirmed_:\t\t'+str(self.sum_bid_unconfirmed_)
+#         #print 'sum_ask_unconfirmed_:\t\t'+str(self.sum_ask_unconfirmed_)
+#         
+#         print 'bid_order_vec_:\t\t\t'+str(self.bid_order_vec_)
+#         print 'ask_order_vec_:\t\t\t'+str(self.ask_order_vec_)
+#         
+#         print 'initial_adjustment_set_:\t'+str(self.initial_adjustment_set_)
+#         print 'bid_int_price_adjustment:\t'+str(self.bid_int_price_adjustment_)
+#         print 'ask_int_price_adjustment:\t'+str(self.ask_int_price_adjustment_)
+# 
+#         print 'order_vec_top_bid_index_:\t'+str(self.order_vec_top_bid_index_)
+#         print 'order_vec_bottom_bid_index_:\t'+str(self.order_vec_bottom_bid_index_)
+#         print 'confirmed_top_bid_index_:\t'+str(self.confirmed_top_bid_index_)
+#         print 'confirmed_bottom_bid_index_:\t'+str(self.confirmed_bottom_bid_index_)
+#         #print 'unconfirmed_top_bid_index_:\t'+str(self.unconfirmed_top_bid_index_)
+#         #print 'unconfirmed_bottom_bid_index_:\t'+str(self.unconfirmed_bottom_bid_index_)
+#         
+#         print 'order_vec_top_ask_index_:\t'+str(self.order_vec_top_ask_index_)
+#         print 'order_vec_bottom_ask_index_:\t'+str(self.order_vec_bottom_ask_index_)
+#         print 'confirmed_top_ask_index_:\t'+str(self.confirmed_top_ask_index_)
+#         print 'confirmed_bottom_ask_index_:\t'+str(self.confirmed_bottom_ask_index_)
+#         #print 'unconfirmed_top_ask_index_:\t'+str(self.unconfirmed_top_ask_index_)
+#         #print 'unconfirmed_bottom_ask_index_:\t'+str(self.unconfirmed_bottom_ask_index_)        
+# 
+#         #print 'unsequenced_bids_:\t\t', self.unsequenced_bids_
+#         #print 'unsequenced_asks_:\t\t', self.unsequenced_asks_
+#         #print 'num_unconfimed_orders_:\t\t'+str(self.num_unconfirmed_orders_)
+#         print 'client_position_:\t\t'+str(self.client_position_)
+#         #print 'global_position_:\t\t'+str(self.global_position_)
+#         print 'sum_bid_sizes_:\t\t\t'+str(self.sum_bid_sizes_)
+#         print 'sum_ask_sizes_:\t\t\t'+str(self.sum_ask_sizes_)
+#         #print 'best_bid_int_price_:\t\t'+str(self.best_bid_int_price_)
+#         #print 'best_ask_int_price_:\t\t'+str(self.best_ask_int_price_)
+#         print 'total_size_placed_:\t\t'+str(self.total_size_placed_)
+#         print 'send_order_count_:\t\t'+str(self.send_order_count_)
+#         print 'cancel_order_count_:\t\t'+str(self.cancel_order_count_)
+#         print 'caos_:\t\t\t\t'+str(self.client_assigned_order_sequence_)
+#         print '-----------------------------------'
         
     def OrderExecuted(self, t_server_assigned_client_id_, _client_assigned_order_sequence_, t_server_assigned_order_sequence_, 
                       _security_id_, _price_, t_buysell_, _size_remaining_, _size_executed_, t_client_position_, 
                       t_global_position_, r_int_price_):
         self.global_position_ = t_global_position_
-        if (t_server_assigned_client_id_ == t_server_assigned_client_id_):
+        if (t_server_assigned_client_id_ == t_server_assigned_client_id_): #hack
             #self.num_self_trades_ += 1
             if (t_buysell_ == 'B'):
                 bid_index_ = self.GetBidIndex(r_int_price_)
@@ -138,7 +164,7 @@ class BaseOrderManager:
                 if (not this_base_order_vec_):
                     print('Not possible')
                 for order_ in this_base_order_vec_[:]:
-                    if (order_.client_assigned_order_sequence() == t_server_assigned_order_sequence_): ##
+                    if (order_.client_assigned_order_sequence() != t_server_assigned_order_sequence_): ##
                         continue
                     #if (order_.server_assigned_order_sequence() == t_server_assigned_order_sequence_):
                     # Found the order
@@ -186,7 +212,9 @@ class BaseOrderManager:
                       _security_id_, _price_, t_buysell_, _size_remaining_, _size_executed_, t_client_position_, 
                       t_global_position_, r_int_price_):
         self.global_position_ = t_global_position_
-        if (t_server_assigned_client_id_ == self.server_assigned_client_id_):
+        print 'fucker'
+        if (t_server_assigned_client_id_ == t_server_assigned_client_id_): #hack
+            print 'hello'
             if (t_buysell_ == 'B'):
                 bid_index_ = self.GetBidIndex(r_int_price_)
                 _this_base_order_vec_ = self.bid_order_vec_[bid_index_]
@@ -219,6 +247,8 @@ class BaseOrderManager:
     def AdjustPosition(self, t_client_position_, _trade_price_, r_int_price_):
         # this can be called any number of times ... ti will only do sth if client_position_ != t_client_position_
         if (self.client_position_ != t_client_position_):
+            for listener_ in self.position_update_listeners_:
+                listener_.OnPositionUpdate(t_client_position_)
             if (t_client_position_ > self.client_position_):
                 _implied_buysell_ = 'B'
             else:
@@ -397,6 +427,8 @@ class BaseOrderManager:
         return t_retval_'''
     
     def SumBidSizeConfirmedEqAboveIntPrice(self, _intpx_):
+        #print self.confirmed_top_bid_index_,
+        #print self.confirmed_bottom_bid_index_,
         if (self.confirmed_top_bid_index_ == -1):
             return 0
         t_bid_index_ = self.GetBidIndex(_intpx_)
@@ -491,9 +523,12 @@ class BaseOrderManager:
             return False
                 
     def SendTrade(self, _price_, _int_price_, _size_requested_, _buysell_):
-        print('SendTrade Called')
+        #self.Dump()
+
+        #print('SendTrade Called')
         #print _price_, _int_price_, _size_requested_, _buysell_
         #exit()
+        print('Send'),
         if (_size_requested_ <= 0):
             print 'SendTrade: _size_requested_ <= 0'
             return
@@ -535,12 +570,14 @@ class BaseOrderManager:
             self.AdjustTopBottomConfirmedAskIndexes(t_ask_index_)
             self.sum_ask_sizes_ += _size_requested_
         
+        order_.dump()
+        #self.Dump()
+
         self.base_trader_.SendTrade(order_)
         
         self.total_size_placed_ += _size_requested_
         self.send_order_count_ += 1
-        
-        self.Dump()
+        #self.Dump()
         
     '''Adjust Function''' 
     '''

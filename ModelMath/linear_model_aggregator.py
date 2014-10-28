@@ -32,7 +32,7 @@ class LinearModelAggregator(BaseModelMath):
         self.count_ += 1
         #print('LMA.OnIndicatorUpdate: '+str(self.count_)+' _new_value_: '+str(_new_value_))
         #print(len(self.prev_value_vec_))
-        print('LMA.OnIndicatorUpdate: '+str(_new_value_))
+        print('LMA.OnIndicatorUpdate: '+str(_new_value_)),
         if (not self.is_ready_):
             self.is_ready_vec_[_indicator_index_] = True
             self.is_ready_ = self.AreAllReady()

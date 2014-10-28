@@ -21,56 +21,55 @@ class DirectionalAggressiveTrading(BaseTrading):
         self.top_ask_lift_ = False
         self.bid_improve_keep_ = False
 
-        if (self.current_tradevarset_.l1bid_trade_size_ == 0):
-            return #not return correct this
-        print 'last_buy_msecs_:\t'+str(self.last_buy_msecs_)
-        print 'current_time_:\t'+str(self.watch_.GetMsecsFromMidnight())
-        print 'cooloff_interval_:\t'+str(self.param_set_.cooloff_interval_)
-        if ((self.last_buy_msecs_ > 0) and 
-            (self.watch_.GetMsecsFromMidnight() - self.last_buy_msecs_ < self.param_set_.cooloff_interval_)):
-            pass
-        else:
-            print 'best_nonself_bid_size_:\t'+str(self.best_nonself_bid_size_)
-            print 'safe_distance_:\t'+str(self.param_set_.safe_distance_)
-            print 'targetbias_numbers_:\t'+str(self.targetbias_numbers_)
-            print 'l1bid_place_:\t'+str(self.current_tradevarset_.l1bid_place_)
-            if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance_) or 
-                (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
-                self.top_bid_place_ = True
-                self.top_bid_keep_ = True
-                
-                if (self.watch_.GetMsecsFromMidnight() - self.last_agg_buy_msecs_ > self.param_set_.agg_cooloff_interval_):
-                    
-                    if ((self.param_set_.allowed_to_aggress_) and 
-                        (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_aggressive_) and 
-                        (self.my_position_ <= self.param_set_.max_position_to_lift_ ) and
-                        (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_cross_)):
-                        self.top_ask_lift_ = True
-
-                        if (self.my_position_ >= self.param_set_.max_position_to_cancel_on_lift_):
-                            self.top_bid_place_ = False
-                            self.top_bid_keep_ = False
-                    else:
-                        self.top_ask_lift_ = False
-                        
-                        if ((self.param_set_.allowed_to_improve_) and 
-                            (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_) and 
-                            (self.my_position_ <= self.param_set_.max_position_to_bidimprove_) and 
-                            (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_)):
-                            self.top_bid_improve_ = True
-                        else:
-                            self.top_bid_improve_ = False
+        if (self.current_tradevarset_.l1bid_trade_size_ > 0):
+            print 'last_buy_msecs_:\t'+str(self.last_buy_msecs_)
+            print 'current_time_:\t'+str(self.watch_.GetMsecsFromMidnight())
+            #print 'cooloff_interval_:\t'+str(self.param_set_.cooloff_interval_)
+            if ((self.last_buy_msecs_ > 0) and 
+                (self.watch_.GetMsecsFromMidnight() - self.last_buy_msecs_ < self.param_set_.cooloff_interval_)):
+                pass
             else:
-                if (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_keep_):
+                print 'best_nonself_bid_size_:\t'+str(self.best_nonself_bid_size_)
+                print 'safe_distance_:\t'+str(self.param_set_.safe_distance_)
+                print 'targetbias_numbers_:\t'+str(self.targetbias_numbers_)
+                print 'l1bid_place_:\t'+str(self.current_tradevarset_.l1bid_place_)
+                if ((self.best_nonself_bid_size_ > self.param_set_.safe_distance_) or 
+                    (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_place_)):
+                    self.top_bid_place_ = True
                     self.top_bid_keep_ = True
+                    
+                    if (self.watch_.GetMsecsFromMidnight() - self.last_agg_buy_msecs_ > self.param_set_.agg_cooloff_interval_):
+                        
+                        if ((self.param_set_.allowed_to_aggress_) and 
+                            (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_aggressive_) and 
+                            (self.my_position_ <= self.param_set_.max_position_to_lift_ ) and
+                            (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_cross_)):
+                            self.top_ask_lift_ = True
+    
+                            if (self.my_position_ >= self.param_set_.max_position_to_cancel_on_lift_):
+                                self.top_bid_place_ = False
+                                self.top_bid_keep_ = False
+                        else:
+                            self.top_ask_lift_ = False
+                            
+                            if ((self.param_set_.allowed_to_improve_) and 
+                                (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_) and 
+                                (self.my_position_ <= self.param_set_.max_position_to_bidimprove_) and 
+                                (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_)):
+                                self.top_bid_improve_ = True
+                            else:
+                                self.top_bid_improve_ = False
                 else:
-                    self.top_bid_keep_ = False
-
-                if ((self.dep_market_view_.spread_increments() > 1 ) and
-                    (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_keep_)):
-                    self.bid_improve_keep_ = True
-                else:
-                    self.bid_improve_keep_ = False
+                    if (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_keep_):
+                        self.top_bid_keep_ = True
+                    else:
+                        self.top_bid_keep_ = False
+    
+                    if ((self.dep_market_view_.spread_increments() > 1 ) and
+                        (self.targetbias_numbers_ >= self.current_tradevarset_.l1bid_improve_keep_)):
+                        self.bid_improve_keep_ = True
+                    else:
+                        self.bid_improve_keep_ = False
 
         self.top_ask_place_ = False
         self.top_ask_keep_ = False
@@ -78,49 +77,48 @@ class DirectionalAggressiveTrading(BaseTrading):
         self.top_bid_hit_ = False
         self.ask_improve_keep_ = False
 
-        if (self.current_tradevarset_.l1ask_trade_size_ == 0):
-            return #not return correct this
-        if ((self.last_sell_msecs_ > 0) and 
-            (self.watch_.GetMsecsFromMidnight() - self.last_sell_msecs_ < self.param_set_.cooloff_interval_)):
-            pass
-        else:
-            if ((self.best_nonself_ask_size_ > self.param_set_.safe_distance_) or 
-                (-self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_place_)):
-                self.top_ask_place_ = True
-                self.top_ask_keep_ = True
-                
-                if (self.watch_.GetMsecsFromMidnight() - self.last_agg_sell_msecs_ > self.param_set_.agg_cooloff_interval_):
-                    
-                    if ((self.param_set_.allowed_to_aggress_) and 
-                        (self.my_position_ >= self.param_set_.min_position_to_hit_) and 
-                        (self.best_nonself_ask_int_price_ - self.best_nonself_bid_int_price_ <= self.param_set_.max_int_spread_to_cross_) and 
-                        (-self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_aggressive_)):
-                        self.top_bid_hit_ = True
-
-                        if (self.my_position_ <= self.param_set_.min_position_to_cancel_on_hit_):
-                            self.top_ask_place_ = False
-                            self.top_ask_keep_ = False
-                    else:
-                        self.top_bid_hit_ = False
-                        
-                        if ((self.param_set_.allowed_to_improve_) and 
-                            (self.my_position_ <= self.param_set_.min_position_to_askimprove_) and 
-                            (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_) and 
-                            (self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_)):
-                            self.top_ask_improve_ = True
-                        else:
-                            self.top_ask_improve_ = False
+        if (self.current_tradevarset_.l1ask_trade_size_ > 0):
+            if ((self.last_sell_msecs_ > 0) and 
+                (self.watch_.GetMsecsFromMidnight() - self.last_sell_msecs_ < self.param_set_.cooloff_interval_)):
+                pass
             else:
-                if (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_keep_):
+                if ((self.best_nonself_ask_size_ > self.param_set_.safe_distance_) or 
+                    (-self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_place_)):
+                    self.top_ask_place_ = True
                     self.top_ask_keep_ = True
+                    
+                    if (self.watch_.GetMsecsFromMidnight() - self.last_agg_sell_msecs_ > self.param_set_.agg_cooloff_interval_):
+                        
+                        if ((self.param_set_.allowed_to_aggress_) and 
+                            (self.my_position_ >= self.param_set_.min_position_to_hit_) and 
+                            (self.best_nonself_ask_int_price_ - self.best_nonself_bid_int_price_ <= self.param_set_.max_int_spread_to_cross_) and 
+                            (-self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_aggressive_)):
+                            self.top_bid_hit_ = True
+    
+                            if (self.my_position_ <= self.param_set_.min_position_to_cancel_on_hit_):
+                                self.top_ask_place_ = False
+                                self.top_ask_keep_ = False
+                        else:
+                            self.top_bid_hit_ = False
+                            
+                            if ((self.param_set_.allowed_to_improve_) and 
+                                (self.my_position_ <= self.param_set_.min_position_to_askimprove_) and 
+                                (self.dep_market_view_.spread_increments() >= self.param_set_.min_int_spread_to_improve_) and 
+                                (self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_)):
+                                self.top_ask_improve_ = True
+                            else:
+                                self.top_ask_improve_ = False
                 else:
-                    self.top_ask_keep_ = False
-                
-                if ((self.dep_market_view_.spread_increments() > 1) and 
-                    (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_keep_)):
-                    self.ask_improve_keep_ = True
-                else:
-                    self.ask_improve_keep_ = False
+                    if (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_keep_):
+                        self.top_ask_keep_ = True
+                    else:
+                        self.top_ask_keep_ = False
+                    
+                    if ((self.dep_market_view_.spread_increments() > 1) and 
+                        (- self.targetbias_numbers_ >= self.current_tradevarset_.l1ask_improve_keep_)):
+                        self.ask_improve_keep_ = True
+                    else:
+                        self.ask_improve_keep_ = False
                     
                     
         print self.top_bid_place_, self.top_bid_keep_, self.top_bid_hit_, self.top_ask_place_, self.top_ask_keep_, self.top_ask_lift_
@@ -143,8 +141,8 @@ class DirectionalAggressiveTrading(BaseTrading):
                     self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, 
                                                   self.current_tradevarset_.l1bid_trade_size_, 'B') # 0 => Buy
                     placed_bids_this_round_ = True
-                    self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
-                    self.last_buy_msecs_ = self.watch_.mecs_from_midnight()
+                    #self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_buy_msecs_ = self.watch_.mecs_from_midnight()
             else:
                 canceled_size_ += self.order_manager_.CancelBidsAboveIntPrice(self.best_nonself_bid_int_price_)
     
@@ -157,24 +155,24 @@ class DirectionalAggressiveTrading(BaseTrading):
                 else:
                     self.order_manager_.SendTradeIntPx((self.best_nonself_bid_int_price_ + 1), self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
-                    self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
-                    self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_agg_buy_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_buy_msecs_ = self.watch_.msecs_from_midnight()
         else:
             if ((self.dep_market_view_.spread_increments() > 1) and (not self.bid_improve_keep_)):
                 canceled_size_ += self.order_manager_.CancelBidsAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if (not placed_bids_this_round_):
             if (self.top_bid_place_):
-                #print 'UnconfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
+                #self.order_manager_.Dump()
+                print 'ConfirmedEqAboveIntPrice:\t'+str(self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_))
                 #if ((self.order_manager_.SumBidSizeUnconfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and
                 if ((self.order_manager_.SumBidSizeConfirmedEqAboveIntPrice(self.best_nonself_bid_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1bid_trade_size_, 'B')
                     placed_bids_this_round_ = True
-                    self.last_buy_msecs_ = self.watch_.GetMsecsFromMidnight()
+                    #self.last_buy_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
                 if (not self.top_bid_keep_):
-                    print('Here')
                     canceled_size_ += self.order_manager_.CancelBidsEqAboveIntPrice(self.best_nonself_bid_int_price_)
     
         if (canceled_size_ > 0):
@@ -197,8 +195,8 @@ class DirectionalAggressiveTrading(BaseTrading):
                 else:
                     self.order_manager_.SendTrade(self.best_nonself_bid_price_, self.best_nonself_bid_int_price_, self.current_tradevarset_.l1ask_trade_size_, 'S') # 1 => Sell
                     placed_asks_this_round_ = True
-                    self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
-                    self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
             else:
                 canceled_size_ += self.order_manager_.CancelAsksAboveIntPrice(self.best_nonself_ask_int_price_)
     
@@ -211,23 +209,22 @@ class DirectionalAggressiveTrading(BaseTrading):
                 else:
                     self.order_manager_.SendTradeIntPx((self.best_nonself_ask_int_price_ - 1), self.current_tradevarset_.l1ask_trade_size_, 'S') # add extra paramater for aggresive
                     placed_asks_this_round_ = True
-                    self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
-                    self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_agg_sell_msecs_ = self.watch_.msecs_from_midnight()
+                    #self.last_sell_msecs_ = self.watch_.msecs_from_midnight()
         else:
             if ((self.dep_market_view_.spread_increments() > 1) and (not self.ask_improve_keep_)): 
                 canceled_size_ += self.order_manager_.CancelAsksAboveIntPrice(self.best_nonself_ask_int_price_)
     
         if (not placed_asks_this_round_):
             if (self.top_ask_place_):
-                #if ((self.order_manager_.SumAskSizeUnconfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
+                print self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_),
                 if ((self.order_manager_.SumAskSizeConfirmedEqAboveIntPrice(self.best_nonself_ask_int_price_) == 0) and 
                     (self.dep_market_view_.spread_increments() <= self.param_set_.max_int_spread_to_place_)):
                     self.order_manager_.SendTrade(self.best_nonself_ask_price_, self.best_nonself_ask_int_price_, self.current_tradevarset_.l1ask_trade_size_, 'S')
                     placed_asks_this_round_ = True
-                    self.last_sell_msecs_ = self.watch_.GetMsecsFromMidnight()
+                    #self.last_sell_msecs_ = self.watch_.GetMsecsFromMidnight()
             else:
                 if (not self.top_ask_keep_):
-                    print('Here')
                     canceled_size_ += self.order_manager_.CancelAsksEqAboveIntPrice(self.best_nonself_ask_int_price_)
         
         if (canceled_size_ > 0):
