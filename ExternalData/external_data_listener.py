@@ -4,7 +4,7 @@ from abc import abstractmethod
 class ExternalDataListener():
     __metaclass__ = ABCMeta
     def __init__(self):
-        self.next_event_timestamp = 0
+        self.next_event_timestamp_ = 0
         return
     
     def __del__(self):
@@ -33,4 +33,4 @@ class ExternalDataListener():
         return
         
     def NextEventTimestamp(self):
-        return self.next_event_timestamp
+        return self.next_event_timestamp_
