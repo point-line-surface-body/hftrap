@@ -81,15 +81,12 @@ class ModelCreator():
                 t_dep_shortcode_ = t_tokens_[2]
                 t_dep_base_pricetype_ = t_tokens_[3]
                 t_current_phase_ = 1
-                 
             elif (t_current_phase_ == 1): #PreModel
                 if (t_tokens_[1] == 'LINEAR'):
                     t_model_math_ = LinearModelAggregator(_watch_, _model_filename_, ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(t_dep_shortcode_), t_dep_base_pricetype_)
                 t_current_phase_ = 2
-                
             elif (t_current_phase_ == 2): #PostModel
                 t_current_phase_ = 3
-                
             elif (t_current_phase_ == 3): #IndicatorStarted
                 print(t_tokens_)
                 if (t_tokens_[0] == 'INDICATOR'):

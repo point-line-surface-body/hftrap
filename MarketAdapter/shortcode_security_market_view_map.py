@@ -21,7 +21,7 @@ class ShortcodeSecurityMarketViewMap():
         if _shortcode_ in ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys():
             return ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_]
         else:
-            ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_] = SecurityMarketView(ShortcodeSecurityMarketViewMap.watch_, _shortcode_, len(ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys()))
+            ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_] = SecurityMarketView(ShortcodeSecurityMarketViewMap.watch_, _shortcode_)#, len(ShortcodeSecurityMarketViewMap.shortcode_smv_map_.keys()))
             return ShortcodeSecurityMarketViewMap.shortcode_smv_map_[_shortcode_]
         
     def CheckValid(self, _shortcode_):
