@@ -90,6 +90,8 @@ def __main__():
     strategy_desc_.strategy_vec_[0].exec_.SetModelMathComponent(base_model_math_)
     for smv_ in smv_vec_:
         smv_.SubscribeOnReady(base_model_math_)
+        
+    order_manager_.AddPositionUpdateListener(strategy_desc_.strategy_vec_[0].exec_)
     
     #market_update_manager_ = MarketUpdateManager.GetUniqueInstance(watch_, smv_vec_, tradingdate_)
     #market_update_manager_.start()

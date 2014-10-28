@@ -50,6 +50,20 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         #self.saci_to_executed_size_ = []
         
         self.count_ = 0
+        
+    def dump(self):
+        for price_ in self.intpx_to_bid_order_vec_.keys():
+            order_vec_ = self.intpx_to_bid_order_vec_[price_]
+            if (not order_vec_):
+                continue
+            for order_ in order_vec_:
+                order_.dump()
+        for price_ in self.intpx_to_ask_order_vec_.keys():
+            order_vec_ = self.intpx_to_ask_order_vec_[price_]
+            if (not order_vec_):
+                continue
+            for order_ in order_vec_:
+                order_.dump()
     
     def AddOrderExecutedListener(self, _listener_):
         if (_listener_ not in self.order_executed_listener_vec_):
@@ -57,7 +71,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             
     def AddOrderCanceledListener(self, _listener_):
         if (_listener_ not in self.order_canceled_listener_vec_):
-            self.order_executed_listener_vec_.append(_listener_)
+            self.order_canceled_listener_vec_.append(_listener_)
     
     @staticmethod
     def GetUniqueInstance(watch_, smv):
@@ -107,7 +121,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         return order_
     
     def SendOrderExch(self, _server_assigned_client_id_, _security_name_, _buysell_, _price_, _size_requested_, _int_price_, _client_assigned_order_sequence_):
-        print 'SendOrderExch'
+        #print 'SendOrderExch'
         order_ = BaseOrder()
         order_.security_name_ = _security_name_
         order_.buysell_ = _buysell_
@@ -133,6 +147,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     self.client_position_map_[_server_assigned_client_id_] += size_executed_
                     #self.global_position_to_send_map_[_server_assigned_client_id_] += size_executed_
                     self.BroadcastExecNotification(_server_assigned_client_id_, order_)
+                    print('executed')
                 else:
                     size_executed_ = order_.MatchPartial(self.dep_market_view_.bestask_size())
                     self.client_position_map_[_server_assigned_client_id_] += size_executed_
@@ -141,11 +156,13 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                     if (not order_.int_price_ in self.intpx_to_bid_order_vec_.keys()):
                         self.intpx_to_bid_order_vec_[order_.int_price_] = []
                     self.intpx_to_bid_order_vec_[order_.int_price_].append(order_)
+                    print('liquidity')
             else:
-                print 'Adding Buy Liquidity order'
+                #print 'Adding Buy Liquidity order'
                 if (not order_.int_price_ in self.intpx_to_bid_order_vec_.keys()):
                     self.intpx_to_bid_order_vec_[order_.int_price_] = []
                 self.intpx_to_bid_order_vec_[order_.int_price_].append(order_)
+                print('liquidity')
         else:
             order_.queue_size_behind_ = 0
             order_.queue_size_ahead_ = 0
@@ -154,23 +171,25 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                 order_.price_ = self.dep_market_view_.bestbid_price()
                 if ((self.dep_market_view_.bestbid_size()) >= order_.size_remaining()):
                     size_executed = order_.ExecuteRemaining()
-                    self.client_position_map_[_server_assigned_client_id_] += size_executed
+                    self.client_position_map_[_server_assigned_client_id_] -= size_executed
                     #self.global_position_to_send_map_[_server_assigned_client_id_] += size_executed
                     self.BroadcastExecNotification(_server_assigned_client_id_, order_)
+                    print('executed')
                 else:
                     size_executed_ = order_.MatchPartial(self.dep_market_view.bestbid_size())
-                    self.client_position_map_[_server_assigned_client_id_] += size_executed_
+                    self.client_position_map_[_server_assigned_client_id_] -= size_executed_
                     #self.global_position_to_send_map_[_server_assigned_client_id_] += size_executed_
                     self.BroadcastExecNotification(_server_assigned_client_id_, order_)
                     if (not order_.int_price_ in self.intpx_to_ask_order_vec_.keys()):
                         self.intpx_to_ask_order_vec_[order_.int_price_] = []
                     self.intpx_to_ask_order_vec_[order_.int_price_].append(order_)
+                    print('liquidity')
             else:
-                print 'Adding Sell Liquidity order'
                 if (not order_.int_price_ in self.intpx_to_ask_order_vec_.keys()):
                     self.intpx_to_ask_order_vec_[order_.int_price_] = []
                 self.intpx_to_ask_order_vec_[order_.int_price_].append(order_)
-        order_.dump()
+                print('liquidity')
+        #order_.dump()
     
     def CancelOrderExch(self, _server_assigned_client_id_, _server_assigned_order_sequence_, _buysell_, _int_price_):
         order_ = self.FetchOrder(_buysell_, _int_price_, _server_assigned_order_sequence_)        
@@ -186,7 +205,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         self.count_ += 1
         #print('SMM.OnMartetUpdate: '+str(self.count_))
         #print('SMM.keys: '), 
-        print self.intpx_to_bid_order_vec_.keys()
+        #print self.intpx_to_bid_order_vec_.keys()
         for price_ in self.intpx_to_bid_order_vec_.keys():
             #print('SMM.price_: '+str(price_))
             #print('SMM.bestbid_int_price_: '+str(self.dep_market_view_.bestbid_int_price()))
@@ -228,10 +247,10 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         order_.queue_size_behind_ = 0
                         order_.queue_size_ahead_ = self.dep_market_view_.bestbid_size()
                         order_.num_events_seen_ = 1
-                        order_.dump()
+                        #order_.dump()
                     else: # not the first time
                         self.UpdateQueueSizes(new_size_, prev_size_, order_)
-                        order_.dump()
+                        #order_.dump()
     
         for price_ in self.intpx_to_ask_order_vec_.keys():
             if (price_ > self.dep_market_view_.bestask_int_price()):
@@ -265,10 +284,11 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
                         order_.queue_size_behind_ = 0
                         order_.queue_size_ahead_ = self.dep_market_view_.bestask_size()
                         order_.num_events_seen_ = 1
-                        order_.dump()
+                        #order_.dump()
                     else: # not the first time
                         self.UpdateQueueSizes(new_size_, prev_size_, order_)
-                        order_.dump()
+                        #order_.dump()
+        self.dump()
                 
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         if (_trade_print_info_.buysell_ == 'B'):
@@ -385,7 +405,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
         return
     
     def BroadcastExecNotification(self, _server_assigned_client_id_, _order_):
-        print('BroadcastExecNotification')
+        print('BroadcastExecNotification '+str(self.client_position_map_[_server_assigned_client_id_]))
         for listener_ in self.order_executed_listener_vec_:
             listener_.OrderExecuted(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
                                     _order_.server_assigned_order_sequence(), 'ZN_0', 
@@ -395,6 +415,7 @@ class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):
             
     def BroadcastCancelNotification(self, _server_assigned_client_id_, _order_):
         print('BroadcastCancelNotification')
+        print self.order_canceled_listener_vec_
         for listener_ in self.order_canceled_listener_vec_:
             listener_.OrderCanceled(_order_.server_assigned_client_id(), _order_.client_assigned_order_sequence(),
                                     _order_.server_assigned_order_sequence(), 'ZN_0', 

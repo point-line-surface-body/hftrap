@@ -333,7 +333,7 @@ class SecurityMarketView:
             print self.onready_listeners_
             
         print('---------------------------------------------------------------------------------------')
-
+        print (self.count_+1),
         self.market_update_info_.Dump()
         #self.OnL1PriceUpdate()
         
