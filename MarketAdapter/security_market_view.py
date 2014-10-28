@@ -22,7 +22,7 @@ from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo
 
 class SecurityMarketView:
 
-    def __init__(self, _watch_, _shortcode_, _security_id_):
+    def __init__(self, _watch_, _shortcode_):
         self.shortcode_ = _shortcode_
         self.watch_ = _watch_
         self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(_shortcode_, self.watch_.TradingDate())
@@ -31,7 +31,7 @@ class SecurityMarketView:
         self.is_ready_ = False
 #        self.computing_price_levels_ = False
 #        self.trade_before_quote_ = SecurityDefinitions.GetTradeBeforeQuote(_shortcode_, self.watch_.TradingDate())
-        self.market_update_info_ = MarketUpdateInfo(_shortcode_, _security_id_, SecurityDefinitions.GetContractExchSource(_shortcode_, self.watch_.TradingDate()))
+        self.market_update_info_ = MarketUpdateInfo(_shortcode_)
         self.trade_print_info_ = TradePrintInfo()
         self.l1_price_listeners_ = []
 #        self.l1_size_listeners_ = []

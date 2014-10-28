@@ -183,9 +183,9 @@ class TradePrintInfo():
 
     
 class MarketUpdateInfo():
-    def __init__(self, *argv):
-        self.shortcode_ = ""
-        self.security_id_ = 0
+    def __init__(self, _shortcode_):
+        #self.shortcode_ = ''
+        #self.security_id_ = 0
 #         self.exch_source_ = ""
 #         self.storing_pretrade_state_ = False
 #         self.pretrade_bestbid_price_  = kInvalidPrice 
@@ -203,10 +203,10 @@ class MarketUpdateInfo():
 #         self.asklevels_ = []
 #         self.bid_level_order_depth_book_ = []
 #         self.ask_level_order_depth_book_ = []
-        
-        if len(argv) == 2:
-            self.shortcode_ = argv[0]
-            self.security_id_ = (int)(argv[1])
+        #print 'MarketUpdateInfo:'+str(len(argv))
+        #if len(argv) == 2:
+        self.shortcode_ = _shortcode_
+        #    self.security_id_ = (int)(argv[1])
 #            self.exch_source_ = argv[2]
         #print('MUI.__init__')
         self.bestbid_price_ = kInvalidPrice

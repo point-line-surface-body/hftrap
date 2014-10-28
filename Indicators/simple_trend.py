@@ -41,7 +41,9 @@ class SimpleTrend(CommonIndicator):
             r_watch_ = argv[0]
             r_tokens_ = argv[1]
             #_basepx_pxtype_ = argv[2]
+            print r_tokens_[3]
             _indep_market_view_ = ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(r_tokens_[3])
+            print _indep_market_view_.shortcode()
             _fractional_seconds_ = float(r_tokens_[4])
             _price_type_ = r_tokens_[5]            
         else :
@@ -49,7 +51,9 @@ class SimpleTrend(CommonIndicator):
             _indep_market_view_ = argv[1]
             _fractional_seconds_ = argv[2]
             _price_type_ = argv[3]            
-        concise_indicator_description_= SimpleTrend.VarName() + " " + _indep_market_view_.shortcode( ) +  " " + str(_fractional_seconds_) + " " + _price_type_
+        concise_indicator_description_= SimpleTrend.VarName() + ' ' + _indep_market_view_.shortcode() + ' ' + str(_fractional_seconds_) + ' ' + _price_type_
+        print CommonIndicator.concise_indicator_description_map_.keys()
+        print concise_indicator_description_
         if concise_indicator_description_ not in CommonIndicator.concise_indicator_description_map_.keys() : 
             CommonIndicator.concise_indicator_description_map_[concise_indicator_description_] = SimpleTrend ( r_watch_, concise_indicator_description_, _indep_market_view_, _fractional_seconds_, _price_type_ ) ;
         return CommonIndicator.concise_indicator_description_map_ [ concise_indicator_description_ ] 
@@ -108,7 +112,7 @@ class SimpleTrend(CommonIndicator):
     
     @staticmethod
     def VarName():
-        return "SimpleTrend"
+        return 'SimpleTrend'
     
 #     def OnMarketDataInterrupted(self,_security_id_, msecs_since_last_receive_ ):
 #         if self.indep_market_view_.security_id()==_security_id_:
