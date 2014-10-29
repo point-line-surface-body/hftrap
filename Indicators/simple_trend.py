@@ -85,7 +85,7 @@ class SimpleTrend(CommonIndicator):
      
             self.last_price_recorded_ = self.current_indep_price_ 
             self.indicator_value_ = (self.current_indep_price_ - self.moving_avg_price_)
-            #print 'SimpleTrend.indicator_value_: '+str(self.indicator_value_)
+            print self.concise_indicator_description_+' '+str(self.indicator_value_)
             self.NotifyIndicatorListeners(self.indicator_value_)
     
     def SetTimeDecayWeights(self):

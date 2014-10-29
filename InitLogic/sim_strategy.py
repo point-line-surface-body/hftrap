@@ -47,7 +47,7 @@ def __main__():
         #smv_ = SecurityMarketView(watch_, source_shortcode_vec_[i_], i_)
         smv_vec_.append(ShortcodeSecurityMarketViewMap.StaticGetSecurityMarketView(source_shortcode_vec_[i_]))
 
-    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_) # need to update smv_vec in this function itself
+    base_model_math_ = ModelCreator.CreateModelMathComponent(watch_, model_filename_)
 
     sim_market_maker_ = BaseSimMarketMaker(watch_, smv_vec_[0])
     
