@@ -21,7 +21,7 @@ class SimpleTrend(CommonIndicator):
         self.decay_page_factor_ = 0.95
         self.decay_vector_ = []
         self.inv_decay_sum_ = 0.05        
-        self.decay_vector_sums_ = []        
+        self.decay_vector_sums_ = []
         self.last_price_recorded_ = 0.0
         self.current_indep_price_ = 0.0
         self.SetTimeDecayWeights()
