@@ -43,6 +43,7 @@ for line in df_original:
 	c_bid_orders = int(tokens[-7])
 	c_bid_size = int(tokens[-6])
 	c_bid_price = GetIntPrice(shortcode, float(tokens[-5]))
+	print c_bid_price
 	c_ask_price = GetIntPrice(shortcode, float(tokens[-4]))
 	c_ask_size = int(tokens[-3])
 	c_ask_orders = int(tokens[-2])

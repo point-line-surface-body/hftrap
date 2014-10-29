@@ -19,7 +19,7 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         self.indicator_value_ = 0.0
         self.is_ready_ = False
         self.data_interupted_ = False
-        self.base_price_type_ = "MidPrice"
+        self.base_price_type_ = 'MidPrice'
         if len(args) == 3:
             self.watch_ = args[0]
             self.concise_indicator_description_ = args[1]
