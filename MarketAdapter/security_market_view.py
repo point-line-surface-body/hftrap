@@ -26,7 +26,7 @@ class SecurityMarketView:
         self.shortcode_ = _shortcode_
         self.watch_ = _watch_
         self.min_price_increment_ = SecurityDefinitions.GetContractMinPriceIncrement(_shortcode_, self.watch_.TradingDate())
-        self.min_order_size_ = SecurityDefinitions.GetContractMinOrderSize(_shortcode_, self.watch_.TradingDate())
+        self.min_order_size_ = 1
 #        self.normal_spread_ = 1 * self.min_price_increment_
         self.is_ready_ = False
 #        self.computing_price_levels_ = False
