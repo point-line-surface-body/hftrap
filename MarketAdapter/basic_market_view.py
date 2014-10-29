@@ -1,5 +1,3 @@
-from CDef.defines import MAX_LEVELS, kInvalidIntPrice, kInvalidPrice
-
 class TradePrintInfo():
     
     def __init__(self):
@@ -209,16 +207,16 @@ class MarketUpdateInfo():
         #    self.security_id_ = (int)(argv[1])
 #            self.exch_source_ = argv[2]
         #print('MUI.__init__')
-        self.bestbid_price_ = kInvalidPrice
+        self.bestbid_price_ = 0
         self.bestbid_size_ = 0
-        self.bestbid_int_price_ = kInvalidIntPrice
+        self.bestbid_int_price_ = 0
         self.bestbid_ordercount_ = 0
-        self.bestask_price_ = kInvalidIntPrice
+        self.bestask_price_ = 0
         self.bestask_size_ = 0
-        self.bestask_int_price_ = kInvalidIntPrice
+        self.bestask_int_price_ = 0
         self.bestask_ordercount_ = 0
         self.spread_increments_ = 1
-        self.mkt_size_weighted_price_ = kInvalidPrice
+        self.mkt_size_weighted_price_ = 0
     
     def Dump(self):
         print('['+str(self.bestbid_size_)+' '+str(self.bestbid_int_price_)+' | '+str(self.bestask_int_price_)+' '

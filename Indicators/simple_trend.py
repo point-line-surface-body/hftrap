@@ -87,6 +87,12 @@ class SimpleTrend(CommonIndicator):
             self.indicator_value_ = (self.current_indep_price_ - self.moving_avg_price_)
             print self.concise_indicator_description_+' '+str(self.indicator_value_)
             self.NotifyIndicatorListeners(self.indicator_value_)
+            
+    def CalcDecayFactor(self, _number_fadeoffs_):
+        if _number_fadeoffs_ < 1 :
+            return 1.00
+        else:
+            return pow(0.5, 1.00/((float)(_number_fadeoffs_)))
     
     def SetTimeDecayWeights(self):
         kDecayLength = 20
@@ -94,7 +100,7 @@ class SimpleTrend(CommonIndicator):
         kMaxPageWidth = 200
         self.page_width_msecs_ = min ( kMaxPageWidth, max( kMinPageWidth, ( self.trend_history_msecs_ / kDecayLength ) ) )
         number_fadeoffs_ = max ( 1, ( int ) (math.ceil( self.trend_history_msecs_ / self.page_width_msecs_) ) )
-        self.decay_page_factor_ = MathUtils.CalcDecayFactor ( number_fadeoffs_ )
+        self.decay_page_factor_ = self.CalcDecayFactor ( number_fadeoffs_ )
         self.decay_vector_ = []
         self.decay_vector_sums_ = []
         for i in range(2*(int)(number_fadeoffs_)):
