@@ -2,7 +2,7 @@ import sys
 sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
-from InitCommon.strategy_desc import StrategyDesc
+from InitLogic.strategy_desc import StrategyDesc
 from ExternalData.historical_dispatcher import HistoricalDispatcher
 from ExternalData.filesource import FileSource
 from ExecLogic.directional_aggressive_trading import DirectionalAggressiveTrading
