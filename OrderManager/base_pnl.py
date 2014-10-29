@@ -1,4 +1,4 @@
-from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
+from MarketAdapter.security_market_view import SecurityMarketViewChangeListener
 from OrderManager.order_manager_listeners import ExecutionListener
 class BasePnl(ExecutionListener, SecurityMarketViewChangeListener):
     

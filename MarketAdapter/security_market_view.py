@@ -1,4 +1,6 @@
 from CommonTradeUtils.security_definitions import SecurityDefinitions
+from abc import ABCMeta
+from abc import abstractmethod
 
 class TradePrintInfo():
     
@@ -28,6 +30,23 @@ class MarketUpdateInfo():
     def Dump(self):
         print('['+str(self.bestbid_size_)+' '+str(self.bestbid_int_price_)+' | '+str(self.bestask_int_price_)+' '
               +str(self.bestask_size_)+']')
+        
+class SecurityMarketViewOnReadyListener:
+    __metaclass__ = ABCMeta
+    @abstractmethod
+    def SMVOnReady(self):
+        return
+    
+class SecurityMarketViewChangeListener():
+    __metaclass__ = ABCMeta
+    
+    @abstractmethod
+    def OnMarketUpdate(self, _market_update_info_):
+        return
+    
+    @abstractmethod
+    def OnTradePrint(self, _trade_print_info_, _market_update_info_):
+        return
 
 class SecurityMarketView:
 

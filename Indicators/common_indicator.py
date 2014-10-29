@@ -4,7 +4,7 @@ To make a new Indicator, you need to make a class that inherit this class.
 Example is given in simple_trend.py which makes a SimpleTrend class.
 '''
 
-from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
+from MarketAdapter.security_market_view import SecurityMarketViewChangeListener
 from indicator_listener import IndicatorListenerPair
 #from CommonTradeUtils.market_update_manager import MarketUpdateManager
 

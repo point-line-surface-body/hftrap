@@ -1,5 +1,5 @@
 from OrderManager.base_order import BaseOrder
-from MarketAdapter.security_market_view_change_listener import SecurityMarketViewChangeListener
+from MarketAdapter.security_market_view import SecurityMarketViewChangeListener
 from ExternalData.external_time_listener import TimePeriodListener        
 
 class BaseSimMarketMaker(SecurityMarketViewChangeListener, TimePeriodListener):

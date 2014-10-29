@@ -1,5 +1,5 @@
 from Indicators.indicator_listener import IndicatorListener
-from MarketAdapter.security_market_view_on_ready_listener import SecurityMarketViewOnReadyListener
+from MarketAdapter.security_market_view import SecurityMarketViewOnReadyListener
 from abc import ABCMeta
 from abc import abstractmethod
 
