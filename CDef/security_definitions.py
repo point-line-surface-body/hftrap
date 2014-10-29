@@ -27,19 +27,3 @@ class SecurityDefinitions(object):
             return 0.031250
         else:
             return 0
-    
-    @staticmethod
-    def GetContractMinOrderSize(_shortcode_, _date_):
-        return 1
-
-    @staticmethod
-    def GetTradeBeforeQuote(_shortcode_, _date_):
-        return  # not necessary to  implement ??
-    
-    @staticmethod
-    def GetContractExchSource(_shortcode_, _date_):
-        return
-
-    @staticmethod
-    def GetConfToMarketUpdateMsecs(_shortcode_, _date_):
-        return
