@@ -1,10 +1,10 @@
 from time import gmtime
+import time
 from ExternalData.external_time_listener import ExternalTimeListener
 
 '''
 TODO: (1) Rename YYMMDD
 '''
-from CDef.MathUtils import GetMsecsFromEpoch
 
 class Watch(ExternalTimeListener):
     
@@ -41,7 +41,7 @@ class Watch(ExternalTimeListener):
 #             print self.msecs_from_midnight_
         self.tv_sec_ = _tv_sec_
         self.tv_usec_ = _tv_usec_
-        self.msecs_from_midnight_ = GetMsecsFromEpoch(_tv_sec_, _tv_usec_)
+        self.msecs_from_midnight_ = Watch.GetMsecsFromEpoch(_tv_sec_, _tv_usec_)
         
     def GetMsecsFromMidnight(self):
         return self.msecs_from_midnight_
@@ -53,3 +53,24 @@ class Watch(ExternalTimeListener):
                 
     def TradingDate(self):
         return self.trading_date_
+    
+    # It takes the utc_time in 4 digit, and convert into total seconds from midnight    
+    @staticmethod
+    def GetMSecsFromUTC(utc_time):
+        hr = (int)(utc_time/100)
+        mins = (int)(utc_time%100)
+        secs = hr * 60 * 60 + mins *60
+        return secs*1000
+
+    #return milli seconds from midnight
+    @staticmethod
+    def GetMsecsFromEpoch(_tv_sec_, _tv_usec_):
+        epoch_time = _tv_sec_ + float(_tv_usec_) / 1000000
+        msecs = int(1000*(epoch_time - (int)(epoch_time)))
+        t = time.gmtime(epoch_time)
+        hr = t.tm_hour
+        mins = t.tm_min
+        secs = t.tm_sec
+        total_secs = hr*60*60 + mins *60 + secs
+        total_msecs = total_secs * 1000 + msecs
+        return total_msecs
