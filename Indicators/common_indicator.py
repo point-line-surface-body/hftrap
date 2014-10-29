@@ -53,12 +53,13 @@ class CommonIndicator(SecurityMarketViewChangeListener):
         return
     
     def GetReadinessRequired(self, r_dep_shortcode_, tokens_):
-        core_shortcode_vec_= []
-        core_shortcodes.GetCoreShortcodes(r_dep_shortcode_, core_shortcode_vec_)
-        if tokens_[3] in core_shortcode_vec_:
-            return True
-        else:
-            return False
+        return True
+#         core_shortcode_vec_= []
+#         core_shortcodes.GetCoreShortcodes(r_dep_shortcode_, core_shortcode_vec_)
+#         if tokens_[3] in core_shortcode_vec_:
+#             return True
+#         else:
+#             return False
     
 #     def SubscribeDataInterrupts(self, _market_update_manager_):
 #         return
