@@ -3,7 +3,6 @@ This is an example of an Indicator.
 '''
 
 import math
-from CDef import MathUtils
 from common_indicator import CommonIndicator
 from MarketAdapter.shortcode_security_market_view_map import ShortcodeSecurityMarketViewMap
 
