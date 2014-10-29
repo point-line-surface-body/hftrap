@@ -1,4 +1,4 @@
-from CDef.security_definitions import SecurityDefinitions
+from CommonTradeUtils.security_definitions import SecurityDefinitions
 from MarketAdapter.basic_market_view import MarketUpdateInfo, TradePrintInfo
 
 # #Keeping only 1 Level in the book
