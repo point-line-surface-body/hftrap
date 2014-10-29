@@ -1,6 +1,6 @@
 from InitLogic.paramset import ParamSet
 from ExecLogic.trade_vars import TradeVars
-from ModelMath.model_math_listener import ModelMathListener
+from ModelMath.base_model_math import ModelMathListener
 from MarketAdapter.security_market_view import SecurityMarketViewChangeListener
 
 class BaseTrading(ModelMathListener, SecurityMarketViewChangeListener): #extends many classes.. add here
