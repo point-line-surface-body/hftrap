@@ -48,6 +48,7 @@ class SecurityMarketViewChangeListener():
     def OnTradePrint(self, _trade_print_info_, _market_update_info_):
         return
 
+
 class SecurityMarketView:
 
     def __init__(self, _watch_, _shortcode_):
@@ -59,13 +60,17 @@ class SecurityMarketView:
         self.market_update_info_ = MarketUpdateInfo(_shortcode_)
         self.trade_print_info_ = TradePrintInfo()
         self.l1_price_listeners_ = []
+        self.is_ready_ = False
+        self.market_update_info_ = MarketUpdateInfo(_shortcode_)
+        self.trade_print_info_ = TradePrintInfo()
+        self.l1_price_listeners_ = []
         self.onready_listeners_ = []
         self.price_type_subscribed_ = {}
         self.count_ = 0
         self.sim_market_maker_ = None
         self.price_type_subscribed_['MktSizeWPrice'] = False
-
-    def SetSimMarketMaker(self, _sim_market_maker_):
+    
+	def SetSimMarketMaker(self, _sim_market_maker_):
         self.sim_market_maker_ = _sim_market_maker_
       
     def __eq__(self, _obj_):
@@ -74,6 +79,27 @@ class SecurityMarketView:
     def shortcode(self):
         return self.market_update_info_.shortcode_
     
+    def bestbid_price(self):
+        return self.market_update_info_.bestbid_price_
+        
+    def bestask_price(self):
+        return self.market_update_info_.bestask_price_
+        
+    def bestbid_int_price(self):
+        return self.market_update_info_.bestbid_int_price_
+      
+    def bestask_int_price(self):
+        return self.market_update_info_.bestask_int_price_
+        
+    def bestbid_size(self):
+        return self.market_update_info_.bestbid_size_
+        
+    def bestask_size(self):
+        return self.market_update_info_.bestask_size_
+        
+    def spread_increments(self):
+        return self.market_update_info_.bestask_int_price_ - self.market_update_info_.bestbid_int_price_
+
     def bestbid_price(self):
         return self.market_update_info_.bestbid_price_
         
@@ -114,20 +140,10 @@ class SecurityMarketView:
         if not self.l1_price_listeners_.__contains__(_new_listener_):
             #print('********Added Listener********')
             self.l1_price_listeners_.append(_new_listener_)
-#         if not self.l1_size_listeners_.__contains__(_new_listener_):
-#             self.l1_size_listeners_.append(_new_listener_)
-#         print(len(self.l1_price_listeners_))
-#         print(self.l1_price_listeners_)
         
     def SubscribeOnReady(self, _new_listener_):
         if not self.onready_listeners_.__contains__(_new_listener_):
             self.onready_listeners_.append(_new_listener_)
-#         
-#     def OnL1PriceUpdate(self):
-#         self.UpdateL1Prices()
-#         self.is_ready_ = True
-#         self.NotifyL1PriceListeners()
-#         self.NotifyOnReadyListeners()
        
     def UpdateL1Prices(self):
         self.market_update_info_.mkt_size_weighted_price_ = (self.market_update_info_.bestbid_price_ * self.market_update_info_.bestask_size_ + self.market_update_info_.bestask_price_ * self.market_update_info_.bestbid_size_) / (self.market_update_info_.bestbid_size_ + self.market_update_info_.bestask_size_)
@@ -161,8 +177,8 @@ class SecurityMarketView:
     
     def GetMidIntPrice(self):
         return (self.bestask_int_price() + self.bestbid_int_price()) * 0.5
-
-    def GetPriceFromType(self, _price_type_):
+    
+	def GetPriceFromType(self, _price_type_):
         if _price_type_ == 'MktSizeWPrice':
             return self.market_update_info_.mkt_size_weighted_price_
         elif _price_type_ == 'AskPrice':
@@ -227,7 +243,6 @@ class SecurityMarketView:
         #self.NotifyTradeListeners()
 
 
-
     def trade_before_quote(self):
         return False
 
@@ -276,4 +291,5 @@ class SecurityMarketView:
         #if (self.count_ == 10):
         #    exit()
         
+        #print self.bestask_price(), self.market_update_info_.bestask_price_
         #print self.bestask_price(), self.market_update_info_.bestask_price_
