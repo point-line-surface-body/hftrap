@@ -70,7 +70,7 @@ class SecurityMarketView:
         self.sim_market_maker_ = None
         self.price_type_subscribed_['MktSizeWPrice'] = False
     
-	def SetSimMarketMaker(self, _sim_market_maker_):
+    def SetSimMarketMaker(self, _sim_market_maker_):
         self.sim_market_maker_ = _sim_market_maker_
       
     def __eq__(self, _obj_):
@@ -79,27 +79,6 @@ class SecurityMarketView:
     def shortcode(self):
         return self.market_update_info_.shortcode_
     
-    def bestbid_price(self):
-        return self.market_update_info_.bestbid_price_
-        
-    def bestask_price(self):
-        return self.market_update_info_.bestask_price_
-        
-    def bestbid_int_price(self):
-        return self.market_update_info_.bestbid_int_price_
-      
-    def bestask_int_price(self):
-        return self.market_update_info_.bestask_int_price_
-        
-    def bestbid_size(self):
-        return self.market_update_info_.bestbid_size_
-        
-    def bestask_size(self):
-        return self.market_update_info_.bestask_size_
-        
-    def spread_increments(self):
-        return self.market_update_info_.bestask_int_price_ - self.market_update_info_.bestbid_int_price_
-
     def bestbid_price(self):
         return self.market_update_info_.bestbid_price_
         
@@ -178,7 +157,7 @@ class SecurityMarketView:
     def GetMidIntPrice(self):
         return (self.bestask_int_price() + self.bestbid_int_price()) * 0.5
     
-	def GetPriceFromType(self, _price_type_):
+    def GetPriceFromType(self, _price_type_):
         if _price_type_ == 'MktSizeWPrice':
             return self.market_update_info_.mkt_size_weighted_price_
         elif _price_type_ == 'AskPrice':
