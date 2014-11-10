@@ -55,7 +55,7 @@ for line in df_original:
 		c_trade_size = 0
 		c_trade_price = 0
 
-	if (c_timestamp != p_timestamp or c_type != p_type or c_bid_size != p_bid_size or c_bid_price != p_bid_price 
+	if (c_type != p_type or c_bid_size != p_bid_size or c_bid_price != p_bid_price 
 					or c_ask_size != p_ask_size or c_ask_price != p_ask_price):
 		df.write(struct.pack('QIccHHHHHH', c_sec, c_usec, c_type, c_buysell, c_bid_size, c_bid_price, c_ask_price, c_ask_size, 
 							c_trade_size, c_trade_price))
