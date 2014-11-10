@@ -43,7 +43,6 @@ for line in df_original:
 	c_bid_orders = int(tokens[-7])
 	c_bid_size = int(tokens[-6])
 	c_bid_price = GetIntPrice(shortcode, float(tokens[-5]))
-	print c_bid_price
 	c_ask_price = GetIntPrice(shortcode, float(tokens[-4]))
 	c_ask_size = int(tokens[-3])
 	c_ask_orders = int(tokens[-2])
@@ -56,10 +55,10 @@ for line in df_original:
 		c_trade_size = 0
 		c_trade_price = 0
 
-	if (c_timestamp != p_timestamp or c_type != p_type or c_bid_orders != p_bid_orders or c_bid_size != p_bid_size or c_bid_price != p_bid_price 
-					or c_ask_orders != p_ask_orders or c_ask_size != p_ask_size or c_ask_price != p_ask_price):
-		df.write(struct.pack('QIccHHHHHHHH', c_sec, c_usec, c_type, c_buysell, c_bid_orders, c_bid_size, c_bid_price, c_ask_price, c_ask_size, 
-							c_ask_orders, c_trade_size, c_trade_price))
+	if (c_timestamp != p_timestamp or c_type != p_type or c_bid_size != p_bid_size or c_bid_price != p_bid_price 
+					or c_ask_size != p_ask_size or c_ask_price != p_ask_price):
+		df.write(struct.pack('QIccHHHHHH', c_sec, c_usec, c_type, c_buysell, c_bid_size, c_bid_price, c_ask_price, c_ask_size, 
+							c_trade_size, c_trade_price))
 
 	p_timestamp = c_timestamp
 	p_type = c_type
