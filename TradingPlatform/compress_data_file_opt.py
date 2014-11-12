@@ -147,7 +147,6 @@ for line in df_original:
                             c_trade_size, c_trade_price))
     if (to_write == -1):
         lines += 1
-        print p_sec-r_sec, p_usec, p_type, p_buysell, p_bid_size, p_bid_price, p_ask_price, p_ask_size, p_trade_size, p_trade_price
         df.write(struct.pack('IIccHHHHHH', p_sec-r_sec, p_usec, p_type, p_buysell, p_bid_size, p_bid_price, p_ask_price, p_ask_size, 
                             p_trade_size, p_trade_price))
     p_timestamp = c_timestamp
