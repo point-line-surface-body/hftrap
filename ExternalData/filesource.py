@@ -3,6 +3,10 @@ from ExternalData.message import Message
 from ExternalData.external_data_listener import ExternalDataListener
 from struct import unpack
 from TradingPlatform.get_data_file_name import GetFileSourceName
+message_format = 'QIccHHHHHH'
+optimize = 1
+if (optimize == 1):
+    message_format = 'IIccHHHHHH'
 
 class FileSource(ExternalDataListener):
     
@@ -14,6 +18,9 @@ class FileSource(ExternalDataListener):
         self.file_ = open(self.file_name_, 'rb')
         #bytes_ = self.file_.read(calcsize('Q'))
         #self.reference_sec_ = unpack('Q', bytes_)[0]
+        if (optimize == 1):
+            bytes_ = unpack('Q', self.file_.read(calcsize('Q')))
+            self.r_sec_ = bytes_[0]
         
     def __del__(self):
         return
@@ -33,12 +40,14 @@ class FileSource(ExternalDataListener):
         print('Filesource.SeekToFirstEventAfter')
         iter_ = 0
         while (1):
-            this_bytes_ = self.file_.read(calcsize('QIccHHHHHH'))
-            if (len(this_bytes_) < calcsize('QIccHHHHHH')):
+            this_bytes_ = self.file_.read(calcsize(message_format))
+            if (len(this_bytes_) < calcsize(message_format)):
                 print('False'+' '+str(len(this_bytes_)))
                 return False
-            self.next_event_ = Message(this_bytes_)
-            #self.next_event_.sec_ += self.reference_usec_
+            if (optimize == 0):
+                self.next_event_ = Message(this_bytes_, 0)
+            else:
+                self.next_event_ = Message(this_bytes_, self.r_sec_)
             self.next_event_timestamp_ = self.next_event_.timestamp_
             if (self.next_event_timestamp_ > _start_time_):
                 print('Turned True after '+str(iter_)+' iterations: '+str(self.next_event_timestamp_)+' '+str(_start_time_))
@@ -48,23 +57,28 @@ class FileSource(ExternalDataListener):
         return
     
     def ComputeEarliestDataTimestamp(self):
-        this_bytes_ = self.file_.read(calcsize('QIccHHHHHH'))
-        if (len(this_bytes_) < calcsize('QIccHHHHHH')):
+        this_bytes_ = self.file_.read(calcsize(message_format))
+        if (len(this_bytes_) < calcsize(message_format)):
             self.next_event_timestamp_ = 0
             return False
         else:
-            self.next_event_ = Message(this_bytes_)
-            #self.next_event_.sec_ += self.reference_sec_
+            if (optimize == 0):
+                self.next_event_ = Message(this_bytes_, 0)
+            else:
+                self.next_event_ = Message(this_bytes_, self.r_sec_)
             self.next_event_timestamp_ = self.next_event_.timestamp_
             return True
     
     def SetNextTimeStamp(self):
-        this_bytes_ = self.file_.read(calcsize('QIccHHHHHH'))
-        if (len(this_bytes_) < calcsize('QIccHHHHHH')):
+        this_bytes_ = self.file_.read(calcsize(message_format))
+        if (len(this_bytes_) < calcsize(message_format)):
             self.next_event_timestamp_ = 0
             return False
         else:
-            self.next_event_ = Message(this_bytes_)
+            if (optimize == 0):
+                self.next_event_ = Message(this_bytes_, 0)
+            else:
+                self.next_event_ = Message(this_bytes_, self.r_sec_)
             self.next_event_timestamp_ = self.next_event_.timestamp_
             return True
         

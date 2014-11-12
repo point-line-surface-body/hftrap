@@ -19,17 +19,24 @@ data_file_name_original = data_file_name+'.original'
 
 #os.system('/home/dvctrader/basetrade_install/bin/mkt_trade_logger SIM '+shortcode+' '+trading_date+' > '+data_file_name_original)
 
-df_original = open(data_file_name_original, 'r')
+df_original_file = open(data_file_name_original, 'r')
+df_original = df_original_file.readlines()
+df_original_file.close()
 df = open(data_file_name, 'wb')
 
 p_timestamp = 0
-p_type = '-'
+p_sec = 0
+p_usec = 0
+p_type = 'M'
+p_buysell = 'B'
 p_bid_orders = 0
 p_bid_size = 0
 p_bid_price = 0
 p_ask_price = 0
 p_ask_size = 0
 p_ask_orders = 0
+p_trade_price = 0
+p_trade_size = 0
 
 lines = 0
 bid_size_state = 0
@@ -39,33 +46,33 @@ ask_size_state = 0
 
 #--------------------------------------
 
+# 
+# minbp = 1000000000
+# minap = 1000000000
+# maxbp = 0
+# maxap = 0
+# for line in df_original:
+#     tokens = line.split()
+#     bp = GetIntPrice(shortcode, float(tokens[-5]))
+#     ap = GetIntPrice(shortcode, float(tokens[-4]))
+#     minbp = min(minbp, bp)
+#     maxbp = max(maxbp, bp)
+#     minap = min(minap, ap)
+#     maxap = max(maxap, ap)
+# 
+# if (maxbp - minbp > 255):
+#     print 'Cannot compress: bp '+str(maxbp)+' '+str(minbp)+' '+shortcode+' '+trading_date
+#     exit(0)
+# if (maxap - minap > 255):
+#     print 'Cannot compress: ap '+str(maxap)+' '+str(minap)+' '+shortcode+' '+trading_date
+#     exit(0)
 
-minbp = 1000000000
-minap = 1000000000
-maxbp = 0
-maxap = 0
-for line in df_original:
-    tokens = line.split()
-    bp = GetIntPrice(shortcode, float(tokens[-5]))
-    ap = GetIntPrice(shortcode, float(tokens[-4]))
-    minbp = min(minbp, bp)
-    maxbp = max(maxbp, bp)
-    minap = min(minap, ap)
-    maxap = max(maxap, ap)
-
-if (maxbp - minbp > 255):
-    print 'Cannot compress: bp '+str(maxbp)+' '+str(minbp)+' '+shortcode+' '+trading_date
-    exit(0)
-if (maxap - minap > 255):
-    print 'Cannot compress: ap '+str(maxap)+' '+str(minap)+' '+shortcode+' '+trading_date
-    exit(0)
-
-r_bid_price = minbp
-r_ask_price = minap
+# r_bid_price = minbp
+# r_ask_price = minap
 #--------------------------------------
 r_tokens = df_original[0].split()
 r_sec = long(r_tokens[0].split('.')[0])
-df.write(struct.pack('QHH', r_sec, r_bid_price, r_ask_price))
+df.write(struct.pack('Q', r_sec))
 
 for line in df_original:
     tokens = line.split()
@@ -106,10 +113,10 @@ for line in df_original:
                 to_write = 1
             if (bid_size_state == 1):
                 if (c_bid_size < p_bid_size):
-                    to_write = 1
+                    to_write = -1
             if (bid_size_state == 2):
-                if (c_bid_size < p_bid_size):
-                    to_write = 1
+                if (c_bid_size > p_bid_size):
+                    to_write = -1
                 
             if (c_bid_size > p_bid_size):
                 bid_size_state = 1
@@ -121,10 +128,10 @@ for line in df_original:
                 to_write = 1
             if (ask_size_state == 1):
                 if (c_ask_size < p_ask_size):
-                    to_write = 1
+                    to_write = -1
             if (ask_size_state == 2):
-                if (c_ask_size < p_ask_size):
-                    to_write = 1
+                if (c_ask_size > p_ask_size):
+                    to_write = -1
                 
             if (c_ask_size > p_ask_size):
                 ask_size_state = 1
@@ -133,14 +140,19 @@ for line in df_original:
         else:
             pass
         
-    if (to_write):
+    if (to_write == 1):
         lines += 1
         #print line
-        if (c_type == 'T'):
-            c_type = c_buysell
-        df.write(struct.pack('HIccHHHHHH', c_sec-r_sec, c_usec, c_type, c_bid_size, c_bid_price - r_bid_price, c_ask_price - r_ask_price, c_ask_size, 
-                            c_trade_size, c_trade_price - r_bid_price))
+        df.write(struct.pack('IIccHHHHHH', c_sec-r_sec, c_usec, c_type, c_buysell, c_bid_size, c_bid_price, c_ask_price, c_ask_size, 
+                            c_trade_size, c_trade_price))
+    if (to_write == -1):
+        lines += 1
+        print p_sec-r_sec, p_usec, p_type, p_buysell, p_bid_size, p_bid_price, p_ask_price, p_ask_size, p_trade_size, p_trade_price
+        df.write(struct.pack('IIccHHHHHH', p_sec-r_sec, p_usec, p_type, p_buysell, p_bid_size, p_bid_price, p_ask_price, p_ask_size, 
+                            p_trade_size, p_trade_price))
     p_timestamp = c_timestamp
+    p_sec = c_sec
+    p_usec = c_usec
     p_type = c_type
     p_bid_orders = c_bid_orders
     p_bid_size = c_bid_size
@@ -154,5 +166,4 @@ for line in df_original:
 
 print lines
 df.close()
-df_original.close()
 #os.system('rm -rf '+get_data_file_name(shortcode, trading_date)+'.original')

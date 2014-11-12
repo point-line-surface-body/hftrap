@@ -1,6 +1,6 @@
 import sys
-#sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
-sys.path.append('/home/ashwin/hftrap')
+sys.path.append('/Users/ashwink/Documents/workspace/hftrap')
+#sys.path.append('/home/ashwin/hftrap')
 from CommonTradeUtils.watch import Watch
 from ModelMath.model_creator import ModelCreator
 from InitLogic.strategy_desc import StrategyDesc
